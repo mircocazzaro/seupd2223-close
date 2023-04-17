@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.stream.Stream;
 
 /**
  * Indexes documents processing a whole directory tree.
@@ -141,7 +142,7 @@ public class DirectoryIndexer {
         // if the directory does not already exist, create it
         if (Files.notExists(indexDir)) {
             try {
-                Files.createDirectory(indexDir);
+                Files.createDirectories(indexDir);
             } catch (Exception e) {
                 throw new IllegalArgumentException(
                         String.format("Unable to create directory %s: %s.", indexDir.toAbsolutePath().toString(),
@@ -240,18 +241,16 @@ public class DirectoryIndexer {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (file.getFileName().toString().endsWith(extension)) {
-
-                    //DocumentParser dp = DocumentParser.create(dpCls, Files.newBufferedReader(file, cs));
-
+                    filesCount += 1;
                     bytesCount += Files.size(file);
 
-                    filesCount += 1;
+                    Stream<ParsedDocument> parsedDocumentStream = DocumentParser.create(
+                            dpCls,
+                            Files.newBufferedReader(file, cs)
+                    );
 
-                    Document doc = null;
-                    /*TODO: fix this
-                    for (ParsedDocument pd : dp) {
-
-                        doc = new Document();
+                    parsedDocumentStream.forEach(pd -> {
+                        Document doc = new Document();
 
                         // add the document identifier
                         doc.add(new StringField(ParsedDocument.Fields.ID, pd.getIdentifier(), Field.Store.YES));
@@ -259,7 +258,11 @@ public class DirectoryIndexer {
                         // add the document body
                         doc.add(new BodyField(pd.getBody()));
 
-                        writer.addDocument(doc);
+                        try {
+                            writer.addDocument(doc);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         docsCount++;
 
@@ -269,10 +272,7 @@ public class DirectoryIndexer {
                                     docsCount, filesCount, bytesCount / MBYTE,
                                     (System.currentTimeMillis() - start) / 1000);
                         }
-
-                    }
-                    */
-
+                    });
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -301,22 +301,35 @@ public class DirectoryIndexer {
     public static void main(String[] args) throws Exception {
 
         final int ramBuffer = 256;
-        final String docsPath = "";
+        final String docsPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";
         final String indexPath = "experiment/index-stop-stem";
 
-        final String extension = "txt";
+        final String extension = "json";
         final int expectedDocs = 528155;
         final String charsetName = "ISO-8859-1";
 
-        final Analyzer a = CustomAnalyzer.builder().withTokenizer(StandardTokenizerFactory.class).addTokenFilter(
-                LowerCaseFilterFactory.class).addTokenFilter(StopFilterFactory.class).addTokenFilter(PorterStemFilterFactory.class).build();
+        final Analyzer a = CustomAnalyzer.builder().withTokenizer(
+                StandardTokenizerFactory.class
+        ).addTokenFilter(
+                LowerCaseFilterFactory.class
+        ).addTokenFilter(
+                StopFilterFactory.class
+        ).addTokenFilter(
+                PorterStemFilterFactory.class
+        ).build();
 
-        DirectoryIndexer i = new DirectoryIndexer(a, new BM25Similarity(), ramBuffer, indexPath, docsPath, extension,
-                charsetName, expectedDocs, ClefParser.class);
+        DirectoryIndexer i = new DirectoryIndexer(
+                a,
+                new BM25Similarity(),
+                ramBuffer,
+                indexPath,
+                docsPath,
+                extension,
+                charsetName,
+                expectedDocs,
+                ClefParser.class
+        );
 
         i.index();
-
-
     }
-
 }
