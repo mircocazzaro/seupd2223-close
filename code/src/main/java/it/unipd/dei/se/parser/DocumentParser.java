@@ -1,131 +1,95 @@
 package it.unipd.dei.se.parser;
 
-import java.io.IOException;
-import java.io.Reader;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+
+import java.io.*;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.lang.reflect.Type;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import java.util.Spliterators;
 
+/**
+ * @author CLOSE GROUP
+ * @version 1.0
+ * <p>
+ * A parser for documents.
+ */
 
-public abstract class DocumentParser
-        implements Iterator<it.unipd.dei.se.parser.ParsedDocument>, Iterable<it.unipd.dei.se.parser.ParsedDocument> {
-
-    /**
-     * Indicates whether there is another {@code ParsedDocument} to return.
-     */
-    protected boolean next = true;
-
-    /**
-     * The reader to be used to parse document(s).
-     */
-    protected final Reader in;
-
+public abstract class DocumentParser {
 
     /**
-     * Creates a new document parser.
+     * Create a Json Iterator from a JsonReader.
      *
-     * @param in the reader to the document(s) to be parsed.
-     * @throws NullPointerException if {@code in} is {@code null}.
+     * @param gson       the Gson object to use for deserialization.
+     * @param objectType the type of the objects to deserialize.
+     * @param reader     the reader to read from.
      */
-    protected DocumentParser(final Reader in) {
+    private record JsonIterator<T>(Gson gson, Type objectType, JsonReader reader) implements Iterator<T> {
 
-        if (in == null) {
-            throw new NullPointerException("Reader cannot be null.");
-        }
-
-        this.in = in;
-    }
-
-
-    @Override
-    public final Iterator<it.unipd.dei.se.parser.ParsedDocument> iterator() {
-        return this;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return next;
-    }
-
-    @Override
-    public final it.unipd.dei.se.parser.ParsedDocument next() {
-
-        if (!next) {
-            throw new NoSuchElementException("No more documents to parse.");
-        }
-
-        try {
-            return parse();
-        } finally {
+        /**
+         * Returns true if the iteration has more elements.
+         *
+         * @return true if the iteration has more elements
+         */
+        @Override
+        public boolean hasNext() {
             try {
-                // we reached the end of the file
-                if (!next) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException("Unable to close the reader.", e);
+                return reader.hasNext();
+            } catch (Exception e) {
+                return false;
             }
         }
 
+        /**
+         * Returns the next element in the iteration.
+         *
+         * @return the next element in the iteration
+         */
+        @Override
+        public T next() {
+            return gson.fromJson(reader, objectType);
+        }
     }
+
 
     /**
-     * Creates a new {@code DocumentParser}.
-     * <p>
-     * It assumes the {@code DocumentParser} has a single-parameter constructor which takes a {@code Reader} as input.
+     * Reads a JSON file and returns a stream of objects.
      *
-     * @param cls the class of the document parser to be instantiated.
-     * @param in  the reader to the document(s) to be parsed.
-     * @return a new instance of {@code DocumentParser} for the given class.
-     * @throws NullPointerException  if {@code cls} and/or {@code in} are {@code null}.
-     * @throws IllegalStateException if something goes wrong in instantiating the class.
+     * @param gson       the Gson object to use for deserialization.
+     * @param objectType the type of the objects to deserialize.
+     * @param in         the reader to read from.
+     * @param <J>        the type of the objects to deserialize.
+     * @return a stream of objects.
+     * @throws IOException if an error occurs while reading the file.
      */
-    public static final DocumentParser create(Class<? extends DocumentParser> cls, Reader in) {
+    public static <J> Stream<J> readJsonFromFile(Gson gson, Type objectType, final Reader in) throws IOException {
+        // Create a JsonReader from the file
+        JsonReader reader = new JsonReader(new BufferedReader(in));
 
-        if (cls == null) {
-            throw new NullPointerException("Document parser class cannot be null.");
+        reader.beginArray();
+
+        // If the file is empty, return an empty stream
+        if (!reader.hasNext()) {
+            return Stream.empty();
         }
 
-        if (in == null) {
-            throw new NullPointerException("Reader cannot be null.");
-        }
-
-
-        try {
-            return cls.getConstructor(Reader.class).newInstance(in);
-        } catch (Exception e) {
-            throw new IllegalStateException(String.format("Unable to instantiate document parser %s.", cls.getName()),
-                    e);
-        }
-
+        // Otherwise, return a stream of objects
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                        new JsonIterator<J>(gson, objectType, reader), // The JsonIterator
+                        0 // The spliterator is not ordered
+                ),
+                false // The stream is not parallel
+        ).onClose(() -> {
+            // Close the reader when the stream is closed
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
-
-
-    public static DocumentParser create(String cls, Reader in) {
-
-        if (cls == null || cls.isBlank()) {
-            throw new NullPointerException("Document parser class cannot be null or empty.");
-        }
-
-        if (in == null) {
-            throw new NullPointerException("Reader cannot be null.");
-        }
-
-        try {
-            return DocumentParser.create((Class<? extends DocumentParser>) Class.forName(cls), in);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(String.format("Unable to find the class of the document parser %s.", cls),
-                    e);
-        }
-
-
-    }
-
-    /**
-     * Performs the actual parsing of the document.
-     *
-     * @return the parsed document.
-     */
-    protected abstract it.unipd.dei.se.parser.ParsedDocument parse();
-
 
 }
