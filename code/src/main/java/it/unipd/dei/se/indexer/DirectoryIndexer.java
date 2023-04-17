@@ -25,6 +25,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.stream.Stream;
 
 /**
+ * @author Close Group
+ * @version 1.0
+ *
  * Indexes documents processing a whole directory tree.
  */
 public class DirectoryIndexer {
@@ -45,7 +48,7 @@ public class DirectoryIndexer {
     private final Class<? extends DocumentParser> dpCls;
 
     /**
-     * The directory (and sub-directories) where documents are stored.
+     * The directory (and subdirectories) where documents are stored.
      */
     private final Path docsDir;
 
@@ -145,19 +148,18 @@ public class DirectoryIndexer {
                 Files.createDirectories(indexDir);
             } catch (Exception e) {
                 throw new IllegalArgumentException(
-                        String.format("Unable to create directory %s: %s.", indexDir.toAbsolutePath().toString(),
-                                e.getMessage()), e);
+                        String.format("Unable to create directory %s: %s.", indexDir.toAbsolutePath(), e.getMessage()), e);
             }
         }
 
         if (!Files.isWritable(indexDir)) {
             throw new IllegalArgumentException(
-                    String.format("Index directory %s cannot be written.", indexDir.toAbsolutePath().toString()));
+                    String.format("Index directory %s cannot be written.", indexDir.toAbsolutePath()));
         }
 
         if (!Files.isDirectory(indexDir)) {
             throw new IllegalArgumentException(String.format("%s expected to be a directory where to write the index.",
-                    indexDir.toAbsolutePath().toString()));
+                    indexDir.toAbsolutePath()));
         }
 
         if (docsPath == null) {
@@ -171,12 +173,12 @@ public class DirectoryIndexer {
         final Path docsDir = Paths.get(docsPath);
         if (!Files.isReadable(docsDir)) {
             throw new IllegalArgumentException(
-                    String.format("Documents directory %s cannot be read.", docsDir.toAbsolutePath().toString()));
+                    String.format("Documents directory %s cannot be read.", docsDir.toAbsolutePath()));
         }
 
         if (!Files.isDirectory(docsDir)) {
             throw new IllegalArgumentException(
-                    String.format("%s expected to be a directory of documents.", docsDir.toAbsolutePath().toString()));
+                    String.format("%s expected to be a directory of documents.", docsDir.toAbsolutePath()));
         }
 
         this.docsDir = docsDir;
@@ -221,7 +223,7 @@ public class DirectoryIndexer {
             writer = new IndexWriter(FSDirectory.open(indexDir), iwc);
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Unable to create the index writer in directory %s: %s.",
-                    indexDir.toAbsolutePath().toString(), e.getMessage()), e);
+                    indexDir.toAbsolutePath(), e.getMessage()), e);
         }
 
         this.start = System.currentTimeMillis();
@@ -237,13 +239,14 @@ public class DirectoryIndexer {
 
         System.out.printf("%n#### Start indexing ####%n");
 
-        Files.walkFileTree(docsDir, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(docsDir, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (file.getFileName().toString().endsWith(extension)) {
                     filesCount += 1;
                     bytesCount += Files.size(file);
 
+                    // Create a stream of parsed documents from the file with the given Parser class(dpCls)
                     Stream<ParsedDocument> parsedDocumentStream = DocumentParser.create(
                             dpCls,
                             Files.newBufferedReader(file, cs)
