@@ -1,10 +1,8 @@
+package it.unipd.dei.se.indexer;
 
-
-package it.unipd.dei.se.index;
-
-import it.unipd.dei.se.parse.DocumentParser;
-import it.unipd.dei.se.parse.ParsedDocument;
-import it.unipd.dei.se.parse.TipsterParser;
+import it.unipd.dei.se.parser.DocumentParser;
+import it.unipd.dei.se.parser.ParsedDocument;
+import it.unipd.dei.se.parser.ClefParser;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
@@ -243,20 +241,20 @@ public class DirectoryIndexer {
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (file.getFileName().toString().endsWith(extension)) {
 
-                    DocumentParser dp = DocumentParser.create(dpCls, Files.newBufferedReader(file, cs));
+                    //DocumentParser dp = DocumentParser.create(dpCls, Files.newBufferedReader(file, cs));
 
                     bytesCount += Files.size(file);
 
                     filesCount += 1;
 
                     Document doc = null;
-
+                    /*TODO: fix this
                     for (ParsedDocument pd : dp) {
 
                         doc = new Document();
 
                         // add the document identifier
-                        doc.add(new StringField(ParsedDocument.FIELDS.ID, pd.getIdentifier(), Field.Store.YES));
+                        doc.add(new StringField(ParsedDocument.Fields.ID, pd.getIdentifier(), Field.Store.YES));
 
                         // add the document body
                         doc.add(new BodyField(pd.getBody()));
@@ -273,6 +271,7 @@ public class DirectoryIndexer {
                         }
 
                     }
+                    */
 
                 }
                 return FileVisitResult.CONTINUE;
@@ -313,7 +312,7 @@ public class DirectoryIndexer {
                 LowerCaseFilterFactory.class).addTokenFilter(StopFilterFactory.class).addTokenFilter(PorterStemFilterFactory.class).build();
 
         DirectoryIndexer i = new DirectoryIndexer(a, new BM25Similarity(), ramBuffer, indexPath, docsPath, extension,
-                charsetName, expectedDocs, TipsterParser.class);
+                charsetName, expectedDocs, ClefParser.class);
 
         i.index();
 
