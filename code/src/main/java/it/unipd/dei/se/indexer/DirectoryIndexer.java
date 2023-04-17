@@ -142,7 +142,7 @@ public class DirectoryIndexer {
         // if the directory does not already exist, create it
         if (Files.notExists(indexDir)) {
             try {
-                Files.createDirectory(indexDir);
+                Files.createDirectories(indexDir);
             } catch (Exception e) {
                 throw new IllegalArgumentException(
                         String.format("Unable to create directory %s: %s.", indexDir.toAbsolutePath().toString(),
@@ -302,7 +302,7 @@ public class DirectoryIndexer {
 
         final int ramBuffer = 256;
         final String docsPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";
-        final String indexPath = "experiment";
+        final String indexPath = "experiment/index-stop-stem";
 
         final String extension = "json";
         final int expectedDocs = 528155;
@@ -331,8 +331,5 @@ public class DirectoryIndexer {
         );
 
         i.index();
-
-
     }
-
 }
