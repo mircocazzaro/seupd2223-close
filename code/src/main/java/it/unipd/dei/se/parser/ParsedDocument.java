@@ -19,7 +19,7 @@ public record ParsedDocument(String id, String body) {
      */
     public final static class Fields {
         public static final String ID = "id";
-        public static final String BODY = "body";
+        public static final String BODY = "contents";
     }
 
     /**
