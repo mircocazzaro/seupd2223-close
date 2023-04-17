@@ -59,6 +59,24 @@ public record ParsedDocument(String id, String body) {
     }
 
     /**
+     * Returns the unique document identifier.
+     *
+     * @return the unique document identifier.
+     */
+    public String getIdentifier() {
+        return id;
+    }
+
+    /**
+     * Returns the body of the document.
+     *
+     * @return the body of the document.
+     */
+    public String getBody() {
+        return body;
+    }
+
+    /**
      * Override the toString method. It returns a string representation of the document.
      *
      * @return the string representation of the document.
