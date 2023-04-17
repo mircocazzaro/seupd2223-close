@@ -244,8 +244,8 @@ public class DirectoryIndexer {
                     filesCount += 1;
                     bytesCount += Files.size(file);
 
-
-                    Stream<ParsedDocument> parsedDocumentStream = new ClefParser().getDocumentStream(
+                    Stream<ParsedDocument> parsedDocumentStream = DocumentParser.create(
+                            dpCls,
                             Files.newBufferedReader(file, cs)
                     );
 
@@ -308,11 +308,27 @@ public class DirectoryIndexer {
         final int expectedDocs = 528155;
         final String charsetName = "ISO-8859-1";
 
-        final Analyzer a = CustomAnalyzer.builder().withTokenizer(StandardTokenizerFactory.class).addTokenFilter(
-                LowerCaseFilterFactory.class).addTokenFilter(StopFilterFactory.class).addTokenFilter(PorterStemFilterFactory.class).build();
+        final Analyzer a = CustomAnalyzer.builder().withTokenizer(
+                StandardTokenizerFactory.class
+        ).addTokenFilter(
+                LowerCaseFilterFactory.class
+        ).addTokenFilter(
+                StopFilterFactory.class
+        ).addTokenFilter(
+                PorterStemFilterFactory.class
+        ).build();
 
-        DirectoryIndexer i = new DirectoryIndexer(a, new BM25Similarity(), ramBuffer, indexPath, docsPath, extension,
-                charsetName, expectedDocs, ClefParser.class);
+        DirectoryIndexer i = new DirectoryIndexer(
+                a,
+                new BM25Similarity(),
+                ramBuffer,
+                indexPath,
+                docsPath,
+                extension,
+                charsetName,
+                expectedDocs,
+                ClefParser.class
+        );
 
         i.index();
 
