@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017-2023 University of Padua, Italy
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package it.unipd.dei.se.parser;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -82,7 +97,7 @@ public record ParsedDocument(String id, String body) {
      * @return the string representation of the document.
      */
     @Override
-    public final String toString() {
+    public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("identifier", id)
                 .append("body", body);
@@ -97,7 +112,7 @@ public record ParsedDocument(String id, String body) {
      * @return true if the two documents have the same identifier.
      */
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         return (this == o) || ((o instanceof ParsedDocument) && id.equals(((ParsedDocument) o).id));
     }
 
@@ -107,7 +122,7 @@ public record ParsedDocument(String id, String body) {
      * @return the hash code of the document identifier.
      */
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return 37 * id.hashCode();
     }
 
