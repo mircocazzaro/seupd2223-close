@@ -14,7 +14,8 @@
     <!-- Project description elements -->
     <name>CLOSE (Clef LOng-eval Search Engine)</name>
 
-    <description>CLOSE (Clef LOng-eval Search Engine) is a group of individuals working on a search engine project that aims to provide efficient and accurate search results for users.
+    <description>CLOSE (Clef LOng-eval Search Engine) is a group of individuals working on a search engine project that
+        aims to provide efficient and accurate search results for users.
     </description>
 
     <url>https://bitbucket.org/upd-dei-stud-prj/seupd2223-close/</url>
@@ -161,9 +162,29 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.dslplatform</groupId>
+            <artifactId>dsl-json-java8</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 </project>

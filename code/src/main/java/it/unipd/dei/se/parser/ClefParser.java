@@ -1,34 +1,60 @@
 package it.unipd.dei.se.parser;
 
-import java.io.BufferedReader;
-import java.io.Reader;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 
+import java.io.*;
+import java.util.stream.Stream;
 
-public class ClefParser extends it.unipd.dei.se.parser.DocumentParser {
+/**
+ * @author CLOSE GROUP
+ * @version 1.0
+ * <p>
+ * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
+ */
+public class ClefParser extends DocumentParser {
+
+    private static final GsonBuilder builder = new GsonBuilder();
 
     /**
-     * The size of the buffer for the body element.
+     * Creates a new parser.
      */
-    private static final int BODY_SIZE = 1024 * 8;
+    public ClefParser() {
+        // Register a custom deserializer for ParsedDocument.
+        builder.registerTypeAdapter(
+                ParsedDocument.class, // The type of the object to deserialize.
+                (JsonDeserializer<ParsedDocument>) (json, typeOfT, context) -> {
+                    // Get the id and the body of the document.
+                    String id = json.getAsJsonObject().get(ParsedDocument.Fields.ID).getAsString();
+                    String body = json.getAsJsonObject().get(ParsedDocument.Fields.BODY).getAsString();
+
+                    // Return a new ParsedDocument.
+                    return new ParsedDocument(id, body);
+                });
+    }
 
     /**
-     * The currently parsed document
+     * Returns a stream of parsed documents.
+     *
+     * @param in the reader to read from.
+     * @return a stream of parsed documents.
+     * @throws IOException if an I/O error occurs.
      */
-    private final it.unipd.dei.se.parser.ParsedDocument document = null;
-
-    public ClefParser(final Reader in) {
-        super(new BufferedReader(in));
+    public Stream<ParsedDocument> getDocumentStream(final Reader in) throws IOException {
+        return DocumentParser.readJsonFromFile(builder.create(), ParsedDocument.class, in);
     }
 
+    public static void main(String[] args) throws Exception {
+        // Read the documents from a file.
+        Reader reader = new FileReader(
+                "/Users/farzad/Projects/uni/search_engine/seupd2223-close/code/src/main/java/it/unipd/dei/se/parser/collector_kodicare_1.txt.json"
+        );
 
-    @Override
-    public boolean hasNext() {
-        return true;
-    }
+        // Create a new parser.
+        Stream<ParsedDocument> parsedDocumentStream = new ClefParser().getDocumentStream(reader);
 
-    @Override
-    protected final it.unipd.dei.se.parser.ParsedDocument parse() {
-        return document;
+        // Print the documents.
+        parsedDocumentStream.forEach(System.out::println);
     }
 
 }
