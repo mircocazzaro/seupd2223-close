@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017-2023 University of Padua, Italy
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package it.unipd.dei.se.indexer;
 
 import it.unipd.dei.se.parser.DocumentParser;
@@ -22,8 +37,12 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.stream.Stream;
 
 /**
+ * @author Close Group
+ * @version 1.0
+ *
  * Indexes documents processing a whole directory tree.
  */
 public class DirectoryIndexer {
@@ -44,7 +63,7 @@ public class DirectoryIndexer {
     private final Class<? extends DocumentParser> dpCls;
 
     /**
-     * The directory (and sub-directories) where documents are stored.
+     * The directory (and subdirectories) where documents are stored.
      */
     private final Path docsDir;
 
@@ -141,22 +160,21 @@ public class DirectoryIndexer {
         // if the directory does not already exist, create it
         if (Files.notExists(indexDir)) {
             try {
-                Files.createDirectory(indexDir);
+                Files.createDirectories(indexDir);
             } catch (Exception e) {
                 throw new IllegalArgumentException(
-                        String.format("Unable to create directory %s: %s.", indexDir.toAbsolutePath().toString(),
-                                e.getMessage()), e);
+                        String.format("Unable to create directory %s: %s.", indexDir.toAbsolutePath(), e.getMessage()), e);
             }
         }
 
         if (!Files.isWritable(indexDir)) {
             throw new IllegalArgumentException(
-                    String.format("Index directory %s cannot be written.", indexDir.toAbsolutePath().toString()));
+                    String.format("Index directory %s cannot be written.", indexDir.toAbsolutePath()));
         }
 
         if (!Files.isDirectory(indexDir)) {
             throw new IllegalArgumentException(String.format("%s expected to be a directory where to write the index.",
-                    indexDir.toAbsolutePath().toString()));
+                    indexDir.toAbsolutePath()));
         }
 
         if (docsPath == null) {
@@ -170,12 +188,12 @@ public class DirectoryIndexer {
         final Path docsDir = Paths.get(docsPath);
         if (!Files.isReadable(docsDir)) {
             throw new IllegalArgumentException(
-                    String.format("Documents directory %s cannot be read.", docsDir.toAbsolutePath().toString()));
+                    String.format("Documents directory %s cannot be read.", docsDir.toAbsolutePath()));
         }
 
         if (!Files.isDirectory(docsDir)) {
             throw new IllegalArgumentException(
-                    String.format("%s expected to be a directory of documents.", docsDir.toAbsolutePath().toString()));
+                    String.format("%s expected to be a directory of documents.", docsDir.toAbsolutePath()));
         }
 
         this.docsDir = docsDir;
@@ -220,7 +238,7 @@ public class DirectoryIndexer {
             writer = new IndexWriter(FSDirectory.open(indexDir), iwc);
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Unable to create the index writer in directory %s: %s.",
-                    indexDir.toAbsolutePath().toString(), e.getMessage()), e);
+                    indexDir.toAbsolutePath(), e.getMessage()), e);
         }
 
         this.start = System.currentTimeMillis();
@@ -236,22 +254,21 @@ public class DirectoryIndexer {
 
         System.out.printf("%n#### Start indexing ####%n");
 
-        Files.walkFileTree(docsDir, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(docsDir, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (file.getFileName().toString().endsWith(extension)) {
-
-                    //DocumentParser dp = DocumentParser.create(dpCls, Files.newBufferedReader(file, cs));
-
+                    filesCount += 1;
                     bytesCount += Files.size(file);
 
-                    filesCount += 1;
+                    // Create a stream of parsed documents from the file with the given Parser class(dpCls)
+                    Stream<ParsedDocument> parsedDocumentStream = DocumentParser.create(
+                            dpCls,
+                            Files.newBufferedReader(file, cs)
+                    );
 
-                    Document doc = null;
-                    /*TODO: fix this
-                    for (ParsedDocument pd : dp) {
-
-                        doc = new Document();
+                    parsedDocumentStream.forEach(pd -> {
+                        Document doc = new Document();
 
                         // add the document identifier
                         doc.add(new StringField(ParsedDocument.Fields.ID, pd.getIdentifier(), Field.Store.YES));
@@ -259,7 +276,11 @@ public class DirectoryIndexer {
                         // add the document body
                         doc.add(new BodyField(pd.getBody()));
 
-                        writer.addDocument(doc);
+                        try {
+                            writer.addDocument(doc);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         docsCount++;
 
@@ -269,10 +290,7 @@ public class DirectoryIndexer {
                                     docsCount, filesCount, bytesCount / MBYTE,
                                     (System.currentTimeMillis() - start) / 1000);
                         }
-
-                    }
-                    */
-
+                    });
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -301,22 +319,35 @@ public class DirectoryIndexer {
     public static void main(String[] args) throws Exception {
 
         final int ramBuffer = 256;
-        final String docsPath = "";
+        final String docsPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";
         final String indexPath = "experiment/index-stop-stem";
 
-        final String extension = "txt";
+        final String extension = "json";
         final int expectedDocs = 528155;
         final String charsetName = "ISO-8859-1";
 
-        final Analyzer a = CustomAnalyzer.builder().withTokenizer(StandardTokenizerFactory.class).addTokenFilter(
-                LowerCaseFilterFactory.class).addTokenFilter(StopFilterFactory.class).addTokenFilter(PorterStemFilterFactory.class).build();
+        final Analyzer a = CustomAnalyzer.builder().withTokenizer(
+                StandardTokenizerFactory.class
+        ).addTokenFilter(
+                LowerCaseFilterFactory.class
+        ).addTokenFilter(
+                StopFilterFactory.class
+        ).addTokenFilter(
+                PorterStemFilterFactory.class
+        ).build();
 
-        DirectoryIndexer i = new DirectoryIndexer(a, new BM25Similarity(), ramBuffer, indexPath, docsPath, extension,
-                charsetName, expectedDocs, ClefParser.class);
+        DirectoryIndexer i = new DirectoryIndexer(
+                a,
+                new BM25Similarity(),
+                ramBuffer,
+                indexPath,
+                docsPath,
+                extension,
+                charsetName,
+                expectedDocs,
+                ClefParser.class
+        );
 
         i.index();
-
-
     }
-
 }

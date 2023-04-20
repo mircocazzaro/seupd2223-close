@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017-2023 University of Padua, Italy
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package it.unipd.dei.se.parser;
 
 import com.google.gson.Gson;
@@ -92,4 +107,41 @@ public abstract class DocumentParser {
         });
     }
 
+    /**
+     * Creates a new {@code DocumentParser}.
+     * <p>
+     * It assumes the {@code DocumentParser} has a single-parameter constructor which takes a {@code Reader} as input.
+     *
+     * @param cls the class of the document parser to be instantiated.
+     * @param in  the reader to the document(s) to be parsed.
+     * @return a new instance of {@code DocumentParser} for the given class.
+     * @throws NullPointerException  if {@code cls} and/or {@code in} are {@code null}.
+     * @throws IllegalStateException if something goes wrong in instantiating the class.
+     */
+    public static Stream<ParsedDocument> create(Class<? extends DocumentParser> cls, Reader in) {
+
+        if (cls == null) {
+            throw new NullPointerException("Document parser class cannot be null.");
+        }
+
+        if (in == null) {
+            throw new NullPointerException("Reader cannot be null.");
+        }
+
+        try {
+            return cls.getConstructor().newInstance().getDocumentStream(in);
+        } catch (Exception e) {
+            throw new IllegalStateException(String.format("Unable to instantiate document parser %s.", cls.getName()), e);
+        }
+
+    }
+
+    /**
+     * Returns a stream of parsed documents.
+     *
+     * @param in the reader to the document(s) to be parsed.
+     * @return a stream of parsed documents.
+     * @throws IOException if something goes wrong in parsing the document(s).
+     */
+    protected abstract Stream<ParsedDocument> getDocumentStream(final Reader in) throws IOException;
 }
