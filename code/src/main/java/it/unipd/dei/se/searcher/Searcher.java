@@ -86,7 +86,7 @@ public class Searcher {
     /**
      * The index reader
      */
-    private final IndexReader reader;
+    private final DirectoryReader reader;
 
     /**
      * The index searcher.
@@ -281,6 +281,9 @@ public class Searcher {
         ScoreDoc[] sd = null;
         String docID = null;
 
+        // the set of document identifiers already retrieved
+        HashSet<String> docIDs = new HashSet<>();
+
         try {
             for (QualityQuery t : topics) {
 
@@ -300,8 +303,15 @@ public class Searcher {
                 for (int i = 0, n = sd.length; i < n; i++) {
                     docID = reader.document(sd[i].doc, idField).get(ParsedDocument.Fields.ID);
 
-                    run.printf(Locale.ENGLISH, "%s\tQ0\t%s\t%d\t%.6f\t%s%n", t.getQueryID(), docID, i, sd[i].score,
-                            runID);
+                    // if the document has already been retrieved, skip it -> avoid duplicates
+                    if (docIDs.contains(docID)) {
+                        continue;
+                    }
+
+                    // otherwise, add it to the set of retrieved documents
+                    docIDs.add(docID);
+
+                    run.printf(Locale.ENGLISH, "%s\tQ0\t%s\t%d\t%.6f\t%s%n", t.getQueryID(), docID, i, sd[i].score, runID);
                 }
 
                 run.flush();
