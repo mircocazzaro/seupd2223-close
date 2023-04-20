@@ -45,14 +45,14 @@ public class CloseSearchEngine {
          * The second argument is the path to the topics.
          * The third argument is the path to the index.
          */
-        if (args.length != 3 || Collections.frequency(Arrays.asList(args), null) > 0) {
+        /*if (args.length != 3 || Collections.frequency(Arrays.asList(args), null) > 0) {
             throw new IllegalArgumentException(
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
-        }
-        final String collectionPath = args[0];
-        final String topicPath = args[1];
-        final String indexPath = args[2];
+        }*/
+        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
+        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
+        final String indexPath ="experiment/index-stop-stem";
 
         // ram buffer size
         final int ramBuffer = 256;
@@ -100,7 +100,7 @@ public class CloseSearchEngine {
                 expectedDocs,
                 ClefParser.class
         );
-        directoryIndexer.index();
+        //directoryIndexer.index();
 
         // searching the topics in the specified path and with the specified extension
         final Searcher searcher = new Searcher(

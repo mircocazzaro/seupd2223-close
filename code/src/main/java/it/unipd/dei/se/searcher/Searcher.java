@@ -68,12 +68,8 @@ public class Searcher {
         /**
          * The description of a topic.
          */
-        public static final String DESCRIPTION = "description";
+        //public static final String DESCRIPTION = "title";
 
-        /**
-         * The narrative of a topic.
-         */
-        public static final String NARRATIVE = "narrative";
     }
 
 
@@ -184,7 +180,9 @@ public class Searcher {
         try {
             BufferedReader in = Files.newBufferedReader(Paths.get(topicsFile), StandardCharsets.UTF_8);
 
-            topics = new TrecTopicsReader().readQueries(in);
+            topics = new ClefQueryParser().readQueries(in);
+
+
 
             in.close();
         } catch (IOException e) {
@@ -291,8 +289,7 @@ public class Searcher {
                 bq = new BooleanQuery.Builder();
 
                 bq.add(qp.parse(QueryParserBase.escape(t.getValue(TOPIC_FIELDS.TITLE))), BooleanClause.Occur.SHOULD);
-                bq.add(qp.parse(QueryParserBase.escape(t.getValue(TOPIC_FIELDS.DESCRIPTION))),
-                        BooleanClause.Occur.SHOULD);
+                //bq.add(qp.parse(QueryParserBase.escape(t.getValue(TOPIC_FIELDS.DESCRIPTION))), BooleanClause.Occur.SHOULD);
 
                 q = bq.build();
 
@@ -333,7 +330,7 @@ public class Searcher {
 
         final String topics = "/Users/ferro/Documents/didattica/repositories/search-engines/collections/TREC_08_1999_AdHoc/topics.txt";
 
-        final String indexPath = "experiment/index-stop-nostem";
+        final String indexPath = "experiment/index-stop-stem";
 
         final String runPath = "experiment";
 

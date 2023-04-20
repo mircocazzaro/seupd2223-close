@@ -319,7 +319,7 @@ public class DirectoryIndexer {
     public static void main(String[] args) throws Exception {
 
         final int ramBuffer = 256;
-        final String docsPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";
+        final String docsPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";
         final String indexPath = "experiment/index-stop-stem";
 
         final String extension = "json";
