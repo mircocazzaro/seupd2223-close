@@ -23,9 +23,8 @@ import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.benchmark.quality.QualityQuery;
-import org.apache.lucene.benchmark.quality.trec.TrecTopicsReader;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParserBase;
@@ -44,6 +43,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -64,12 +64,6 @@ public class Searcher {
          * The title of a topic.
          */
         public static final String TITLE = "title";
-
-        /**
-         * The description of a topic.
-         */
-        //public static final String DESCRIPTION = "title";
-
     }
 
 
@@ -86,8 +80,12 @@ public class Searcher {
     /**
      * The index reader
      */
-    private final IndexReader reader;
+    private final DirectoryReader reader;
 
+    /**
+     * The stored fields of the index.
+     */
+    private final StoredFields storedFields;
     /**
      * The index searcher.
      */
@@ -163,6 +161,13 @@ public class Searcher {
             reader = DirectoryReader.open(FSDirectory.open(indexDir));
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Unable to create the index reader for directory %s: %s.",
+                    indexDir.toAbsolutePath().toString(), e.getMessage()), e);
+        }
+
+        try {
+            storedFields = reader.storedFields();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(String.format("Unable to create the stored fields for directory %s: %s.",
                     indexDir.toAbsolutePath().toString(), e.getMessage()), e);
         }
 
@@ -281,15 +286,16 @@ public class Searcher {
         ScoreDoc[] sd = null;
         String docID = null;
 
+        // the set of document identifiers already retrieved
+        HashSet<String> docIDs = new HashSet<>();
+
         try {
             for (QualityQuery t : topics) {
-
                 System.out.printf("Searching for topic %s.%n", t.getQueryID());
 
                 bq = new BooleanQuery.Builder();
 
                 bq.add(qp.parse(QueryParserBase.escape(t.getValue(TOPIC_FIELDS.TITLE))), BooleanClause.Occur.SHOULD);
-                //bq.add(qp.parse(QueryParserBase.escape(t.getValue(TOPIC_FIELDS.DESCRIPTION))), BooleanClause.Occur.SHOULD);
 
                 q = bq.build();
 
@@ -298,10 +304,17 @@ public class Searcher {
                 sd = docs.scoreDocs;
 
                 for (int i = 0, n = sd.length; i < n; i++) {
-                    docID = reader.document(sd[i].doc, idField).get(ParsedDocument.Fields.ID);
+                    docID = storedFields.document(sd[i].doc, idField).get(ParsedDocument.Fields.ID);
 
-                    run.printf(Locale.ENGLISH, "%s\tQ0\t%s\t%d\t%.6f\t%s%n", t.getQueryID(), docID, i, sd[i].score,
-                            runID);
+                    // if the document has already been retrieved, skip it -> avoid duplicates
+                    if (docIDs.contains(docID)) {
+                        continue;
+                    }
+
+                    // otherwise, add it to the set of retrieved documents
+                    docIDs.add(docID);
+
+                    run.printf(Locale.ENGLISH, "%s\tQ0\t%s\t%d\t%.6f\t%s%n", t.getQueryID(), docID, i, sd[i].score, runID);
                 }
 
                 run.flush();
