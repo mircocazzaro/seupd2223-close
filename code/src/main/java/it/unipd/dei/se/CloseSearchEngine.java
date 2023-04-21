@@ -15,16 +15,10 @@
  */
 package it.unipd.dei.se;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import it.unipd.dei.se.analyzer.CloseAnalyzer;
 import it.unipd.dei.se.parser.ClefParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.StopFilterFactory;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
 
@@ -50,8 +44,10 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
-        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
+        //final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
+        final String collectionPath = "/Users/gianlucaantolini/Downloads/correct_json";
+        //final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
+        final String topicPath = "/Users/gianlucaantolini/Downloads/publish/English/Queries/train.trec";
         final String indexPath ="experiment/index-stop-stem";
 
         // ram buffer size
@@ -80,13 +76,16 @@ public class CloseSearchEngine {
         final Similarity sim = new BM25Similarity();
 
         // creating the analyzer to be used for indexing and searching the collection
-        final Analyzer closeAnalyzer = CustomAnalyzer.builder().withTokenizer(
+        /*final Analyzer closeAnalyzer = CustomAnalyzer.builder().withTokenizer(
                 StandardTokenizerFactory.class
         ).addTokenFilter(
                 LowerCaseFilterFactory.class
         ).addTokenFilter(
                 StopFilterFactory.class
-        ).build();
+        ).build();*/
+
+        // analyzer with all the options
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "stoplist.txt", CloseAnalyzer.StemFilterType.Porter, null, null );
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(
@@ -100,7 +99,7 @@ public class CloseSearchEngine {
                 expectedDocs,
                 ClefParser.class
         );
-        //directoryIndexer.index();
+        directoryIndexer.index();
 
         // searching the topics in the specified path and with the specified extension
         final Searcher searcher = new Searcher(
