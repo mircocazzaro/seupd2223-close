@@ -24,6 +24,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.StemmerOverrideFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
@@ -86,7 +87,7 @@ public class CloseSearchEngine {
                 LowerCaseFilterFactory.class
         ).addTokenFilter(
                 StopFilterFactory.class
-        ).build();
+        ).addTokenFilter(StemmerOverrideFilterFactory.class).build();
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(

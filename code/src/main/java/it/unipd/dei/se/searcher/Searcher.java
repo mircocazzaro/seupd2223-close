@@ -341,7 +341,7 @@ public class Searcher {
      */
     public static void main(String[] args) throws Exception {
 
-        final String topics = "/Users/ferro/Documents/didattica/repositories/search-engines/collections/TREC_08_1999_AdHoc/topics.txt";
+        final String topics = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
 
         final String indexPath = "experiment/index-stop-stem";
 
