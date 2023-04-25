@@ -9,7 +9,11 @@ import org.apache.lucene.analysis.en.EnglishPossessiveFilter;
 import org.apache.lucene.analysis.en.KStemFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.miscellaneous.LengthFilter;
+import org.apache.lucene.analysis.miscellaneous.TypeAsSynonymFilter;
 import org.apache.lucene.analysis.ngram.NGramTokenFilter;
+import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilter;
+import org.apache.lucene.analysis.opennlp.OpenNLPPOSFilter;
+import org.apache.lucene.analysis.opennlp.OpenNLPTokenizerFactory;
 import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +25,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static it.unipd.dei.se.analyzer.AnalyzerUtil.loadStopList;
+import static it.unipd.dei.se.analyzer.AnalyzerUtil.*;
 
 public class CloseAnalyzer extends Analyzer {
     /**
@@ -64,6 +68,10 @@ public class CloseAnalyzer extends Analyzer {
 
     private final  Integer shingleFilterSize;  //set to null if don't want to use
 
+    private final boolean useNLPFilter;
+
+    private final boolean lemmatization;
+
 
 
     /**
@@ -71,7 +79,7 @@ public class CloseAnalyzer extends Analyzer {
      */
     public CloseAnalyzer(TokenizerType tokenizerType, int minLength, int maxLength,
                           boolean isEnglishPossessiveFilter, String stopFilterListName, StemFilterType stemFilterType,
-                          Integer nGramFilterSize, Integer shingleFilterSize)
+                          Integer nGramFilterSize, Integer shingleFilterSize, boolean useNLPFilter, boolean lemmatization)
     {
         super();
 
@@ -91,6 +99,10 @@ public class CloseAnalyzer extends Analyzer {
 
         this.shingleFilterSize = shingleFilterSize;
 
+        this.useNLPFilter = useNLPFilter;
+
+        this.lemmatization = lemmatization;
+
     }
 
 
@@ -100,68 +112,89 @@ public class CloseAnalyzer extends Analyzer {
         Tokenizer source = null;
         TokenStream tokens = null;
 
-        switch(tokenizerType)
-        {
-            case Whitespace:
-                source = new WhitespaceTokenizer();
-                break;
 
-            case Letter:
-                source = new LetterTokenizer();
-                break;
 
-            case Standard:
-                source = new StandardTokenizer();
-                break;
-        }
+            switch (tokenizerType) {
+                case Whitespace:
+                    source = new WhitespaceTokenizer();
+                    break;
 
-        tokens = new LowerCaseFilter(source);
+                case Letter:
+                    source = new LetterTokenizer();
+                    break;
 
-        if(minLength != null && maxLength != null)
-        {
-            tokens = new LengthFilter(tokens, minLength, maxLength);
-        }
+                case Standard:
+                    source = new StandardTokenizer();
+                    break;
+            }
 
-        if(isEnglishPossessiveFilter)
-        {
-            tokens = new EnglishPossessiveFilter(tokens);
-        }
+            tokens = new LowerCaseFilter(source);
 
-        if(stopFilterListName != null)
-        {
-            tokens = new StopFilter(tokens, loadStopList(stopFilterListName));
-        }
+            if (minLength != null && maxLength != null) {
+                tokens = new LengthFilter(tokens, minLength, maxLength);
+            }
 
-        switch(stemFilterType)
-        {
-            case EnglishMinimal:
-                tokens = new EnglishMinimalStemFilter(tokens);
-                break;
+            if (isEnglishPossessiveFilter) {
+                tokens = new EnglishPossessiveFilter(tokens);
+            }
 
-            case Porter:
-                tokens = new PorterStemFilter(tokens);
-                break;
+            if (stopFilterListName != null) {
+                tokens = new StopFilter(tokens, loadStopList(stopFilterListName));
+            }
 
-            case K:
-                tokens = new KStemFilter(tokens);
-                break;
+            switch (stemFilterType) {
+                case EnglishMinimal:
+                    tokens = new EnglishMinimalStemFilter(tokens);
+                    break;
+
+                case Porter:
+                    tokens = new PorterStemFilter(tokens);
+                    break;
+
+                case K:
+                    tokens = new KStemFilter(tokens);
+                    break;
 
             /*case Lovins:
                 tokens = new LovinsStemFilter(tokens);
                 break;*/
-        }
+            }
 
-        if(nGramFilterSize != null)
-        {
-            tokens = new NGramTokenFilter(tokens, nGramFilterSize);
-        }
+            if (nGramFilterSize != null) {
+                tokens = new NGramTokenFilter(tokens, nGramFilterSize);
+            }
 
-        if(shingleFilterSize != null)
-        {
-            tokens = new ShingleFilter(tokens, shingleFilterSize);
-        }
+            if (shingleFilterSize != null) {
+                tokens = new ShingleFilter(tokens, shingleFilterSize);
+            }
 
-        return new TokenStreamComponents(source, tokens);
+            if (useNLPFilter) {
+                //tokens = new OpenNLPPOSFilter(source, loadPosTaggerModel("en-pos-maxent.bin"));
+
+                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-location.bin"));
+
+                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-person.bin"));
+
+                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-organization.bin"));
+
+                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-money.bin"));
+
+                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-date.bin"));
+
+                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-time.bin"));
+
+                //tokens = new TypeAsSynonymFilter(tokens, "<nlp>");
+
+            }
+
+            if (lemmatization) {
+
+                tokens = new OpenNLPLemmatizerFilter(tokens, loadLemmatizerModel("en-lemmatizer.bin"));
+            }
+
+
+            return new TokenStreamComponents(source, tokens);
+
     }
 
 

@@ -44,11 +44,11 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        //final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
-        final String collectionPath = "/Users/gianlucaantolini/Downloads/correct_json";
-        //final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
-        final String topicPath = "/Users/gianlucaantolini/Downloads/publish/English/Queries/train.trec";
-        final String indexPath ="experiment/index-stop-stem";
+        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
+        //final String collectionPath = "/Users/gianlucaantolini/Downloads/correct_json";
+        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
+        //final String topicPath = "/Users/gianlucaantolini/Downloads/publish/English/Queries/train.trec";
+        final String indexPath ="experiment/mirco-long-stoplist-lemma";
 
         // ram buffer size
         final int ramBuffer = 256;
@@ -85,7 +85,7 @@ public class CloseSearchEngine {
         ).build();*/
 
         // analyzer with all the options
-        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "stoplist.txt", CloseAnalyzer.StemFilterType.Porter, null, null );
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "long-stoplist.txt", CloseAnalyzer.StemFilterType.Porter, null, null, false, true);
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(

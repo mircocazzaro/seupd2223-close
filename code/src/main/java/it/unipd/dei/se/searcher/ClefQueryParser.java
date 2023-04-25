@@ -26,11 +26,11 @@ public class ClefQueryParser extends TrecTopicsReader {
                 HashMap<String, String> fields = new HashMap();
                 StringBuilder sb = this.read(reader, "<num>", (StringBuilder)null, true, false);
                 int h = sb.indexOf("</num>");
-                String num = sb.substring(5, h-1).trim();
+                String num = sb.substring(5, h).trim();
                 sb = this.read(reader, "<title>", (StringBuilder)null, true, false);
                 //int k = sb.indexOf(">");
                 h = sb.indexOf("</title>");
-                String title = sb.substring(7, h-1).trim();
+                String title = sb.substring(7, h).trim();
 
                 String line;
 
