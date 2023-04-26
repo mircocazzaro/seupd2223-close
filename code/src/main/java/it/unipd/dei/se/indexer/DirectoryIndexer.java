@@ -15,24 +15,28 @@
  */
 package it.unipd.dei.se.indexer;
 
-import it.unipd.dei.se.parser.DocumentParser;
-import it.unipd.dei.se.parser.ParsedDocument;
-import it.unipd.dei.se.parser.ClefParser;
+import com.google.gson.stream.JsonWriter;
+import it.unipd.dei.se.analyzer.DocEmbeddings;
+import it.unipd.dei.se.parser.*;
+import it.unipd.dei.se.parser.Embedded.ClefEmbeddedParser;
+import it.unipd.dei.se.parser.Embedded.ParsedEmbeddedDocument;
+import it.unipd.dei.se.parser.Text.ClefParser;
+import it.unipd.dei.se.parser.Text.ParsedTextDocument;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.en.PorterStemFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.VectorSimilarityFunction;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.FSDirectory;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
@@ -42,7 +46,7 @@ import java.util.stream.Stream;
 /**
  * @author Close Group
  * @version 1.0
- *
+ * <p>
  * Indexes documents processing a whole directory tree.
  */
 public class DirectoryIndexer {
@@ -102,6 +106,8 @@ public class DirectoryIndexer {
      */
     private long bytesCount;
 
+    private boolean useEmbeddings = false;
+
     /**
      * Creates a new indexer.
      *
@@ -140,8 +146,13 @@ public class DirectoryIndexer {
             throw new IllegalArgumentException("RAM buffer size cannot be less than or equal to zero.");
         }
 
+        // if the class of document parser is instance of ClefEmbeddedParser, then use the DocEmbeddingsAnalyzer
+        if (dpCls.equals(ClefEmbeddedParser.class)){
+            this.useEmbeddings = true;
+        }
+
         final IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-        iwc.setSimilarity(similarity);
+        if (!this.useEmbeddings) iwc.setSimilarity(similarity);
         iwc.setRAMBufferSizeMB(ramBufferSizeMB);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         iwc.setCommitOnClose(true);
@@ -245,13 +256,62 @@ public class DirectoryIndexer {
 
     }
 
+    public void docEmbedding() throws IOException {
+        System.out.printf("%n#### Start Creating Embedded Data ####%n");
+        Files.walkFileTree(docsDir, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
+                Stream<ParsedTextDocument> parsedDocumentStream = DocumentParser.create(dpCls, Files.newBufferedReader(file, cs));
+
+                if (file.getFileName().toString().endsWith(extension)) {
+                    // check if the file exists in directory
+                    if (Files.exists(Paths.get("data/" + file.getFileName().toString()))) {
+                        System.out.printf("%s file already exists in data directory.%n", file.getFileName().toString());
+                        return FileVisitResult.CONTINUE;
+                    }
+                    filesCount += 1;
+                    bytesCount = Files.size(file);
+                    try (JsonWriter writer = new JsonWriter(new FileWriter("data/" + file.getFileName().toString()))) {
+                        writer.beginArray();
+                        parsedDocumentStream.forEach(pd -> {
+                            try {
+                                writer.beginObject();
+                                writer.name(ParsedTextDocument.Fields.ID).value(pd.getIdentifier());
+                                writer.name(ParsedTextDocument.Fields.BODY);
+                                writer.beginArray();
+                                for (float s : DocEmbeddings.getInstance().generateDocEmbedding(pd.getBody()).toFloatVector()) {
+                                    writer.value(s);
+                                }
+                                writer.endArray();
+                                writer.endObject();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        writer.endArray();
+
+                        System.out.printf("%s file (%d Mbytes) generated in %d seconds.%n", file.getFileName().toString(), bytesCount / MBYTE, (System.currentTimeMillis() - start) / 1000);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        System.out.printf("#### Pre Process For Embedding Data Finish ####%n");
+    }
+
+
     /**
      * Indexes the documents.
      *
      * @throws IOException if something goes wrong while indexing.
      */
     public void index() throws IOException {
-
         System.out.printf("%n#### Start indexing ####%n");
 
         Files.walkFileTree(docsDir, new SimpleFileVisitor<>() {
@@ -262,19 +322,30 @@ public class DirectoryIndexer {
                     bytesCount += Files.size(file);
 
                     // Create a stream of parsed documents from the file with the given Parser class(dpCls)
-                    Stream<ParsedDocument> parsedDocumentStream = DocumentParser.create(
-                            dpCls,
-                            Files.newBufferedReader(file, cs)
-                    );
-
-                    parsedDocumentStream.forEach(pd -> {
+                    DocumentParser.create(dpCls, Files.newBufferedReader(file, cs)).forEach(pd -> {
                         Document doc = new Document();
 
-                        // add the document identifier
-                        doc.add(new StringField(ParsedDocument.Fields.ID, pd.getIdentifier(), Field.Store.YES));
+                        if (useEmbeddings) {
+                            // if the document is an embedded document cast it to ParsedEmbeddedDocument
+                            ParsedEmbeddedDocument ped = (ParsedEmbeddedDocument) pd;
 
-                        // add the document body
-                        doc.add(new BodyField(pd.getBody()));
+                            // add the document identifier
+                            doc.add(new StringField(ParsedEmbeddedDocument.Fields.ID, ped.getIdentifier(), Field.Store.YES));
+
+                            // add the document embedding
+                            doc.add(new KnnFloatVectorField(ParsedEmbeddedDocument.Fields.EMB_BODY, ped.getBody(), VectorSimilarityFunction.EUCLIDEAN));
+
+                        } else {
+                            // if the document is a text document cast it to ParsedTextDocument
+                            ParsedTextDocument ptd = (ParsedTextDocument) pd;
+
+                            // add the document identifier
+                            doc.add(new StringField(ParsedTextDocument.Fields.ID, ptd.getIdentifier(), Field.Store.YES));
+
+                            // add the document embedding
+                            doc.add(new BodyField(ptd.getBody()));
+                        }
+
 
                         try {
                             writer.addDocument(doc);
@@ -291,6 +362,7 @@ public class DirectoryIndexer {
                                     (System.currentTimeMillis() - start) / 1000);
                         }
                     });
+
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -319,8 +391,10 @@ public class DirectoryIndexer {
     public static void main(String[] args) throws Exception {
 
         final int ramBuffer = 256;
-        final String docsPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";
-        final String indexPath = "experiment/index-stop-stem";
+        //final String docsPath = "data/";
+        final String docsPath = "/Users/farzad/Projects/uni/search_engine/publish/French/Documents/Json";
+
+        final String indexPath = "experiment/word-to-vec/";
 
         final String extension = "json";
         final int expectedDocs = 528155;
@@ -348,6 +422,8 @@ public class DirectoryIndexer {
                 ClefParser.class
         );
 
-        i.index();
+        i.docEmbedding();
+
+        //i.index();
     }
 }
