@@ -19,6 +19,7 @@ import it.unipd.dei.se.analyzer.CloseAnalyzer;
 import it.unipd.dei.se.parser.ClefParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.codecs.TermStats;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.BooleanSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
@@ -61,7 +62,7 @@ public class CloseSearchEngine {
         final int expectedDocs = 528155;
 
         // maximum number of documents to be retrieved
-        final int maxDocsRetrieved = 1000;
+        final int maxDocsRetrieved = 10;
 
         // extension of the files to be indexed
         final String extension = "json";
@@ -102,6 +103,7 @@ public class CloseSearchEngine {
         );
         directoryIndexer.index();
 
+
         // searching the topics in the specified path and with the specified extension
         final Searcher searcher = new Searcher(
                 closeAnalyzer,
@@ -114,6 +116,7 @@ public class CloseSearchEngine {
                 maxDocsRetrieved
         );
         searcher.search();
+
 
     }
 }
