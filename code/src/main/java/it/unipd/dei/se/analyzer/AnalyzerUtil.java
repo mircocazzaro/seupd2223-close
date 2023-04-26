@@ -93,6 +93,8 @@ public class AnalyzerUtil {
         System.out.printf("Text to be processed%n");
         System.out.printf("+ %s%n%n", t);
 
+        StringBuilder tokenizedString = new StringBuilder();
+
         System.out.printf("Tokens%n");
         try {
             // Reset the stream before starting
@@ -100,13 +102,16 @@ public class AnalyzerUtil {
 
             // Print all tokens until the stream is exhausted
             while (stream.incrementToken()) {
-                System.out.printf("+ token: %s%n", tokenTerm.toString());
+                String tokenTermTmp = tokenTerm.toString();
+                System.out.printf("+ token: %s%n", tokenTermTmp);
                 System.out.printf("  - type: %s%n", tokenType.type());
                 System.out.printf("  - keyword: %b%n", tokenKeyword.isKeyword());
                 System.out.printf("  - position increment: %d%n", tokenPositionIncrement.getPositionIncrement());
                 System.out.printf("  - position length: %d%n", tokenPositionLength.getPositionLength());
                 System.out.printf("  - offset: [%d, %d]%n", tokenOffset.startOffset(), tokenOffset.endOffset());
                 System.out.printf("  - flags: %d%n", tokenFlags.getFlags());
+
+                tokenizedString.append(tokenTerm.toString() + " ");
             }
 
             // Perform any end-of-stream operations
@@ -117,6 +122,8 @@ public class AnalyzerUtil {
             stream.close();
         }
 
+        System.out.printf("Processed (tokenized) text%n");
+        System.out.printf("+ %s%n%n", tokenizedString.toString());
         System.out.printf("%nElapsed time%n");
         System.out.printf("+ %d milliseconds%n", System.currentTimeMillis() - start);
         System.out.printf("####################################################################################%n");
