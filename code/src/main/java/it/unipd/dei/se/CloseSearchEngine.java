@@ -20,6 +20,7 @@ import it.unipd.dei.se.parser.ClefParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.BooleanSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 
 import it.unipd.dei.se.indexer.DirectoryIndexer;
@@ -48,7 +49,7 @@ public class CloseSearchEngine {
         //final String collectionPath = "/Users/gianlucaantolini/Downloads/correct_json";
         final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
         //final String topicPath = "/Users/gianlucaantolini/Downloads/publish/English/Queries/train.trec";
-        final String indexPath ="experiment/mirco-long-stoplist-lemma";
+        final String indexPath ="experiment/mirco-longer-stoplist-porterstem-standardtoken";
 
         // ram buffer size
         final int ramBuffer = 256;
@@ -85,7 +86,7 @@ public class CloseSearchEngine {
         ).build();*/
 
         // analyzer with all the options
-        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "long-stoplist.txt", CloseAnalyzer.StemFilterType.Porter, null, null, false, true);
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "long-stoplist.txt", CloseAnalyzer.StemFilterType.Porter, null, null, false, false);
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(
