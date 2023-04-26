@@ -286,13 +286,13 @@ public class Searcher {
         ScoreDoc[] sd = null;
         String docID = null;
 
-        // the set of document identifiers already retrieved
-        HashSet<String> docIDs = new HashSet<>();
-
         try {
             for (QualityQuery t : topics) {
                 System.out.printf("Searching for topic %s.%n", t.getQueryID());
-
+                
+                // the set of document identifiers already retrieved
+                HashSet<String> docIDs = new HashSet<>();
+        
                 bq = new BooleanQuery.Builder();
 
                 bq.add(qp.parse(QueryParserBase.escape(t.getValue(TOPIC_FIELDS.TITLE))), BooleanClause.Occur.SHOULD);
