@@ -73,3 +73,4 @@ tomcat-logs/
 # Data Generated locally
 code/data/*
 code/experiment/*
+code/test/*
