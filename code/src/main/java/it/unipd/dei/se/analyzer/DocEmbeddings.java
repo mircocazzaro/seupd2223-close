@@ -24,6 +24,15 @@ public class DocEmbeddings {
         );
     }
 
+    public float[] getEmbeddingForQuery(String query) {
+        String[] words = query.split("\\s+");
+        float[] queryEmbedding = new float[words.length];
+        for (int i = 0; i < words.length; i++) {
+            queryEmbedding[i] = Float.parseFloat(words[i].replace("\\", ""));
+        }
+        return queryEmbedding;
+    }
+
     public static synchronized DocEmbeddings getInstance() {
         if (instance == null) {
             instance = new DocEmbeddings();

@@ -308,7 +308,7 @@ public class Searcher {
 
                 if (useEmbeddings) {
 //                    float[] qe = DocEmbeddings.getInstance().generateDocEmbedding(query).toFloatVector();
-                    float[] qe = DocEmbeddings.getInstance().getEmbedding(query);
+                    float[] qe = DocEmbeddings.getInstance().getEmbeddingForQuery(query);
                     q = new KnnFloatVectorQuery(ParsedEmbeddedDocument.Fields.EMB_BODY, qe, 1000);
                 } else {
                     bq = new BooleanQuery.Builder();
