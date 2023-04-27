@@ -118,7 +118,7 @@ public abstract class DocumentParser {
      * @throws NullPointerException  if {@code cls} and/or {@code in} are {@code null}.
      * @throws IllegalStateException if something goes wrong in instantiating the class.
      */
-    public static Stream<ParsedDocument> create(Class<? extends DocumentParser> cls, Reader in) {
+    public static <T> Stream<T> create(Class<? extends DocumentParser> cls, Reader in) {
 
         if (cls == null) {
             throw new NullPointerException("Document parser class cannot be null.");
@@ -143,5 +143,5 @@ public abstract class DocumentParser {
      * @return a stream of parsed documents.
      * @throws IOException if something goes wrong in parsing the document(s).
      */
-    protected abstract Stream<ParsedDocument> getDocumentStream(final Reader in) throws IOException;
+    protected abstract <T> Stream<T> getDocumentStream(final Reader in) throws IOException;
 }
