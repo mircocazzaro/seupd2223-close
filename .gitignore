@@ -69,3 +69,7 @@ tomcat-logs/
 
 # OSX
 .DS_Store
+
+# Data Generated locally
+code/data/*
+code/experiment/*
