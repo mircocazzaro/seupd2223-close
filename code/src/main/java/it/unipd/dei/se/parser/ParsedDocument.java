@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package it.unipd.dei.se.parser;
+package it.unipd.dei.se.parser.Text;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -25,7 +25,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * A parsed document.
  */
 
-public record ParsedDocument(String id, String body) {
+public record ParsedTextDocument(String id, String body) {
 
     /**
      * The fields of a parsed document.
@@ -43,7 +43,7 @@ public record ParsedDocument(String id, String body) {
      * @param id  the document identifier.
      * @param body the document body.
      */
-    public ParsedDocument(final String id, final String body) {
+    public ParsedTextDocument(final String id, final String body) {
         /*
          * Check the document identifier.
          * It cannot be null or empty.
@@ -113,7 +113,7 @@ public record ParsedDocument(String id, String body) {
      */
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof ParsedDocument) && id.equals(((ParsedDocument) o).id));
+        return (this == o) || ((o instanceof ParsedTextDocument) && id.equals(((ParsedTextDocument) o).id));
     }
 
     /**
