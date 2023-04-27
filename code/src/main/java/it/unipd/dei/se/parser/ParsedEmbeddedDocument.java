@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package it.unipd.dei.se.parser.Text;
+package it.unipd.dei.se.parser.Embedded;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -25,25 +25,28 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * A parsed document.
  */
 
-public record ParsedTextDocument(String id, String body) {
+public record ParsedEmbeddedDocument(String id, float[] body) {
 
     /**
      * The fields of a parsed document.
      * ID: the document identifier.
      * BODY: the document body.
+     * EMB_BODY: the document body for the embedded model.
      */
     public final static class Fields {
         public static final String ID = "id";
         public static final String BODY = "contents";
+
+        public static final String EMB_BODY = "emb_contents";
     }
 
     /**
      * Creates a new parsed document.
      *
-     * @param id  the document identifier.
+     * @param id   the document identifier.
      * @param body the document body.
      */
-    public ParsedTextDocument(final String id, final String body) {
+    public ParsedEmbeddedDocument(final String id, final float[] body) {
         /*
          * Check the document identifier.
          * It cannot be null or empty.
@@ -66,7 +69,7 @@ public record ParsedTextDocument(String id, String body) {
             throw new NullPointerException("Document body cannot be null.");
         }
 
-        if (body.isEmpty()) {
+        if (body.length == 0) {
             throw new IllegalStateException("Document body cannot be empty.");
         }
 
@@ -87,7 +90,7 @@ public record ParsedTextDocument(String id, String body) {
      *
      * @return the body of the document.
      */
-    public String getBody() {
+    public float[] getBody() {
         return body;
     }
 
@@ -113,7 +116,7 @@ public record ParsedTextDocument(String id, String body) {
      */
     @Override
     public boolean equals(Object o) {
-        return (this == o) || ((o instanceof ParsedTextDocument) && id.equals(((ParsedTextDocument) o).id));
+        return (this == o) || ((o instanceof ParsedEmbeddedDocument) && id.equals(((ParsedEmbeddedDocument) o).id));
     }
 
     /**

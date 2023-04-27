@@ -15,10 +15,7 @@
  */
 package it.unipd.dei.se;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import it.unipd.dei.se.parser.ClefParser;
+import it.unipd.dei.se.parser.Embedded.ClefEmbeddedParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
@@ -51,9 +48,9 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
-        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
-        final String indexPath ="experiment/index-stop-stem";
+        final String collectionPath = "/Users/farzad/Projects/uni/search_engine/fun/output/all-MiniLM-L6-v2";;
+        final String topicPath = "test/train.trec";
+        final String indexPath ="experiment/all-MiniLM-L6-v2";
 
         // ram buffer size
         final int ramBuffer = 256;
@@ -99,7 +96,7 @@ public class CloseSearchEngine {
                 extension,
                 charsetName,
                 expectedDocs,
-                ClefParser.class
+                ClefEmbeddedParser.class
         );
         //directoryIndexer.index();
 
@@ -112,7 +109,8 @@ public class CloseSearchEngine {
                 expectedTopics,
                 runID,
                 runPath,
-                maxDocsRetrieved
+                maxDocsRetrieved,
+                true
         );
         searcher.search();
 

@@ -16,7 +16,9 @@
 
 package it.unipd.dei.se.searcher;
 
-import it.unipd.dei.se.parser.ParsedDocument;
+import it.unipd.dei.se.analyzer.DocEmbeddings;
+import it.unipd.dei.se.parser.Embedded.ParsedEmbeddedDocument;
+import it.unipd.dei.se.parser.Text.ParsedTextDocument;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
@@ -43,7 +45,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -64,6 +65,8 @@ public class Searcher {
          * The title of a topic.
          */
         public static final String TITLE = "title";
+
+        public static final String EMB = "embeddings";
     }
 
 
@@ -111,6 +114,10 @@ public class Searcher {
      */
     private long elapsedTime = Long.MIN_VALUE;
 
+    /**
+     * use embeddings or not
+     */
+    private boolean useEmbeddings;
 
     /**
      * Creates a new searcher.
@@ -123,12 +130,13 @@ public class Searcher {
      * @param runID            the identifier of the run to be created.
      * @param runPath          the path where to store the run.
      * @param maxDocsRetrieved the maximum number of documents to be retrieved.
+     * @param useEmbeddings    use embeddings or not
      * @throws NullPointerException     if any of the parameters is {@code null}.
      * @throws IllegalArgumentException if any of the parameters assumes invalid values.
      */
     public Searcher(final Analyzer analyzer, final Similarity similarity, final String indexPath,
                     final String topicsFile, final int expectedTopics, final String runID, final String runPath,
-                    final int maxDocsRetrieved) {
+                    final int maxDocsRetrieved, boolean useEmbeddings) throws IOException {
 
         if (analyzer == null) {
             throw new NullPointerException("Analyzer cannot be null.");
@@ -171,8 +179,11 @@ public class Searcher {
                     indexDir.toAbsolutePath().toString(), e.getMessage()), e);
         }
 
+        this.useEmbeddings = useEmbeddings;
+
         searcher = new IndexSearcher(reader);
-        searcher.setSimilarity(similarity);
+
+        if(!useEmbeddings) searcher.setSimilarity(new BM25Similarity());
 
         if (topicsFile == null) {
             throw new NullPointerException("Topics file cannot be null.");
@@ -205,7 +216,7 @@ public class Searcher {
                     topics.length);
         }
 
-        qp = new QueryParser(ParsedDocument.Fields.BODY, analyzer);
+        qp = new QueryParser(ParsedTextDocument.Fields.BODY, analyzer);
 
         if (runID == null) {
             throw new NullPointerException("Run identifier cannot be null.");
@@ -278,7 +289,7 @@ public class Searcher {
         final long start = System.currentTimeMillis();
 
         final Set<String> idField = new HashSet<>();
-        idField.add(ParsedDocument.Fields.ID);
+        idField.add(ParsedTextDocument.Fields.ID);
 
         BooleanQuery.Builder bq = null;
         Query q = null;
@@ -286,25 +297,31 @@ public class Searcher {
         ScoreDoc[] sd = null;
         String docID = null;
 
+        // the set of document identifiers already retrieved
         try {
             for (QualityQuery t : topics) {
-                System.out.printf("Searching for topic %s.%n", t.getQueryID());
-                
-                // the set of document identifiers already retrieved
                 HashSet<String> docIDs = new HashSet<>();
-        
-                bq = new BooleanQuery.Builder();
 
-                bq.add(qp.parse(QueryParserBase.escape(t.getValue(TOPIC_FIELDS.TITLE))), BooleanClause.Occur.SHOULD);
+                System.out.printf("Searching for topic %s.%n", t.getQueryID());
 
-                q = bq.build();
+                String query = QueryParserBase.escape(t.getValue(TOPIC_FIELDS.TITLE));
+
+                if (useEmbeddings) {
+//                    float[] qe = DocEmbeddings.getInstance().generateDocEmbedding(query).toFloatVector();
+                    float[] qe = DocEmbeddings.getInstance().getEmbedding(query);
+                    q = new KnnFloatVectorQuery(ParsedEmbeddedDocument.Fields.EMB_BODY, qe, 1000);
+                } else {
+                    bq = new BooleanQuery.Builder();
+                    bq.add(qp.parse(query), BooleanClause.Occur.SHOULD);
+                    q = bq.build();
+                }
 
                 docs = searcher.search(q, maxDocsRetrieved);
 
                 sd = docs.scoreDocs;
 
                 for (int i = 0, n = sd.length; i < n; i++) {
-                    docID = storedFields.document(sd[i].doc, idField).get(ParsedDocument.Fields.ID);
+                    docID = storedFields.document(sd[i].doc, idField).get(ParsedTextDocument.Fields.ID);
 
                     // if the document has already been retrieved, skip it -> avoid duplicates
                     if (docIDs.contains(docID)) {
@@ -354,7 +371,7 @@ public class Searcher {
         final Analyzer a = CustomAnalyzer.builder().withTokenizer(StandardTokenizerFactory.class).addTokenFilter(
                 LowerCaseFilterFactory.class).addTokenFilter(StopFilterFactory.class).build();
 
-        Searcher s = new Searcher(a, new BM25Similarity(), indexPath, topics, 50, runID, runPath, maxDocsRetrieved);
+        Searcher s = new Searcher(a, new BM25Similarity(), indexPath, topics, 50, runID, runPath, maxDocsRetrieved,false);
 
         s.search();
 

@@ -13,10 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package it.unipd.dei.se.parser.Text;
+package it.unipd.dei.se.parser.Embedded;
 
 import com.google.gson.*;
+import it.unipd.dei.se.parser.Text.ClefParser;
 import it.unipd.dei.se.parser.DocumentParser;
+import it.unipd.dei.se.parser.Text.ParsedTextDocument;
+import it.unipd.dei.se.utils.JArrayConvertor;
 
 import java.io.*;
 import java.util.stream.Stream;
@@ -27,24 +30,22 @@ import java.util.stream.Stream;
  * <p>
  * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
  */
-public class ClefParser extends DocumentParser {
+public class ClefEmbeddedParser extends DocumentParser {
 
     private static final GsonBuilder builder = new GsonBuilder();
 
     /**
      * Creates a new parser.
      */
-    public ClefParser() {
-
-            builder.registerTypeAdapter(
-                    ParsedTextDocument.class, // The type of the object to deserialize.
-                    (JsonDeserializer<ParsedTextDocument>) (json, typeOfT, context) -> {
-                        // Get the id and the body of the document.
-                        String id = json.getAsJsonObject().get(ParsedTextDocument.Fields.ID).getAsString();
-                        String body = json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString();
-                        return new ParsedTextDocument(id, body);
-                    });
-
+    public ClefEmbeddedParser() {
+        builder.registerTypeAdapter(
+                ParsedEmbeddedDocument.class, // The type of the object to deserialize.
+                (JsonDeserializer<ParsedEmbeddedDocument>) (json, typeOfT, context) -> {
+                    // Get the id and the body of the document.
+                    String id = json.getAsJsonObject().get(ParsedEmbeddedDocument.Fields.ID).getAsString();
+                    JsonArray body = json.getAsJsonObject().get(ParsedEmbeddedDocument.Fields.BODY).getAsJsonArray();
+                    return new ParsedEmbeddedDocument(id, JArrayConvertor.toFloatArray(body));
+                });
     }
 
     /**
@@ -54,8 +55,8 @@ public class ClefParser extends DocumentParser {
      * @return a stream of parsed documents.
      * @throws IOException if an I/O error occurs.
      */
-    public Stream<ParsedTextDocument> getDocumentStream(final Reader in) throws IOException {
-        return DocumentParser.readJsonFromFile(builder.create(), ParsedTextDocument.class, in);
+    public Stream<ParsedEmbeddedDocument> getDocumentStream(final Reader in) throws IOException {
+        return DocumentParser.readJsonFromFile(builder.create(), ParsedEmbeddedDocument.class, in);
     }
 
     public static void main(String[] args) throws Exception {
