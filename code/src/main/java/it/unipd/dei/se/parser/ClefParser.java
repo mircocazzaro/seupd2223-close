@@ -13,10 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package it.unipd.dei.se.parser;
+package it.unipd.dei.se.parser.Text;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
+import com.google.gson.*;
+import it.unipd.dei.se.parser.DocumentParser;
 
 import java.io.*;
 import java.util.stream.Stream;
@@ -35,17 +35,16 @@ public class ClefParser extends DocumentParser {
      * Creates a new parser.
      */
     public ClefParser() {
-        // Register a custom deserializer for ParsedDocument.
-        builder.registerTypeAdapter(
-                ParsedDocument.class, // The type of the object to deserialize.
-                (JsonDeserializer<ParsedDocument>) (json, typeOfT, context) -> {
-                    // Get the id and the body of the document.
-                    String id = json.getAsJsonObject().get(ParsedDocument.Fields.ID).getAsString();
-                    String body = json.getAsJsonObject().get(ParsedDocument.Fields.BODY).getAsString();
 
-                    // Return a new ParsedDocument.
-                    return new ParsedDocument(id, body);
-                });
+            builder.registerTypeAdapter(
+                    ParsedTextDocument.class, // The type of the object to deserialize.
+                    (JsonDeserializer<ParsedTextDocument>) (json, typeOfT, context) -> {
+                        // Get the id and the body of the document.
+                        String id = json.getAsJsonObject().get(ParsedTextDocument.Fields.ID).getAsString();
+                        String body = json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString();
+                        return new ParsedTextDocument(id, body);
+                    });
+
     }
 
     /**
@@ -55,18 +54,18 @@ public class ClefParser extends DocumentParser {
      * @return a stream of parsed documents.
      * @throws IOException if an I/O error occurs.
      */
-    public Stream<ParsedDocument> getDocumentStream(final Reader in) throws IOException {
-        return DocumentParser.readJsonFromFile(builder.create(), ParsedDocument.class, in);
+    public Stream<ParsedTextDocument> getDocumentStream(final Reader in) throws IOException {
+        return DocumentParser.readJsonFromFile(builder.create(), ParsedTextDocument.class, in);
     }
 
     public static void main(String[] args) throws Exception {
         // Read the documents from a file.
         Reader reader = new FileReader(
-                "/Users/farzad/Projects/uni/search_engine/seupd2223-close/code/src/main/java/it/unipd/dei/se/parser/collector_kodicare_1.txt.json"
+                "data/collector_kodicare_32.txt.json"
         );
 
         // Create a new parser.
-        Stream<ParsedDocument> parsedDocumentStream = new ClefParser().getDocumentStream(reader);
+        Stream<ParsedTextDocument> parsedDocumentStream = new ClefParser().getDocumentStream(reader);
 
         // Print the documents.
         parsedDocumentStream.forEach(System.out::println);
