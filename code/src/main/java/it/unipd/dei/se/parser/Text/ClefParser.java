@@ -57,17 +57,19 @@ public class ClefParser extends DocumentParser {
 
                     for (String jspattern : jspatterns) {
                         if (body.contains(jspattern)) {
-                            String code = null;
-                            try {
-                                code = body.substring(body.indexOf(jspattern), body.indexOf("/script>"));
-                            } catch (StringIndexOutOfBoundsException e) {
+                            while (body.contains(jspattern)) {
+                                String code = null;
                                 try {
-                                    code = body.substring(body.indexOf(jspattern), body.indexOf("}"));
-                                } catch (StringIndexOutOfBoundsException ex) {
-                                    code = "";
+                                    code = body.substring(body.indexOf(jspattern), body.indexOf("/script>"));
+                                } catch (StringIndexOutOfBoundsException e) {
+                                    try {
+                                        code = body.substring(body.indexOf(jspattern), body.indexOf("}"));
+                                    } catch (StringIndexOutOfBoundsException ex) {
+                                        code = jspattern;
+                                    }
                                 }
+                                body = body.replace(code, "");
                             }
-                            body = body.replace(code, "");
                             //System.out.println("Found some JS code");
                         }
                     }
@@ -87,15 +89,10 @@ public class ClefParser extends DocumentParser {
                     body = matcher.replaceAll("");*/
 
 
-                    //special chars parser
-                    /*Pattern pattern = Pattern.compile("[^\\x00-\\x7F]");
-                    Matcher matcher = pattern.matcher(body);
-                    body = matcher.replaceAll("");*/
-
-                    // Creare un pattern che corrisponde agli URI HTTP e HTTPS
+                    /*// Creare un pattern che corrisponde agli URI HTTP e HTTPS
                     Pattern httpUriPattern = Pattern.compile("(https?://\\S+)");
                     Matcher matcher = httpUriPattern.matcher(body);
-                    body = matcher.replaceAll("");
+                    body = matcher.replaceAll("");*/
 
                     return new ParsedTextDocument(id, body);
                 });

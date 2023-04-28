@@ -19,13 +19,18 @@ package it.unipd.dei.se.searcher;
 import it.unipd.dei.se.analyzer.DocEmbeddings;
 import it.unipd.dei.se.parser.Embedded.ParsedEmbeddedDocument;
 import it.unipd.dei.se.parser.Text.ParsedTextDocument;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.benchmark.quality.QualityQuery;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -43,9 +48,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Searches a document collection.
@@ -311,6 +314,7 @@ public class Searcher {
                     float[] qe = DocEmbeddings.getInstance().getEmbeddingForQuery(query);
                     q = new KnnFloatVectorQuery(ParsedEmbeddedDocument.Fields.EMB_BODY, qe, 1000);
                 } else {
+
                     bq = new BooleanQuery.Builder();
                     bq.add(qp.parse(query), BooleanClause.Occur.SHOULD);
                     q = bq.build();
@@ -378,4 +382,8 @@ public class Searcher {
 
     }
 
+
+
 }
+
+
