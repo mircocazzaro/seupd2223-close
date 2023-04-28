@@ -78,8 +78,8 @@ public class CloseAnalyzer extends Analyzer {
      * Creates a new instance of the analyzer.
      */
     public CloseAnalyzer(TokenizerType tokenizerType, int minLength, int maxLength,
-                          boolean isEnglishPossessiveFilter, String stopFilterListName, StemFilterType stemFilterType,
-                          Integer nGramFilterSize, Integer shingleFilterSize, boolean useNLPFilter, boolean lemmatization)
+                         boolean isEnglishPossessiveFilter, String stopFilterListName, StemFilterType stemFilterType,
+                         Integer nGramFilterSize, Integer shingleFilterSize, boolean useNLPFilter, boolean lemmatization)
     {
         super();
 
@@ -114,86 +114,86 @@ public class CloseAnalyzer extends Analyzer {
 
 
 
-            switch (tokenizerType) {
-                case Whitespace:
-                    source = new WhitespaceTokenizer();
-                    break;
+        switch (tokenizerType) {
+            case Whitespace:
+                source = new WhitespaceTokenizer();
+                break;
 
-                case Letter:
-                    source = new LetterTokenizer();
-                    break;
+            case Letter:
+                source = new LetterTokenizer();
+                break;
 
-                case Standard:
-                    source = new StandardTokenizer();
-                    break;
-            }
+            case Standard:
+                source = new StandardTokenizer();
+                break;
+        }
 
-            tokens = new LowerCaseFilter(source);
+        tokens = new LowerCaseFilter(source);
 
-            if (minLength != null && maxLength != null) {
-                tokens = new LengthFilter(tokens, minLength, maxLength);
-            }
+        if (minLength != null && maxLength != null) {
+            tokens = new LengthFilter(tokens, minLength, maxLength);
+        }
 
-            if (isEnglishPossessiveFilter) {
-                tokens = new EnglishPossessiveFilter(tokens);
-            }
+        if (isEnglishPossessiveFilter) {
+            tokens = new EnglishPossessiveFilter(tokens);
+        }
 
-            if (stopFilterListName != null) {
-                tokens = new StopFilter(tokens, loadStopList(stopFilterListName));
-            }
+        if (stopFilterListName != null) {
+            tokens = new StopFilter(tokens, loadStopList(stopFilterListName));
+        }
 
-            switch (stemFilterType) {
-                case EnglishMinimal:
-                    tokens = new EnglishMinimalStemFilter(tokens);
-                    break;
+        switch (stemFilterType) {
+            case EnglishMinimal:
+                tokens = new EnglishMinimalStemFilter(tokens);
+                break;
 
-                case Porter:
-                    tokens = new PorterStemFilter(tokens);
-                    break;
+            case Porter:
+                tokens = new PorterStemFilter(tokens);
+                break;
 
-                case K:
-                    tokens = new KStemFilter(tokens);
-                    break;
+            case K:
+                tokens = new KStemFilter(tokens);
+                break;
 
             /*case Lovins:
                 tokens = new LovinsStemFilter(tokens);
                 break;*/
-            }
+        }
 
-            if (nGramFilterSize != null) {
-                tokens = new NGramTokenFilter(tokens, nGramFilterSize);
-            }
+        if (nGramFilterSize != null) {
+            tokens = new NGramTokenFilter(tokens, nGramFilterSize);
+        }
 
-            if (shingleFilterSize != null) {
-                tokens = new ShingleFilter(tokens, shingleFilterSize);
-            }
+        if (shingleFilterSize != null) {
+            tokens = new ShingleFilter(tokens, shingleFilterSize);
+        }
 
-            if (useNLPFilter) {
-                //tokens = new OpenNLPPOSFilter(source, loadPosTaggerModel("en-pos-maxent.bin"));
+        if (useNLPFilter) {
+            tokens = new OpenNLPPOSFilter(source, loadPosTaggerModel("en-pos-maxent.bin"));
 
-                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-location.bin"));
+            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-location.bin"));
 
-                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-person.bin"));
+            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-person.bin"));
 
-                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-organization.bin"));
+            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-organization.bin"));
 
-                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-money.bin"));
+            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-money.bin"));
 
-                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-date.bin"));
+            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-date.bin"));
 
-                //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-time.bin"));
+            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-time.bin"));
 
-                //tokens = new TypeAsSynonymFilter(tokens, "<nlp>");
+            tokens = new TypeAsSynonymFilter(tokens, "<nlp>");
 
-            }
+        }
 
-            if (lemmatization) {
+        if (lemmatization) {
 
-                tokens = new OpenNLPLemmatizerFilter(tokens, loadLemmatizerModel("en-lemmatizer.bin"));
-            }
+            tokens = new OpenNLPLemmatizerFilter(tokens, loadLemmatizerModel("en-lemmatizer.bin"));
+        }
 
 
-            return new TokenStreamComponents(source, tokens);
+        return new TokenStreamComponents(source, tokens);
 
     }
 

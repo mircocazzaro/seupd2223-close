@@ -20,9 +20,7 @@ import it.unipd.dei.se.parser.ClefParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.codecs.TermStats;
-import org.apache.lucene.search.similarities.BM25Similarity;
-import org.apache.lucene.search.similarities.BooleanSimilarity;
-import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.similarities.*;
 
 import it.unipd.dei.se.indexer.DirectoryIndexer;
 
@@ -50,7 +48,7 @@ public class CloseSearchEngine {
         //final String collectionPath = "/Users/gianlucaantolini/Downloads/correct_json";
         final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
         //final String topicPath = "/Users/gianlucaantolini/Downloads/publish/English/Queries/train.trec";
-        final String indexPath ="experiment/mirco-longer-stoplist-porterstem-standardtoken";
+        final String indexPath ="experiment/mirco-nlp";
 
         // ram buffer size
         final int ramBuffer = 256;
@@ -62,7 +60,7 @@ public class CloseSearchEngine {
         final int expectedDocs = 528155;
 
         // maximum number of documents to be retrieved
-        final int maxDocsRetrieved = 10;
+        final int maxDocsRetrieved = 1000;
 
         // extension of the files to be indexed
         final String extension = "json";
@@ -75,6 +73,7 @@ public class CloseSearchEngine {
         final String charsetName = "ISO-8859-1";
 
         // creating the similarity to be used for ranking the documents
+        //final Similarity[] similarities = {new BM25Similarity(true)};
         final Similarity sim = new BM25Similarity();
 
         // creating the analyzer to be used for indexing and searching the collection

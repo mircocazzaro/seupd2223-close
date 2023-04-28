@@ -287,10 +287,11 @@ public class Searcher {
         String docID = null;
 
         // the set of document identifiers already retrieved
-        HashSet<String> docIDs = new HashSet<>();
 
         try {
             for (QualityQuery t : topics) {
+                HashSet<String> docIDs = new HashSet<>();
+
                 System.out.printf("Searching for topic %s.%n", t.getQueryID());
 
                 bq = new BooleanQuery.Builder();

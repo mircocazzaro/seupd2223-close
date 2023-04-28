@@ -19,6 +19,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -42,6 +46,55 @@ public class ClefParser extends DocumentParser {
                     // Get the id and the body of the document.
                     String id = json.getAsJsonObject().get(ParsedDocument.Fields.ID).getAsString();
                     String body = json.getAsJsonObject().get(ParsedDocument.Fields.BODY).getAsString();
+
+                    //JAVASCRIPT PARSING
+                    List<String> jspatterns = new ArrayList<String>();
+                    jspatterns.add("function(");
+                    jspatterns.add("function (");
+                    jspatterns.add("{");
+                    jspatterns.add("<script");
+
+                    for (String jspattern : jspatterns) {
+                        if (body.contains(jspattern)) {
+                            String code = null;
+                            try {
+                                code = body.substring(body.indexOf(jspattern), body.indexOf("/script>"));
+                            }catch (StringIndexOutOfBoundsException e) {
+                                try {
+                                    code = body.substring(body.indexOf(jspattern), body.indexOf("}"));
+                                }catch (StringIndexOutOfBoundsException ex) {
+                                    code = "";
+                                }
+                            }
+                            body = body.replace(code, "");
+                            //System.out.println("Found some JS code");
+                        }
+                    }
+
+                    //COUNTRY LISTS PARSER
+
+                    /*Pattern pattern = Pattern.compile("\\b\\w+ia\\b");
+                    Matcher matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");
+
+                    pattern = Pattern.compile("\\b\\w+land\\b");
+                    matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");
+
+                    pattern = Pattern.compile("\\b\\w+stan\\b");
+                    matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");*/
+
+
+                    //special chars parser
+                    /*Pattern pattern = Pattern.compile("[^\\x00-\\x7F]");
+                    Matcher matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");*/
+
+                    // Creare un pattern che corrisponde agli URI HTTP e HTTPS
+                    Pattern httpUriPattern = Pattern.compile("(https?://\\S+)");
+                    Matcher matcher = httpUriPattern.matcher(body);
+                    body = matcher.replaceAll("");
 
                     // Return a new ParsedDocument.
                     return new ParsedDocument(id, body);
