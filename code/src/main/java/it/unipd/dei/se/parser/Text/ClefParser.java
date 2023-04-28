@@ -19,6 +19,10 @@ import com.google.gson.*;
 import it.unipd.dei.se.parser.DocumentParser;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -36,14 +40,65 @@ public class ClefParser extends DocumentParser {
      */
     public ClefParser() {
 
-            builder.registerTypeAdapter(
-                    ParsedTextDocument.class, // The type of the object to deserialize.
-                    (JsonDeserializer<ParsedTextDocument>) (json, typeOfT, context) -> {
-                        // Get the id and the body of the document.
-                        String id = json.getAsJsonObject().get(ParsedTextDocument.Fields.ID).getAsString();
-                        String body = json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString();
-                        return new ParsedTextDocument(id, body);
-                    });
+        builder.registerTypeAdapter(
+                ParsedTextDocument.class, // The type of the object to deserialize.
+                (JsonDeserializer<ParsedTextDocument>) (json, typeOfT, context) -> {
+                    // Get the id and the body of the document.
+                    String id = json.getAsJsonObject().get(ParsedTextDocument.Fields.ID).getAsString();
+                    String body = json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString();
+
+
+                    //JAVASCRIPT PARSING
+                    List<String> jspatterns = new ArrayList<String>();
+                    jspatterns.add("function(");
+                    jspatterns.add("function (");
+                    jspatterns.add("{");
+                    jspatterns.add("<script");
+
+                    for (String jspattern : jspatterns) {
+                        if (body.contains(jspattern)) {
+                            String code = null;
+                            try {
+                                code = body.substring(body.indexOf(jspattern), body.indexOf("/script>"));
+                            } catch (StringIndexOutOfBoundsException e) {
+                                try {
+                                    code = body.substring(body.indexOf(jspattern), body.indexOf("}"));
+                                } catch (StringIndexOutOfBoundsException ex) {
+                                    code = "";
+                                }
+                            }
+                            body = body.replace(code, "");
+                            //System.out.println("Found some JS code");
+                        }
+                    }
+
+                    //COUNTRY LISTS PARSER
+
+                    /*Pattern pattern = Pattern.compile("\\b\\w+ia\\b");
+                    Matcher matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");
+
+                    pattern = Pattern.compile("\\b\\w+land\\b");
+                    matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");
+
+                    pattern = Pattern.compile("\\b\\w+stan\\b");
+                    matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");*/
+
+
+                    //special chars parser
+                    /*Pattern pattern = Pattern.compile("[^\\x00-\\x7F]");
+                    Matcher matcher = pattern.matcher(body);
+                    body = matcher.replaceAll("");*/
+
+                    // Creare un pattern che corrisponde agli URI HTTP e HTTPS
+                    Pattern httpUriPattern = Pattern.compile("(https?://\\S+)");
+                    Matcher matcher = httpUriPattern.matcher(body);
+                    body = matcher.replaceAll("");
+
+                    return new ParsedTextDocument(id, body);
+                });
 
     }
 

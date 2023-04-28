@@ -16,6 +16,7 @@
 package it.unipd.dei.se;
 
 import it.unipd.dei.se.parser.Embedded.ClefEmbeddedParser;
+import it.unipd.dei.se.analyzer.CloseAnalyzer;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
@@ -25,6 +26,8 @@ import org.apache.lucene.analysis.miscellaneous.StemmerOverrideFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.codecs.TermStats;
+import org.apache.lucene.search.similarities.*;
 
 import it.unipd.dei.se.indexer.DirectoryIndexer;
 
@@ -75,16 +78,20 @@ public class CloseSearchEngine {
         final String charsetName = "ISO-8859-1";
 
         // creating the similarity to be used for ranking the documents
+        //final Similarity[] similarities = {new BM25Similarity(true)};
         final Similarity sim = new BM25Similarity();
 
         // creating the analyzer to be used for indexing and searching the collection
-        final Analyzer closeAnalyzer = CustomAnalyzer.builder().withTokenizer(
+        /*final Analyzer closeAnalyzer = CustomAnalyzer.builder().withTokenizer(
                 StandardTokenizerFactory.class
         ).addTokenFilter(
                 LowerCaseFilterFactory.class
         ).addTokenFilter(
                 StopFilterFactory.class
-        ).addTokenFilter(StemmerOverrideFilterFactory.class).build();
+        ).build();*/
+
+        // analyzer with all the options
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "long-stoplist.txt", CloseAnalyzer.StemFilterType.Porter, null, null, false, false);
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(
@@ -98,7 +105,8 @@ public class CloseSearchEngine {
                 expectedDocs,
                 ClefEmbeddedParser.class
         );
-        //directoryIndexer.index();
+        directoryIndexer.index();
+
 
         // searching the topics in the specified path and with the specified extension
         final Searcher searcher = new Searcher(
@@ -113,6 +121,7 @@ public class CloseSearchEngine {
                 true
         );
         searcher.search();
+
 
     }
 }

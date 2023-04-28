@@ -23,11 +23,19 @@ import it.unipd.dei.se.parser.Embedded.ParsedEmbeddedDocument;
 import it.unipd.dei.se.parser.Text.ClefParser;
 import it.unipd.dei.se.parser.Text.ParsedTextDocument;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.en.PorterStemFilterFactory;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -38,15 +46,22 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import org.apache.commons.math3.linear.*;
+
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 import java.util.stream.Stream;
 
 /**
  * @author Close Group
  * @version 1.0
- * <p>
+ *
  * Indexes documents processing a whole directory tree.
  */
 public class DirectoryIndexer {
@@ -99,7 +114,7 @@ public class DirectoryIndexer {
     /**
      * The total number of indexed documents.
      */
-    private long docsCount;
+    public long docsCount;
 
     /**
      * The total number of indexed bytes
@@ -347,6 +362,23 @@ public class DirectoryIndexer {
                         }
 
 
+//                        double[] vector = createVector(doc);
+//                        double [] [] twodvector = new double[1][50];
+//
+//                        for (int i = 0; i < 50; i++) {
+//                            twodvector[0][i] = vector[i];
+//                        }
+//
+//                        // Costruzione di una matrice dei documenti
+//                        RealMatrix documentMatrix = new Array2DRowRealMatrix(twodvector, true);
+//
+//                        // Esecuzione della PCA sulla matrice dei documenti
+//                        RealMatrix embedding = documentMatrix.getSubMatrix(0, documentMatrix.getRowDimension() - 1, 0, 20);
+//
+//                        // Creazione del documento da indicizzare con l'embedding ridotto
+//                        Document indexedDoc = createIndexedDocument(doc, embedding);
+
+
                         try {
                             writer.addDocument(doc);
                         } catch (IOException e) {
@@ -391,10 +423,8 @@ public class DirectoryIndexer {
     public static void main(String[] args) throws Exception {
 
         final int ramBuffer = 256;
-        //final String docsPath = "data/";
-        final String docsPath = "/Users/farzad/Projects/uni/search_engine/publish/French/Documents/Json";
-
-        final String indexPath = "experiment/word-to-vec/";
+        final String docsPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";
+        final String indexPath = "experiment/index-stop-stem";
 
         final String extension = "json";
         final int expectedDocs = 528155;
@@ -425,5 +455,50 @@ public class DirectoryIndexer {
         i.docEmbedding();
 
         //i.index();
+    }
+
+
+    private double[] createVector(Document doc) {
+        String content = doc.get("contents");
+        String[] tokens = content.split("\\s+");
+        Map<String, Integer> tf = new HashMap<>();
+        for (String token : tokens) {
+            tf.merge(token, 1, Integer::sum);
+        }
+        double[] vector = new double[50];
+        int i = 0;
+        for (Map.Entry<String, Integer> entry : tf.entrySet()) {
+            double tfidf = entry.getValue() * idf(entry.getKey(), docsCount, tf);
+            if (i<50) {
+                vector[i++] = tfidf;
+            }
+        }
+        return vector;
+    }
+
+    public double idf(String term, long totalNumDocs, Map<String, Integer> termFreqs) {
+        int docsWithTerm = termFreqs.containsKey(term) ? termFreqs.get(term) : 0;
+        double idf = Math.log((totalNumDocs - docsWithTerm + 0.5) / (docsWithTerm + 0.5));
+        return idf;
+    }
+
+    private static Document createIndexedDocument(Document doc, RealMatrix embedding) {
+        Document indexedDoc = new Document();
+
+        // Aggiungi tutti i campi del documento originale al nuovo documento indicizzato
+        for (IndexableField field : doc) {
+            indexedDoc.add(field);
+        }
+
+        // Aggiungi l'embedding ridotto come campo indicizzato
+        StringBuilder embeddingStr = new StringBuilder();
+        for (int i = 0; i < embedding.getRowDimension(); i++) {
+            for (int j = 0; j < embedding.getColumnDimension(); j++) {
+                embeddingStr.append(embedding.getEntry(i, j)).append(" ");
+            }
+        }
+        indexedDoc.add(new TextField("embedding", embeddingStr.toString().trim(), Field.Store.YES));
+
+        return indexedDoc;
     }
 }

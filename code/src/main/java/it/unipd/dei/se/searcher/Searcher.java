@@ -183,7 +183,7 @@ public class Searcher {
 
         searcher = new IndexSearcher(reader);
 
-        if(!useEmbeddings) searcher.setSimilarity(new BM25Similarity());
+        if(!useEmbeddings) searcher.setSimilarity(similarity);
 
         if (topicsFile == null) {
             throw new NullPointerException("Topics file cannot be null.");
