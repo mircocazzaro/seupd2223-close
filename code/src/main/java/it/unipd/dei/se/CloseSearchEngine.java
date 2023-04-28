@@ -52,9 +52,14 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
+        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;//doc mirco
+        final String collectionPath = "/Users/nicolaboscolo/Documents/longeval/English/Documents/Json";;
+
         final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
+        //final String topicPath = "/Users/nicolaboscolo/Documents/longeval/English/Queries/train.trec";//doc nicola
+
         final String indexPath ="experiment/all-MiniLM-L6-v2";
+
 
         // ram buffer size
         final int ramBuffer = 256;
