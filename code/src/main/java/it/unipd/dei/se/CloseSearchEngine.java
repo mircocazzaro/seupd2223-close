@@ -106,7 +106,7 @@ public class CloseSearchEngine {
                 expectedDocs,
                 ClefParser.class
         );
-        directoryIndexer.index();
+        //directoryIndexer.index();
 
 
         // searching the topics in the specified path and with the specified extension
