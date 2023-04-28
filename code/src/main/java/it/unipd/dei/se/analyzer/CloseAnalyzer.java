@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.en.EnglishMinimalStemFilter;
 import org.apache.lucene.analysis.en.EnglishPossessiveFilter;
 import org.apache.lucene.analysis.en.KStemFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
+import org.apache.lucene.analysis.fr.FrenchLightStemFilter;
 import org.apache.lucene.analysis.miscellaneous.LengthFilter;
 import org.apache.lucene.analysis.miscellaneous.TypeAsSynonymFilter;
 import org.apache.lucene.analysis.ngram.NGramTokenFilter;
@@ -48,6 +49,7 @@ public class CloseAnalyzer extends Analyzer {
         EnglishMinimal,
         Porter,
         K,
+        French
         //Lovins
     }
 
@@ -153,6 +155,10 @@ public class CloseAnalyzer extends Analyzer {
 
             case K:
                 tokens = new KStemFilter(tokens);
+                break;
+
+            case French:
+                tokens = new FrenchLightStemFilter(tokens);
                 break;
 
             /*case Lovins:

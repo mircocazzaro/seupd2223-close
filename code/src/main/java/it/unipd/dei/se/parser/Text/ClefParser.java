@@ -57,19 +57,17 @@ public class ClefParser extends DocumentParser {
 
                     for (String jspattern : jspatterns) {
                         if (body.contains(jspattern)) {
-                            while (body.contains(jspattern)) {
-                                String code = null;
+                            String code = null;
+                            try {
+                                code = body.substring(body.indexOf(jspattern), body.indexOf("/script>"));
+                            } catch (StringIndexOutOfBoundsException e) {
                                 try {
-                                    code = body.substring(body.indexOf(jspattern), body.indexOf("/script>"));
-                                } catch (StringIndexOutOfBoundsException e) {
-                                    try {
-                                        code = body.substring(body.indexOf(jspattern), body.indexOf("}"));
-                                    } catch (StringIndexOutOfBoundsException ex) {
-                                        code = jspattern;
-                                    }
+                                    code = body.substring(body.indexOf(jspattern), body.indexOf("}"));
+                                } catch (StringIndexOutOfBoundsException ex) {
+                                    code = jspattern;
                                 }
-                                body = body.replace(code, "");
                             }
+                            body = body.replace(code, "");
                             //System.out.println("Found some JS code");
                         }
                     }

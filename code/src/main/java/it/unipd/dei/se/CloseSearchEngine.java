@@ -52,8 +52,8 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
-        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
+        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Documents\\Json";;
+        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Queries\\train.trec";
         final String indexPath ="experiment/all-MiniLM-L6-v2";
 
         // ram buffer size
@@ -92,7 +92,7 @@ public class CloseSearchEngine {
         ).build();*/
 
         // analyzer with all the options
-        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "long-stoplist.txt", CloseAnalyzer.StemFilterType.Porter, null, null, false, false);
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "long-stoplist.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false);
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(
