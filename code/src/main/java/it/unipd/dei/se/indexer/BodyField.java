@@ -16,7 +16,7 @@
 
 package it.unipd.dei.se.indexer;
 
-import it.unipd.dei.se.parser.ParsedDocument;
+import it.unipd.dei.se.parser.Text.ParsedTextDocument;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
@@ -53,7 +53,7 @@ public class BodyField extends Field {
      * @param value the contents of the body of a document.
      */
     public BodyField(final Reader value) {
-        super(ParsedDocument.Fields.BODY, value, BODY_TYPE);
+        super(ParsedTextDocument.Fields.BODY, value, BODY_TYPE);
     }
 
     /**
@@ -62,7 +62,7 @@ public class BodyField extends Field {
      * @param value the contents of the body of a document.
      */
     public BodyField(final String value) {
-        super(ParsedDocument.Fields.BODY, value, BODY_TYPE);
+        super(ParsedTextDocument.Fields.BODY, value, BODY_TYPE);
     }
 
 }

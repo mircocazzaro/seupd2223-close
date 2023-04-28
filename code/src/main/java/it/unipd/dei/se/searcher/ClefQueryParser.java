@@ -43,6 +43,8 @@ public class ClefQueryParser extends TrecTopicsReader {
                     }
                 }
 
+                System.out.println(title);
+
                 //fields.put("num", num);
                 fields.put("title", title);
 
