@@ -17,6 +17,7 @@ package it.unipd.dei.se;
 
 import it.unipd.dei.se.parser.Embedded.ClefEmbeddedParser;
 import it.unipd.dei.se.analyzer.CloseAnalyzer;
+import it.unipd.dei.se.parser.Text.ClefParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
@@ -51,8 +52,8 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "/Users/farzad/Projects/uni/search_engine/fun/output/all-MiniLM-L6-v2";;
-        final String topicPath = "test/train.trec";
+        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Documents\\Json";;
+        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\English\\Queries\\train.trec";
         final String indexPath ="experiment/all-MiniLM-L6-v2";
 
         // ram buffer size
@@ -103,7 +104,7 @@ public class CloseSearchEngine {
                 extension,
                 charsetName,
                 expectedDocs,
-                ClefEmbeddedParser.class
+                ClefParser.class
         );
         directoryIndexer.index();
 
@@ -118,7 +119,7 @@ public class CloseSearchEngine {
                 runID,
                 runPath,
                 maxDocsRetrieved,
-                true
+                false
         );
         searcher.search();
 

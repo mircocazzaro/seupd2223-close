@@ -362,23 +362,6 @@ public class DirectoryIndexer {
                         }
 
 
-//                        double[] vector = createVector(doc);
-//                        double [] [] twodvector = new double[1][50];
-//
-//                        for (int i = 0; i < 50; i++) {
-//                            twodvector[0][i] = vector[i];
-//                        }
-//
-//                        // Costruzione di una matrice dei documenti
-//                        RealMatrix documentMatrix = new Array2DRowRealMatrix(twodvector, true);
-//
-//                        // Esecuzione della PCA sulla matrice dei documenti
-//                        RealMatrix embedding = documentMatrix.getSubMatrix(0, documentMatrix.getRowDimension() - 1, 0, 20);
-//
-//                        // Creazione del documento da indicizzare con l'embedding ridotto
-//                        Document indexedDoc = createIndexedDocument(doc, embedding);
-
-
                         try {
                             writer.addDocument(doc);
                         } catch (IOException e) {
@@ -457,48 +440,4 @@ public class DirectoryIndexer {
         //i.index();
     }
 
-
-    private double[] createVector(Document doc) {
-        String content = doc.get("contents");
-        String[] tokens = content.split("\\s+");
-        Map<String, Integer> tf = new HashMap<>();
-        for (String token : tokens) {
-            tf.merge(token, 1, Integer::sum);
-        }
-        double[] vector = new double[50];
-        int i = 0;
-        for (Map.Entry<String, Integer> entry : tf.entrySet()) {
-            double tfidf = entry.getValue() * idf(entry.getKey(), docsCount, tf);
-            if (i<50) {
-                vector[i++] = tfidf;
-            }
-        }
-        return vector;
-    }
-
-    public double idf(String term, long totalNumDocs, Map<String, Integer> termFreqs) {
-        int docsWithTerm = termFreqs.containsKey(term) ? termFreqs.get(term) : 0;
-        double idf = Math.log((totalNumDocs - docsWithTerm + 0.5) / (docsWithTerm + 0.5));
-        return idf;
-    }
-
-    private static Document createIndexedDocument(Document doc, RealMatrix embedding) {
-        Document indexedDoc = new Document();
-
-        // Aggiungi tutti i campi del documento originale al nuovo documento indicizzato
-        for (IndexableField field : doc) {
-            indexedDoc.add(field);
-        }
-
-        // Aggiungi l'embedding ridotto come campo indicizzato
-        StringBuilder embeddingStr = new StringBuilder();
-        for (int i = 0; i < embedding.getRowDimension(); i++) {
-            for (int j = 0; j < embedding.getColumnDimension(); j++) {
-                embeddingStr.append(embedding.getEntry(i, j)).append(" ");
-            }
-        }
-        indexedDoc.add(new TextField("embedding", embeddingStr.toString().trim(), Field.Store.YES));
-
-        return indexedDoc;
-    }
 }
