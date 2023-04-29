@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.RegEx;
 
+import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.stack;
 import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.static_bidirectional_rnn;
 
 /**
@@ -40,6 +41,7 @@ public class ClefParser extends DocumentParser {
     
     private static  Pattern jspattern = null;
     private static  Pattern dates_Pattern = null;
+    private static Pattern noise_pattern=null;
 
 
     private static final GsonBuilder builder = new GsonBuilder();
@@ -54,7 +56,7 @@ public class ClefParser extends DocumentParser {
                 (JsonDeserializer<ParsedTextDocument>) (json, typeOfT, context) -> {
                     // Get the id and the body of the document.
                     String id = json.getAsJsonObject().get(ParsedTextDocument.Fields.ID).getAsString();
-                    StringBuilder body = new StringBuilder(json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString());
+                    StringBuilder bodyBuilder = new StringBuilder(json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString());
 
                     /* 
                     //JAVASCRIPT PARSING
@@ -91,15 +93,15 @@ public class ClefParser extends DocumentParser {
                     int start=0;
                     int end=0;
                     //removes all <scripts>
-                    while((start=body.indexOf("<script", start))!=-1){
-                        if((end=body.indexOf("script>", start))!=-1){
+                    while((start=bodyBuilder.indexOf("<script", start))!=-1){
+                        if((end=bodyBuilder.indexOf("script>", start))!=-1){
                             end=end+7;
-                            body.replace(start, end, "");
+                            bodyBuilder.replace(start, end, "");
                             continue;
                         }
-                        if((end=body.indexOf(">", start))!=-1){
+                        if((end=bodyBuilder.indexOf(">", start))!=-1){
                             end++;
-                            body.replace(start, end, "");
+                            bodyBuilder.replace(start, end, "");
                             continue;
                         }
                         start++;
@@ -107,19 +109,19 @@ public class ClefParser extends DocumentParser {
                     }
 
                     //removes JS
-                    Matcher m = jspattern.matcher(body);
+                    Matcher m = jspattern.matcher(bodyBuilder);
                     while(m.find()){
                         start=m.start();
                         int count=1;
-                        for(int i=start; i<body.length(); i++){
-                            if(body.charAt(i)=='{'){
+                        for(int i=start; i<bodyBuilder.length(); i++){
+                            if(bodyBuilder.charAt(i)=='{'){
                                 count++;
                                 continue;
                             }
-                            if((body.charAt(i)=='}')){
+                            if((bodyBuilder.charAt(i)=='}')){
                                 if(--count==0){
-                                    body.replace(start, i, "");
-                                    m = jspattern.matcher(body);
+                                    bodyBuilder.replace(start, i, "");
+                                    m = jspattern.matcher(bodyBuilder);
                                     break;
                                     
                                 }
@@ -133,35 +135,26 @@ public class ClefParser extends DocumentParser {
 
                     
 
-                    //COUNTRY LISTS PARSER
+                    //String body = bodyBuilder.toString();
 
-                    /*Pattern pattern = Pattern.compile("\\b\\w+ia\\b");
-                    Matcher matcher = pattern.matcher(body);
-                    body = matcher.replaceAll("");
-
-                    pattern = Pattern.compile("\\b\\w+land\\b");
-                    matcher = pattern.matcher(body);
-                    body = matcher.replaceAll("");
-
-                    pattern = Pattern.compile("\\b\\w+stan\\b");
-                    matcher = pattern.matcher(body);
-                    body = matcher.replaceAll("");*/
-
-
+                    
                     // HTTP/HTTPS URI PARSER
                     String uriRegex = "(https?://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
                     Pattern uriPattern = Pattern.compile(uriRegex);
-                    Matcher uriMatcher = uriPattern.matcher(body);
+                    Matcher uriMatcher = uriPattern.matcher(bodyBuilder);
+                    
 
+                    /* 
                     while (uriMatcher.find()) {
                         String uri = uriMatcher.group();
                         body = body.replace(uri, "");
                         //System.out.println("Found a URI");
                     }
+                    */
 
                     // NOISES PARSER
-                    body = removeNoise(body);
-                    return new ParsedTextDocument(id, body.toString());
+                    //body = removeNoise(body);
+                    return new ParsedTextDocument(id, uriMatcher.replaceAll(""));
                 });
 
     }
@@ -181,6 +174,8 @@ public class ClefParser extends DocumentParser {
      *      - Hashtags and mentions
      */
     public static String removeNoise(String text) {
+
+
         // Remove HTML tags and CSS stylesheets.
         text = text.replaceAll("<style[^>]*>[^<]*</style>|<[^>]*>", "");
 
@@ -209,6 +204,7 @@ public class ClefParser extends DocumentParser {
         text = text.replaceAll("(?i)@[\\w]+|#\\w+|\\bRT\\b", "");
 
         return text;
+        
     }
 
 
