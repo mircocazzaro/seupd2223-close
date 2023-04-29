@@ -87,10 +87,17 @@ public class ClefParser extends DocumentParser {
                     body = matcher.replaceAll("");*/
 
 
-                    /*// Creare un pattern che corrisponde agli URI HTTP e HTTPS
-                    Pattern httpUriPattern = Pattern.compile("(https?://\\S+)");
-                    Matcher matcher = httpUriPattern.matcher(body);
-                    body = matcher.replaceAll("");*/
+                    // HTTP/HTTPS URI PARSER
+                    String uriRegex = "(https?://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
+                    Pattern uriPattern = Pattern.compile(uriRegex);
+                    Matcher uriMatcher = uriPattern.matcher(body);
+
+                    while (uriMatcher.find()) {
+                        String uri = uriMatcher.group();
+                        body = body.replace(uri, "");
+                        //System.out.println("Found a URI");
+                    }
+
 
                     return new ParsedTextDocument(id, body);
                 });
