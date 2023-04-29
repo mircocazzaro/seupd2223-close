@@ -25,6 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.annotation.RegEx;
+
+import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.static_bidirectional_rnn;
+
 /**
  * @author CLOSE GROUP
  * @version 1.0
@@ -32,6 +36,11 @@ import java.util.stream.Stream;
  * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
  */
 public class ClefParser extends DocumentParser {
+
+    
+    private static  Pattern jspattern = null;
+    private static  Pattern dates_Pattern = null;
+
 
     private static final GsonBuilder builder = new GsonBuilder();
 
@@ -45,9 +54,9 @@ public class ClefParser extends DocumentParser {
                 (JsonDeserializer<ParsedTextDocument>) (json, typeOfT, context) -> {
                     // Get the id and the body of the document.
                     String id = json.getAsJsonObject().get(ParsedTextDocument.Fields.ID).getAsString();
-                    String body = json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString();
+                    StringBuilder body = new StringBuilder(json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString());
 
-
+                    /* 
                     //JAVASCRIPT PARSING
                     List<String> jspatterns = new ArrayList<String>();
                     jspatterns.add("function(");
@@ -71,6 +80,58 @@ public class ClefParser extends DocumentParser {
                             //System.out.println("Found some JS code");
                         }
                     }
+                    */
+                    
+                    //compiles regular expression for JS and all caps text
+                    if(jspattern==null){
+                        jspattern=Pattern.compile("function.(.)[{]");
+                        dates_Pattern= Pattern.compile("");
+                    }
+                    
+                    int start=0;
+                    int end=0;
+                    //removes all <scripts>
+                    while((start=body.indexOf("<script", start))!=-1){
+                        if((end=body.indexOf("script>", start))!=-1){
+                            end=end+7;
+                            body.replace(start, end, "");
+                            continue;
+                        }
+                        if((end=body.indexOf(">", start))!=-1){
+                            end++;
+                            body.replace(start, end, "");
+                            continue;
+                        }
+                        start++;
+                        
+                    }
+
+                    //removes JS
+                    Matcher m = jspattern.matcher(body);
+                    while(m.find()){
+                        start=m.start();
+                        int count=1;
+                        for(int i=start; i<body.length(); i++){
+                            if(body.charAt(i)=='{'){
+                                count++;
+                                continue;
+                            }
+                            if((body.charAt(i)=='}')){
+                                if(--count==0){
+                                    body.replace(start, i, "");
+                                    m = jspattern.matcher(body);
+                                    break;
+                                    
+                                }
+
+                            }
+                        }
+                    }
+
+                    //removes all caps words
+                    //m= all_caps_pattern.matcher(body);
+
+                    
 
                     //COUNTRY LISTS PARSER
 
@@ -92,7 +153,7 @@ public class ClefParser extends DocumentParser {
                     Matcher matcher = httpUriPattern.matcher(body);
                     body = matcher.replaceAll("");*/
 
-                    return new ParsedTextDocument(id, body);
+                    return new ParsedTextDocument(id, body.toString());
                 });
 
     }
