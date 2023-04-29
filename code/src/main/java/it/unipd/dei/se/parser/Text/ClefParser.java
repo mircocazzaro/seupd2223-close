@@ -98,11 +98,58 @@ public class ClefParser extends DocumentParser {
                         //System.out.println("Found a URI");
                     }
 
-
+                    // NOISES PARSER
+                    body = removeNoise(body);
                     return new ParsedTextDocument(id, body);
                 });
 
     }
+
+    /**
+     * Clean noises in the document passed as parameter.
+     * The noises this function removes are the following:
+     *      - HTML tags and CSS stylesheets
+     *      - XML or JSON code
+     *      - Meta tags and document properties
+     *      - Navigation menus
+     *      - Advertisements
+     *      - Footers
+     *      - Noise characters
+     *      - Non-ASCII characters
+     *      - Social media handles
+     *      - Hashtags and mentions
+     */
+    public static String removeNoise(String text) {
+        // Remove HTML tags and CSS stylesheets.
+        text = text.replaceAll("<style[^>]*>[^<]*</style>|<[^>]*>", "");
+
+        // Remove XML or JSON code.
+        text = text.replaceAll("<\\?xml[^>]*>|<script[^>]*>[^<]*</script>|\\{[^\\}]*\\}", "");
+
+        // Remove meta tags and document properties.
+        text = text.replaceAll("<meta[^>]*>|<title>[^<]*</title>|<head[^>]*>|<body[^>]*>|<html[^>]*>|</head>|</body>|</html>", "");
+
+        // Remove navigation menus.
+        text = text.replaceAll("(?i)menu|nav|navigation", "");
+
+        // Remove advertisements.
+        text = text.replaceAll("(?i)advertisements?|pub|annonce", "");
+
+        // Remove footers.
+        text = text.replaceAll("(?i)footer|pied de page|mentions légales", "");
+
+        // Remove noise characters.
+        text = text.replaceAll("[^\\p{L}\\p{N}\\s]+", "");
+
+        // Remove non-ASCII characters.
+        text = text.replaceAll("[^\\p{ASCII}]", "");
+
+        // Remove social media handles, hashtags, and mentions.
+        text = text.replaceAll("(?i)@[\\w]+|#\\w+|\\bRT\\b", "");
+
+        return text;
+    }
+
 
     /**
      * Returns a stream of parsed documents.
@@ -118,14 +165,20 @@ public class ClefParser extends DocumentParser {
     public static void main(String[] args) throws Exception {
         // Read the documents from a file.
         Reader reader = new FileReader(
-                "data/collector_kodicare_32.txt.json"
+                "C:/Users/39392/OneDrive/Desktop/Search Engines/collections/longeval-train-v2/French/Documents/Json/collector_kodicare_1.txt.json"
         );
 
         // Create a new parser.
         Stream<ParsedTextDocument> parsedDocumentStream = new ClefParser().getDocumentStream(reader);
 
-        // Print the documents.
-        parsedDocumentStream.forEach(System.out::println);
+        // Print the documents to the terminal and a text file.
+        PrintWriter writer = new PrintWriter("C:/Users/39392/OneDrive/Desktop/Search Engines/collections/longeval-train-v2/French/Outputs/documents.txt", "UTF-8");
+        parsedDocumentStream.forEach(document -> {
+            System.out.println(document);
+            writer.println(document);
+        });
+        writer.close();
     }
+
 
 }
