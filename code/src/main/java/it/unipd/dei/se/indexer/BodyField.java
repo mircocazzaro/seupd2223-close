@@ -43,7 +43,7 @@ public class BodyField extends Field {
     static {
         BODY_TYPE.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
         BODY_TYPE.setTokenized(true);
-        BODY_TYPE.setStored(false);
+        BODY_TYPE.setStored(true);
     }
 
 

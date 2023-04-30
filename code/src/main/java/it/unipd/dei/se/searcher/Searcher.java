@@ -16,21 +16,20 @@
 
 package it.unipd.dei.se.searcher;
 
+import ai.djl.MalformedModelException;
+import ai.djl.repository.zoo.ModelNotFoundException;
+import ai.djl.translate.TranslateException;
 import it.unipd.dei.se.analyzer.DocEmbeddings;
 import it.unipd.dei.se.parser.Embedded.ParsedEmbeddedDocument;
 import it.unipd.dei.se.parser.Text.ParsedTextDocument;
-import org.apache.commons.math3.linear.RealMatrix;
+import it.unipd.dei.se.utils.ReRanker;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.benchmark.quality.QualityQuery;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -49,6 +48,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+
 
 /**
  * Searches a document collection.
@@ -120,7 +120,12 @@ public class Searcher {
     /**
      * use embeddings or not
      */
-    private boolean useEmbeddings;
+    private final boolean useEmbeddings;
+
+    /**
+     * text embeddings for re-ranking
+     */
+    private ReRanker reRanker =null;
 
     /**
      * Creates a new searcher.
@@ -134,12 +139,13 @@ public class Searcher {
      * @param runPath          the path where to store the run.
      * @param maxDocsRetrieved the maximum number of documents to be retrieved.
      * @param useEmbeddings    use embeddings or not
+     * @param reRankModel      model name for re-ranking
      * @throws NullPointerException     if any of the parameters is {@code null}.
      * @throws IllegalArgumentException if any of the parameters assumes invalid values.
      */
     public Searcher(final Analyzer analyzer, final Similarity similarity, final String indexPath,
                     final String topicsFile, final int expectedTopics, final String runID, final String runPath,
-                    final int maxDocsRetrieved, boolean useEmbeddings) throws IOException {
+                    final int maxDocsRetrieved, boolean useEmbeddings, final String reRankModel) throws IOException, ModelNotFoundException, MalformedModelException {
 
         if (analyzer == null) {
             throw new NullPointerException("Analyzer cannot be null.");
@@ -186,7 +192,7 @@ public class Searcher {
 
         searcher = new IndexSearcher(reader);
 
-        if(!useEmbeddings) searcher.setSimilarity(similarity);
+        if (!useEmbeddings) searcher.setSimilarity(similarity);
 
         if (topicsFile == null) {
             throw new NullPointerException("Topics file cannot be null.");
@@ -200,7 +206,6 @@ public class Searcher {
             BufferedReader in = Files.newBufferedReader(Paths.get(topicsFile), StandardCharsets.UTF_8);
 
             topics = new ClefQueryParser().readQueries(in);
-
 
 
             in.close();
@@ -267,6 +272,10 @@ public class Searcher {
         }
 
         this.maxDocsRetrieved = maxDocsRetrieved;
+
+        if (reRankModel != null) {
+            this.reRanker = new ReRanker(storedFields, reRankModel);
+        }
     }
 
     /**
@@ -322,7 +331,11 @@ public class Searcher {
 
                 docs = searcher.search(q, maxDocsRetrieved);
 
-                sd = docs.scoreDocs;
+                if (reRanker == null) {
+                    sd = docs.scoreDocs;
+                } else {
+                    sd = reRanker.sort(query, docs.scoreDocs);
+                }
 
                 for (int i = 0, n = sd.length; i < n; i++) {
                     docID = storedFields.document(sd[i].doc, idField).get(ParsedTextDocument.Fields.ID);
@@ -341,10 +354,14 @@ public class Searcher {
                 run.flush();
 
             }
+        } catch (TranslateException e) {
+            throw new RuntimeException(e);
         } finally {
             run.close();
 
             reader.close();
+
+            reRanker.close();
         }
 
         elapsedTime = System.currentTimeMillis() - start;
@@ -375,13 +392,12 @@ public class Searcher {
         final Analyzer a = CustomAnalyzer.builder().withTokenizer(StandardTokenizerFactory.class).addTokenFilter(
                 LowerCaseFilterFactory.class).addTokenFilter(StopFilterFactory.class).build();
 
-        Searcher s = new Searcher(a, new BM25Similarity(), indexPath, topics, 50, runID, runPath, maxDocsRetrieved,false);
+        Searcher s = new Searcher(a, new BM25Similarity(), indexPath, topics, 50, runID, runPath, maxDocsRetrieved, false, null);
 
         s.search();
 
 
     }
-
 
 
 }
