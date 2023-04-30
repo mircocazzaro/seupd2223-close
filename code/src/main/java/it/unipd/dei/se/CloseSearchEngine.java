@@ -52,9 +52,9 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Documents\\Json";;
-        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Queries\\train.trec";
-        final String indexPath ="experiment/all-MiniLM-L6-v2";
+        final String collectionPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";;
+        final String topicPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Queries/train.trec";
+        final String indexPath ="experiment/index-stop-stem";
 
         // ram buffer size
         final int ramBuffer = 256;
@@ -119,7 +119,8 @@ public class CloseSearchEngine {
                 runID,
                 runPath,
                 maxDocsRetrieved,
-                false
+                false,
+                "all-MiniLM-L6-v2"
         );
         searcher.search();
 
