@@ -19,6 +19,7 @@ package it.unipd.dei.se.searcher;
 import ai.djl.MalformedModelException;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.translate.TranslateException;
+import com.google.gson.Gson;
 import it.unipd.dei.se.analyzer.DocEmbeddings;
 import it.unipd.dei.se.parser.Embedded.ParsedEmbeddedDocument;
 import it.unipd.dei.se.parser.Text.ParsedTextDocument;
@@ -31,15 +32,19 @@ import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.benchmark.quality.QualityQuery;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.StoredFields;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParserBase;
+import org.apache.lucene.queryparser.xml.builders.TermQueryBuilder;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.FSDirectory;
 
+import javax.json.JsonReader;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +53,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -304,6 +310,7 @@ public class Searcher {
         idField.add(ParsedTextDocument.Fields.ID);
 
         BooleanQuery.Builder bq = null;
+        TermQueryBuilder tq = null;
         Query q = null;
         TopDocs docs = null;
         ScoreDoc[] sd = null;
@@ -323,10 +330,27 @@ public class Searcher {
                     float[] qe = DocEmbeddings.getInstance().getEmbeddingForQuery(query);
                     q = new KnnFloatVectorQuery(ParsedEmbeddedDocument.Fields.EMB_BODY, qe, 1000);
                 } else {
-
                     bq = new BooleanQuery.Builder();
-                    bq.add(qp.parse(query), BooleanClause.Occur.SHOULD);
+
+                    List<String> queries = null;
+                    queries = getExpansion(t.getQueryID());
+
+                    List<Query> lq = new ArrayList<Query>();
+
+                    for (String qr : queries) {
+                        lq.add(qp.parse(qr));
+                    }
+
+                    for (Query query1 : lq) {
+                        bq.add(query1,  BooleanClause.Occur.SHOULD);
+                    }
+
+                    Query mainquery = new BoostQuery(qp.parse(query), 14.68f*lq.size());
+                    bq.add(mainquery, BooleanClause.Occur.MUST);
+
                     q = bq.build();
+                    System.out.println("Added " + queries.size() + " queries for " + t.getQueryID());
+
                 }
 
                 docs = searcher.search(q, maxDocsRetrieved);
@@ -400,6 +424,23 @@ public class Searcher {
     }
 
 
+
+
+    public List<String> getExpansion (String queryID) throws IOException {
+        Gson gson = new Gson();
+        BufferedReader reader = new BufferedReader(new FileReader("code/python_scripts/result.json"));
+        HashMap<String, ArrayList<String>> hmap = gson.fromJson(reader, HashMap.class);
+
+        ArrayList <String> list = hmap.get(queryID);
+
+
+        return list.stream().limit(3).collect(Collectors.toList());
+    }
+
+
+
 }
 
+//TRY WITH FRENCHMINIMALSTEM
+//TRY OTHER SIMILARITY NOW WITH QUERY EXPANSION
 
