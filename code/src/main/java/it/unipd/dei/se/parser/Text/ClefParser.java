@@ -25,6 +25,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.annotation.RegEx;
+
+import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.stack;
+import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.static_bidirectional_rnn;
+
 /**
  * @author CLOSE GROUP
  * @version 1.0
@@ -32,6 +37,12 @@ import java.util.stream.Stream;
  * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
  */
 public class ClefParser extends DocumentParser {
+
+    
+    private static  Pattern jspattern = null;
+    private static  Pattern dates_Pattern = null;
+    private static Pattern noise_pattern=null;
+
 
     private static final GsonBuilder builder = new GsonBuilder();
 
@@ -45,9 +56,9 @@ public class ClefParser extends DocumentParser {
                 (JsonDeserializer<ParsedTextDocument>) (json, typeOfT, context) -> {
                     // Get the id and the body of the document.
                     String id = json.getAsJsonObject().get(ParsedTextDocument.Fields.ID).getAsString();
-                    String body = json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString();
+                    StringBuilder bodyBuilder = new StringBuilder(json.getAsJsonObject().get(ParsedTextDocument.Fields.BODY).getAsString());
 
-
+                    /* 
                     //JAVASCRIPT PARSING
                     List<String> jspatterns = new ArrayList<String>();
                     jspatterns.add("function(");
@@ -71,31 +82,131 @@ public class ClefParser extends DocumentParser {
                             //System.out.println("Found some JS code");
                         }
                     }
+                    */
+                    
+                    //compiles regular expression for JS and all caps text
+                    if(jspattern==null){
+                        jspattern=Pattern.compile("function.(.)[{]");
+                        dates_Pattern= Pattern.compile("");
+                    }
+                    
+                    int start=0;
+                    int end=0;
+                    //removes all <scripts>
+                    while((start=bodyBuilder.indexOf("<script", start))!=-1){
+                        if((end=bodyBuilder.indexOf("script>", start))!=-1){
+                            end=end+7;
+                            bodyBuilder.replace(start, end, "");
+                            continue;
+                        }
+                        if((end=bodyBuilder.indexOf(">", start))!=-1){
+                            end++;
+                            bodyBuilder.replace(start, end, "");
+                            continue;
+                        }
+                        start++;
+                        
+                    }
 
-                    //COUNTRY LISTS PARSER
+                    //removes JS
+                    Matcher m = jspattern.matcher(bodyBuilder);
+                    while(m.find()){
+                        start=m.start();
+                        int count=1;
+                        for(int i=start; i<bodyBuilder.length(); i++){
+                            if(bodyBuilder.charAt(i)=='{'){
+                                count++;
+                                continue;
+                            }
+                            if((bodyBuilder.charAt(i)=='}')){
+                                if(--count==0){
+                                    bodyBuilder.replace(start, i, "");
+                                    m = jspattern.matcher(bodyBuilder);
+                                    break;
+                                    
+                                }
 
-                    /*Pattern pattern = Pattern.compile("\\b\\w+ia\\b");
-                    Matcher matcher = pattern.matcher(body);
-                    body = matcher.replaceAll("");
+                            }
+                        }
+                    }
 
-                    pattern = Pattern.compile("\\b\\w+land\\b");
-                    matcher = pattern.matcher(body);
-                    body = matcher.replaceAll("");
+                    //removes all caps words
+                    //m= all_caps_pattern.matcher(body);
 
-                    pattern = Pattern.compile("\\b\\w+stan\\b");
-                    matcher = pattern.matcher(body);
-                    body = matcher.replaceAll("");*/
+                    
 
+                    //String body = bodyBuilder.toString();
 
-                    /*// Creare un pattern che corrisponde agli URI HTTP e HTTPS
-                    Pattern httpUriPattern = Pattern.compile("(https?://\\S+)");
-                    Matcher matcher = httpUriPattern.matcher(body);
-                    body = matcher.replaceAll("");*/
+                    
+                    // HTTP/HTTPS URI PARSER
+                    String uriRegex = "(https?://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
+                    Pattern uriPattern = Pattern.compile(uriRegex);
+                    Matcher uriMatcher = uriPattern.matcher(bodyBuilder);
+                    
 
-                    return new ParsedTextDocument(id, body);
+                    /* 
+                    while (uriMatcher.find()) {
+                        String uri = uriMatcher.group();
+                        body = body.replace(uri, "");
+                        //System.out.println("Found a URI");
+                    }
+                    */
+
+                    // NOISES PARSER
+                    //body = removeNoise(body);
+                    return new ParsedTextDocument(id, uriMatcher.replaceAll(""));
                 });
 
     }
+
+    /**
+     * Clean noises in the document passed as parameter.
+     * The noises this function removes are the following:
+     *      - HTML tags and CSS stylesheets
+     *      - XML or JSON code
+     *      - Meta tags and document properties
+     *      - Navigation menus
+     *      - Advertisements
+     *      - Footers
+     *      - Noise characters
+     *      - Non-ASCII characters
+     *      - Social media handles
+     *      - Hashtags and mentions
+     */
+    public static String removeNoise(String text) {
+
+
+        // Remove HTML tags and CSS stylesheets.
+        text = text.replaceAll("<style[^>]*>[^<]*</style>|<[^>]*>", "");
+
+        // Remove XML or JSON code.
+        text = text.replaceAll("<\\?xml[^>]*>|<script[^>]*>[^<]*</script>|\\{[^\\}]*\\}", "");
+
+        // Remove meta tags and document properties.
+        text = text.replaceAll("<meta[^>]*>|<title>[^<]*</title>|<head[^>]*>|<body[^>]*>|<html[^>]*>|</head>|</body>|</html>", "");
+
+        // Remove navigation menus.
+        text = text.replaceAll("(?i)menu|nav|navigation", "");
+
+        // Remove advertisements.
+        text = text.replaceAll("(?i)advertisements?|pub|annonce", "");
+
+        // Remove footers.
+        text = text.replaceAll("(?i)footer|pied de page|mentions légales", "");
+
+        // Remove noise characters.
+        text = text.replaceAll("[^\\p{L}\\p{N}\\s]+", "");
+
+        // Remove non-ASCII characters.
+        text = text.replaceAll("[^\\p{ASCII}]", "");
+
+        // Remove social media handles, hashtags, and mentions.
+        text = text.replaceAll("(?i)@[\\w]+|#\\w+|\\bRT\\b", "");
+
+        return text;
+        
+    }
+
 
     /**
      * Returns a stream of parsed documents.
@@ -111,14 +222,20 @@ public class ClefParser extends DocumentParser {
     public static void main(String[] args) throws Exception {
         // Read the documents from a file.
         Reader reader = new FileReader(
-                "data/collector_kodicare_32.txt.json"
+                "C:/Users/39392/OneDrive/Desktop/Search Engines/collections/longeval-train-v2/French/Documents/Json/collector_kodicare_1.txt.json"
         );
 
         // Create a new parser.
         Stream<ParsedTextDocument> parsedDocumentStream = new ClefParser().getDocumentStream(reader);
 
-        // Print the documents.
-        parsedDocumentStream.forEach(System.out::println);
+        // Print the documents to the terminal and a text file.
+        PrintWriter writer = new PrintWriter("C:/Users/39392/OneDrive/Desktop/Search Engines/collections/longeval-train-v2/French/Outputs/documents.txt", "UTF-8");
+        parsedDocumentStream.forEach(document -> {
+            System.out.println(document);
+            writer.println(document);
+        });
+        writer.close();
     }
+
 
 }
