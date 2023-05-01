@@ -20,11 +20,7 @@ import it.unipd.dei.se.analyzer.CloseAnalyzer;
 import it.unipd.dei.se.parser.Text.ClefParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.StopFilterFactory;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
-import org.apache.lucene.analysis.miscellaneous.StemmerOverrideFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.codecs.TermStats;
@@ -79,7 +75,7 @@ public class CloseSearchEngine {
         final String charsetName = "ISO-8859-1";
 
         // creating the similarity to be used for ranking the documents
-        //final Similarity[] similarities = {new BM25Similarity(true)};
+
         final Similarity sim = new BM25Similarity();
 
         // creating the analyzer to be used for indexing and searching the collection
@@ -92,7 +88,7 @@ public class CloseSearchEngine {
         ).build();*/
 
         // analyzer with all the options
-        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 10, true, "long-stoplist.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false);
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, true, "long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false);
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(
@@ -106,7 +102,7 @@ public class CloseSearchEngine {
                 expectedDocs,
                 ClefParser.class
         );
-        //directoryIndexer.index();
+        directoryIndexer.index();
 
 
         // searching the topics in the specified path and with the specified extension

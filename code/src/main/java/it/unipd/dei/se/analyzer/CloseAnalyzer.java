@@ -9,14 +9,17 @@ import org.apache.lucene.analysis.en.EnglishPossessiveFilter;
 import org.apache.lucene.analysis.en.KStemFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.fr.FrenchLightStemFilter;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.miscellaneous.LengthFilter;
 import org.apache.lucene.analysis.miscellaneous.TypeAsSynonymFilter;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilter;
 import org.apache.lucene.analysis.ngram.NGramTokenFilter;
 import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilter;
 import org.apache.lucene.analysis.opennlp.OpenNLPPOSFilter;
 import org.apache.lucene.analysis.opennlp.OpenNLPTokenizerFactory;
 import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.util.ElisionFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -132,6 +135,8 @@ public class CloseAnalyzer extends Analyzer {
 
         tokens = new LowerCaseFilter(source);
 
+        //tokens = new ASCIIFoldingFilter(source);
+
         if (minLength != null && maxLength != null) {
             tokens = new LengthFilter(tokens, minLength, maxLength);
         }
@@ -143,6 +148,8 @@ public class CloseAnalyzer extends Analyzer {
         if (stopFilterListName != null) {
             tokens = new StopFilter(tokens, loadStopList(stopFilterListName));
         }
+
+
 
         switch (stemFilterType) {
             case EnglishMinimal:
@@ -197,6 +204,7 @@ public class CloseAnalyzer extends Analyzer {
 
             tokens = new OpenNLPLemmatizerFilter(tokens, loadLemmatizerModel("en-lemmatizer.bin"));
         }
+
 
 
         return new TokenStreamComponents(source, tokens);
