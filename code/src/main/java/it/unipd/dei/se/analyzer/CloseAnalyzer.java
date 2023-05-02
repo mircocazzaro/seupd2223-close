@@ -225,7 +225,7 @@ public class CloseAnalyzer extends Analyzer {
     public static void main(String[] args) throws IOException {
         final String text = "100 - This text; is used $ to see (and test) what our Analyzer does, in order to improve it." +
                 "% So, I think it's appropriate to add lot of noise to this";
-        CloseAnalyzer closeAnalyzer = new CloseAnalyzer(TokenizerType.Standard, 2, 10, true, null, StemFilterType.EnglishMinimal, null, null, false, false);
+        CloseAnalyzer closeAnalyzer = new CloseAnalyzer(TokenizerType.Standard, 2, 10, true, null, StemFilterType.EnglishMinimal, null, null, false, false, false);
 
         consumeTokenStream(closeAnalyzer, text);
 
