@@ -27,9 +27,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.RegEx;
 
-import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.stack;
-import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.static_bidirectional_rnn;
-
 /**
  * @author CLOSE GROUP
  * @version 1.0

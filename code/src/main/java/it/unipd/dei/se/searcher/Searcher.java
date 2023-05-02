@@ -428,7 +428,7 @@ public class Searcher {
 
     public List<String> getExpansion (String queryID) throws IOException {
         Gson gson = new Gson();
-        BufferedReader reader = new BufferedReader(new FileReader("code/python_scripts/result.json"));
+        BufferedReader reader = new BufferedReader(new FileReader("python_scripts/result.json"));
         HashMap<String, ArrayList<String>> hmap = gson.fromJson(reader, HashMap.class);
 
         ArrayList <String> list = hmap.get(queryID);

@@ -48,8 +48,10 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";;
-        final String topicPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Queries/train.trec";
+        // final String collectionPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";
+        //final String topicPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Queries/train.trec";
+        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Documents\\Json";
+        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Queries\\train.trec";
         final String indexPath ="experiment/index-stop-stem";
 
         // ram buffer size
@@ -102,7 +104,7 @@ public class CloseSearchEngine {
                 expectedDocs,
                 ClefParser.class
         );
-        directoryIndexer.index();
+       // directoryIndexer.index();
 
 
         // searching the topics in the specified path and with the specified extension

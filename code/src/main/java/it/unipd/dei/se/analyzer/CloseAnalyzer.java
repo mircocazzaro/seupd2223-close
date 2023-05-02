@@ -9,25 +9,27 @@ import org.apache.lucene.analysis.en.EnglishPossessiveFilter;
 import org.apache.lucene.analysis.en.KStemFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.fr.FrenchLightStemFilter;
-import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
-import org.apache.lucene.analysis.miscellaneous.LengthFilter;
-import org.apache.lucene.analysis.miscellaneous.TypeAsSynonymFilter;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilter;
+import org.apache.lucene.analysis.miscellaneous.*;
 import org.apache.lucene.analysis.ngram.NGramTokenFilter;
 import org.apache.lucene.analysis.opennlp.OpenNLPLemmatizerFilter;
 import org.apache.lucene.analysis.opennlp.OpenNLPPOSFilter;
 import org.apache.lucene.analysis.opennlp.OpenNLPTokenizerFactory;
 import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.synonym.SynonymFilter;
+import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
+import org.apache.lucene.analysis.synonym.SynonymGraphFilter;
+import org.apache.lucene.analysis.synonym.SynonymMap;
 import org.apache.lucene.analysis.util.ElisionFilter;
+import org.apache.lucene.util.CharsRef;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
 
 import static it.unipd.dei.se.analyzer.AnalyzerUtil.*;
 
@@ -52,7 +54,8 @@ public class CloseAnalyzer extends Analyzer {
         EnglishMinimal,
         Porter,
         K,
-        French
+        French,
+        Boh
         //Lovins
     }
 
@@ -151,6 +154,36 @@ public class CloseAnalyzer extends Analyzer {
 
 
 
+        SynonymMap.Builder builder = new SynonymMap.Builder(true);
+
+    // Lettura del file contenente i sinonimi
+        Path synonymsFile = Paths.get("python_scripts/synonyms-french.txt");
+        List<String> lines = null;
+        try {
+            lines = Files.readAllLines(synonymsFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Aggiunta dei sinonimi alla SynonymMap.Builder
+        for (String line : lines) {
+            String[] words = line.split(", ");
+            for (int i = 1; i < words.length; i++) {
+                builder.add(new CharsRef(words[i]), new CharsRef(words[0].toLowerCase()), true);
+            }
+        }
+
+    // Creazione della SynonymMap
+        SynonymMap synonymMap = null;
+        try {
+            synonymMap = builder.build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        tokens = new SynonymGraphFilter(tokens, synonymMap, true);
+
+
         switch (stemFilterType) {
             case EnglishMinimal:
                 tokens = new EnglishMinimalStemFilter(tokens);
@@ -171,6 +204,7 @@ public class CloseAnalyzer extends Analyzer {
             /*case Lovins:
                 tokens = new LovinsStemFilter(tokens);
                 break;*/
+
         }
 
         if (nGramFilterSize != null) {
@@ -184,11 +218,11 @@ public class CloseAnalyzer extends Analyzer {
         if (useNLPFilter) {
             tokens = new OpenNLPPOSFilter(source, loadPosTaggerModel("en-pos-maxent.bin"));
 
-            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-location.bin"));
+            tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-location.bin"));
 
-            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-person.bin"));
+            tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-person.bin"));
 
-            //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-organization.bin"));
+            tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-organization.bin"));
 
             //tokens = new OpenNLPNERFilter(tokens, loadLNerTaggerModel("en-ner-money.bin"));
 
