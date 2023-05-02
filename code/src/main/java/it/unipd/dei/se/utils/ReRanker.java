@@ -109,7 +109,7 @@ public class ReRanker {
             INDArray de = embeddings.get(i);
             double similarity = de.mul(query_embedding).sumNumber().doubleValue() / (de.norm2Number().doubleValue() * query_embedding.norm2Number().doubleValue());
             // Change the score of the doc to the similarity
-            scoreDocs[i].score = (float) similarity;
+            scoreDocs[i].score = (float) (similarity * scoreDocs[i].score);
         }
 
         // Sort the score docs by similarity

@@ -78,7 +78,7 @@ public class CloseSearchEngine {
 
         // creating the similarity to be used for ranking the documents
 
-        final Similarity sim = new BM25Similarity();
+        final Similarity sim = new BM25Similarity((float)1.2,(float)0.90);
 
         // creating the analyzer to be used for indexing and searching the collection
         /*final Analyzer closeAnalyzer = CustomAnalyzer.builder().withTokenizer(
@@ -104,7 +104,7 @@ public class CloseSearchEngine {
                 expectedDocs,
                 ClefParser.class
         );
-       // directoryIndexer.index();
+        directoryIndexer.index();
 
 
         // searching the topics in the specified path and with the specified extension
