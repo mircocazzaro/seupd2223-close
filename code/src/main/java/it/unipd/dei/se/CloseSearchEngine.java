@@ -48,8 +48,8 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        final String collectionPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";;
-        final String topicPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Queries/train.trec";
+        final String collectionPath = "/Users/nicolaboscolo/Documents/longeval/French/Documents/Json";;
+        final String topicPath = "/Users/nicolaboscolo/Documents/longeval/French/Queries/train.trec";
         final String indexPath ="experiment/index-stop-stem";
 
         // ram buffer size
@@ -76,7 +76,7 @@ public class CloseSearchEngine {
 
         // creating the similarity to be used for ranking the documents
 
-        final Similarity sim = new BM25Similarity();
+        final Similarity sim = new BM25Similarity((float)1.2,(float)0.90);
 
         // creating the analyzer to be used for indexing and searching the collection
         /*final Analyzer closeAnalyzer = CustomAnalyzer.builder().withTokenizer(
@@ -116,7 +116,7 @@ public class CloseSearchEngine {
                 runPath,
                 maxDocsRetrieved,
                 false,
-                "all-MiniLM-L6-v2"
+                null
         );
         searcher.search();
 
