@@ -9,6 +9,7 @@ import org.apache.lucene.analysis.en.EnglishPossessiveFilter;
 import org.apache.lucene.analysis.en.KStemFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.fr.FrenchLightStemFilter;
+import org.apache.lucene.analysis.fr.FrenchMinimalStemFilter;
 import org.apache.lucene.analysis.miscellaneous.LengthFilter;
 import org.apache.lucene.analysis.miscellaneous.TypeAsSynonymFilter;
 import org.apache.lucene.analysis.ngram.NGramTokenFilter;
@@ -17,6 +18,7 @@ import org.apache.lucene.analysis.opennlp.OpenNLPPOSFilter;
 import org.apache.lucene.analysis.opennlp.OpenNLPTokenizerFactory;
 import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.util.ElisionFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -25,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import static it.unipd.dei.se.analyzer.AnalyzerUtil.*;
 
@@ -49,7 +52,8 @@ public class CloseAnalyzer extends Analyzer {
         EnglishMinimal,
         Porter,
         K,
-        French
+        French,
+        FrenchMinimal
         //Lovins
     }
 
@@ -74,6 +78,8 @@ public class CloseAnalyzer extends Analyzer {
 
     private final boolean lemmatization;
 
+    private final boolean frenchElisionFilter;
+
 
 
     /**
@@ -81,7 +87,7 @@ public class CloseAnalyzer extends Analyzer {
      */
     public CloseAnalyzer(TokenizerType tokenizerType, int minLength, int maxLength,
                          boolean isEnglishPossessiveFilter, String stopFilterListName, StemFilterType stemFilterType,
-                         Integer nGramFilterSize, Integer shingleFilterSize, boolean useNLPFilter, boolean lemmatization)
+                         Integer nGramFilterSize, Integer shingleFilterSize, boolean useNLPFilter, boolean lemmatization, boolean frenchElisionFilter)
     {
         super();
 
@@ -105,6 +111,7 @@ public class CloseAnalyzer extends Analyzer {
 
         this.lemmatization = lemmatization;
 
+        this.frenchElisionFilter = frenchElisionFilter;
     }
 
 
@@ -161,9 +168,14 @@ public class CloseAnalyzer extends Analyzer {
                 tokens = new FrenchLightStemFilter(tokens);
                 break;
 
+            case FrenchMinimal:
+                tokens = new FrenchMinimalStemFilter(tokens);
+                break;
+
             /*case Lovins:
                 tokens = new LovinsStemFilter(tokens);
                 break;*/
+
         }
 
         if (nGramFilterSize != null) {
@@ -196,6 +208,13 @@ public class CloseAnalyzer extends Analyzer {
         if (lemmatization) {
 
             tokens = new OpenNLPLemmatizerFilter(tokens, loadLemmatizerModel("en-lemmatizer.bin"));
+        }
+
+        if(frenchElisionFilter) {
+            Character[] elisionsList = {'l', 'd', 's', 't', 'n', 'm'};
+            CharArraySet elisionArray = new CharArraySet(elisionsList.length, true);
+            elisionArray.addAll(Arrays.asList(elisionsList));
+            tokens = new ElisionFilter(tokens, elisionArray);
         }
 
 
