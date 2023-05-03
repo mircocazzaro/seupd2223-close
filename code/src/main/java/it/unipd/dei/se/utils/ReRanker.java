@@ -16,7 +16,6 @@ import it.unipd.dei.se.parser.Text.ParsedTextDocument;
 import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.ScoreDoc;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.IOException;
