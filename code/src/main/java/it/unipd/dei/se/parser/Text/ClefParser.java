@@ -142,7 +142,6 @@ public class ClefParser extends DocumentParser {
                     String uriRegex = "(https?://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
                     Pattern uriPattern = Pattern.compile(uriRegex);
                     Matcher uriMatcher = uriPattern.matcher(bodyBuilder);
-                    
 
                     /* 
                     while (uriMatcher.find()) {
@@ -154,7 +153,8 @@ public class ClefParser extends DocumentParser {
 
                     // NOISES PARSER
                     //body = removeNoise(body);
-                    return new ParsedTextDocument(id, uriMatcher.replaceAll(""));
+                    //return new ParsedTextDocument(id, uriMatcher.replaceAll(""));
+                    return new ParsedTextDocument(id, removePatterns(bodyBuilder.toString()));
                 });
 
     }
@@ -207,6 +207,18 @@ public class ClefParser extends DocumentParser {
         
     }
 
+    // Function to remove patterns like "word1_word2", "word1.word2", and HTTP/HTTPS URIs from a string
+    public String removePatterns(String input) {
+
+        // Define regular expression pattern to match the desired patterns
+        Pattern pattern = Pattern.compile("(\\w+)[_.:](\\w+)|(https?://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)");
+
+        // Replace all matched patterns with a space character
+        Matcher matcher = pattern.matcher(input);
+        String output = matcher.replaceAll(" ");
+
+        return output;
+    }
 
     /**
      * Returns a stream of parsed documents.

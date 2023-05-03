@@ -1,6 +1,8 @@
 package it.unipd.dei.se.utils;
 
+import ai.djl.Device;
 import ai.djl.MalformedModelException;
+import ai.djl.engine.Engine;
 import ai.djl.huggingface.translator.TextEmbeddingTranslatorFactory;
 import ai.djl.inference.Predictor;
 import ai.djl.ndarray.NDList;
@@ -124,6 +126,11 @@ public class ReRanker {
     public void close() {
         // Clean up resources
         this.predictor.close();
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(Device.fromName("cuda"));
     }
 
 }
