@@ -107,7 +107,7 @@ public class ReRanker {
         for (int i = 0; i < embeddings.size(); i++) {
             INDArray de = embeddings.get(i);
             
-            // Calculate the cosine similarity between the query and the document
+            // Calculate the cosine similarity between the query and the document, the higher, is better
             double similarity = de.mul(query_embedding).sumNumber().doubleValue() / (de.norm2Number().doubleValue() * query_embedding.norm2Number().doubleValue());
 
             // Calculate the Manhattan similarity between the query and the document, the lower, is better
