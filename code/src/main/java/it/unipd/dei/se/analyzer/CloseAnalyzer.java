@@ -28,6 +28,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -80,14 +81,15 @@ public class CloseAnalyzer extends Analyzer {
 
     private final boolean lemmatization;
 
-
+    private final boolean frenchElisionFilter;
 
     /**
      * Creates a new instance of the analyzer.
      */
     public CloseAnalyzer(TokenizerType tokenizerType, int minLength, int maxLength,
                          boolean isEnglishPossessiveFilter, String stopFilterListName, StemFilterType stemFilterType,
-                         Integer nGramFilterSize, Integer shingleFilterSize, boolean useNLPFilter, boolean lemmatization)
+                         Integer nGramFilterSize, Integer shingleFilterSize,
+                         boolean useNLPFilter, boolean lemmatization, boolean frenchElisionFilter)
     {
         super();
 
@@ -111,6 +113,7 @@ public class CloseAnalyzer extends Analyzer {
 
         this.lemmatization = lemmatization;
 
+        this.frenchElisionFilter = frenchElisionFilter;
     }
 
 
@@ -239,7 +242,12 @@ public class CloseAnalyzer extends Analyzer {
             tokens = new OpenNLPLemmatizerFilter(tokens, loadLemmatizerModel("en-lemmatizer.bin"));
         }
 
-
+        if(frenchElisionFilter) {
+            Character[] elisionsList = {'l', 'd', 's', 't', 'n', 'm'};
+            CharArraySet elisionArray = new CharArraySet(elisionsList.length, true);
+            elisionArray.addAll(Arrays.asList(elisionsList));
+            tokens = new ElisionFilter(tokens, elisionArray);
+        }
 
         return new TokenStreamComponents(source, tokens);
 
@@ -248,7 +256,7 @@ public class CloseAnalyzer extends Analyzer {
     public static void main(String[] args) throws IOException {
         final String text = "100 - This text; is used $ to see (and test) what our Analyzer does, in order to improve it." +
                 "% So, I think it's appropriate to add lot of noise to this";
-        CloseAnalyzer closeAnalyzer = new CloseAnalyzer(TokenizerType.Standard, 2, 10, true, null, StemFilterType.EnglishMinimal, null, null, false, false);
+        CloseAnalyzer closeAnalyzer = new CloseAnalyzer(TokenizerType.Standard, 2, 10, true, null, StemFilterType.EnglishMinimal, null, null, false, false, true);
 
         consumeTokenStream(closeAnalyzer, text);
 

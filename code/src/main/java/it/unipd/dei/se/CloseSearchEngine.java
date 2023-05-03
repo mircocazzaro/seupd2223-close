@@ -90,7 +90,7 @@ public class CloseSearchEngine {
         ).build();*/
 
         // analyzer with all the options
-        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, true, "long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false);
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, false, "new-long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false, true);
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(
