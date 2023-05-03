@@ -3,6 +3,7 @@ package it.unipd.dei.se.utils;
 import ai.djl.MalformedModelException;
 import ai.djl.huggingface.translator.TextEmbeddingTranslatorFactory;
 import ai.djl.inference.Predictor;
+import ai.djl.ndarray.NDList;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.repository.zoo.ModelZoo;
@@ -13,6 +14,7 @@ import it.unipd.dei.se.parser.Text.ParsedTextDocument;
 import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.ScoreDoc;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class ReRanker {
     /**
      * The model
      */
-    private final Predictor<String, float[]> predictor;
+    private final Predictor<String[], float[][]> predictor;
 
     /**
      * The stored fields of the index
@@ -41,15 +43,15 @@ public class ReRanker {
      */
     public ReRanker(StoredFields storedFields, String model_name) throws ModelNotFoundException, MalformedModelException, IOException {
         // Create the criteria for the model
-        Criteria<String, float[]> criteria = Criteria.builder()
-                        .setTypes(String.class, float[].class)
+        Criteria<String[], float[][]> criteria = Criteria.builder()
+                        .setTypes(String[].class, float[][].class)
                         .optModelUrls("djl://ai.djl.huggingface.pytorch/sentence-transformers/" + model_name)
                         .optEngine("PyTorch")
                         .optTranslatorFactory(new TextEmbeddingTranslatorFactory())
                         .optProgress(new ProgressBar())
                         .build();
 
-        ZooModel<String, float[]> model = ModelZoo.loadModel(criteria);
+        ZooModel<String[], float[][]> model = ModelZoo.loadModel(criteria);
 
         // Create a predictor to perform inference
         this.predictor = model.newPredictor();
@@ -64,12 +66,12 @@ public class ReRanker {
      * @return the embeddings of the documents
      * @throws TranslateException if an error occurs during translation
      */
-    public List<INDArray> get_embeddings(List<String> documents) throws TranslateException {
-            // Todo: batch creating embeddings
+    public List<INDArray> get_embeddings(String[] documents) throws TranslateException {
             List<INDArray> embeddings = new ArrayList<>();
-            for (String document : documents) {
-                // Predict the embedding of the document
-                embeddings.add(Nd4j.create(predictor.predict(document)));
+            for (float[][] results : predictor.batchPredict(Collections.singletonList(documents))) {
+                for (float[] result : results) {
+                    embeddings.add(Nd4j.create(result));
+                }
             }
             return embeddings;
     }
@@ -88,14 +90,14 @@ public class ReRanker {
         final Set<String> fields = new HashSet<>();
         fields.add(ParsedTextDocument.Fields.BODY);
 
-        List<String> documents = new ArrayList<>();
-        for (ScoreDoc sd : scoreDocs) {
-            // Get the body of the document
-            documents.add(storedFields.document(sd.doc, fields).get(ParsedTextDocument.Fields.BODY));
+        String[] documents = new String[scoreDocs.length + 1];
+        for (int i = 0; i < scoreDocs.length; i++) {
+            // Get the body of the document and add it to the list of documents
+            documents[i] = storedFields.document(scoreDocs[i].doc, fields).get(ParsedTextDocument.Fields.BODY);
         }
 
         // Add the query to the list of documents
-        documents.add(query);
+        documents[scoreDocs.length] = query;
 
         // Get the embeddings of the documents
         List<INDArray> embeddings = get_embeddings(documents);
