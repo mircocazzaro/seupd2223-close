@@ -2,10 +2,8 @@ package it.unipd.dei.se.utils;
 
 import ai.djl.Device;
 import ai.djl.MalformedModelException;
-import ai.djl.engine.Engine;
 import ai.djl.huggingface.translator.TextEmbeddingTranslatorFactory;
 import ai.djl.inference.Predictor;
-import ai.djl.ndarray.NDList;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.repository.zoo.ModelZoo;
@@ -16,7 +14,6 @@ import it.unipd.dei.se.parser.Text.ParsedTextDocument;
 import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.ScoreDoc;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.IOException;
@@ -46,12 +43,12 @@ public class ReRanker {
     public ReRanker(StoredFields storedFields, String model_name) throws ModelNotFoundException, MalformedModelException, IOException {
         // Create the criteria for the model
         Criteria<String[], float[][]> criteria = Criteria.builder()
-                        .setTypes(String[].class, float[][].class)
-                        .optModelUrls("djl://ai.djl.huggingface.pytorch/sentence-transformers/" + model_name)
-                        .optEngine("PyTorch")
-                        .optTranslatorFactory(new TextEmbeddingTranslatorFactory())
-                        .optProgress(new ProgressBar())
-                        .build();
+                .setTypes(String[].class, float[][].class)
+                .optModelUrls("djl://ai.djl.huggingface.pytorch/sentence-transformers/" + model_name)
+                .optEngine("PyTorch")
+                .optTranslatorFactory(new TextEmbeddingTranslatorFactory())
+                .optProgress(new ProgressBar())
+                .build();
 
         ZooModel<String[], float[][]> model = ModelZoo.loadModel(criteria);
 
@@ -109,7 +106,22 @@ public class ReRanker {
         // Calculate the similarity between the query and the documents
         for (int i = 0; i < embeddings.size(); i++) {
             INDArray de = embeddings.get(i);
+            
+            // Calculate the cosine similarity between the query and the document
             double similarity = de.mul(query_embedding).sumNumber().doubleValue() / (de.norm2Number().doubleValue() * query_embedding.norm2Number().doubleValue());
+
+            // Calculate the Manhattan similarity between the query and the document, the lower, is better
+            // double similarity = de.sub(query_embedding).norm1Number().doubleValue();
+
+            // Calculate the Jaccard similarity between the query and the document, the higher, is better
+            // double similarity = de.mul(query_embedding).sumNumber().doubleValue() / de.add(query_embedding).sub(de.mul(query_embedding)).sumNumber().doubleValue();
+
+            // Calculate the Pearson correlation coefficient similarity between the query and the document, the higher, is better
+            // double similarity = de.sub(de.meanNumber()).mul(query_embedding.sub(query_embedding.meanNumber())).sumNumber().doubleValue() / (de.stdNumber().doubleValue() * query_embedding.stdNumber().doubleValue());
+
+            // Calculate the Mahalanobis distance similarity between the query and the document, the lower, is better
+            // double similarity = de.sub(query_embedding).mmul(de.sub(query_embedding).transpose()).sumNumber().doubleValue();
+
             // Change the score of the doc to the similarity
             scoreDocs[i].score = (float) (similarity * scoreDocs[i].score);
         }
