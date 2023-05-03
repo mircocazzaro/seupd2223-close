@@ -154,7 +154,7 @@ public class CloseAnalyzer extends Analyzer {
 
 
 
-        SynonymMap.Builder builder = new SynonymMap.Builder(true);
+      /*  SynonymMap.Builder builder = new SynonymMap.Builder(true);
 
     // Lettura del file contenente i sinonimi
         Path synonymsFile = Paths.get("python_scripts/synonyms-french.txt");
@@ -179,9 +179,9 @@ public class CloseAnalyzer extends Analyzer {
             synonymMap = builder.build();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
-        tokens = new SynonymGraphFilter(tokens, synonymMap, true);
+        //tokens = new SynonymGraphFilter(tokens, synonymMap, true);
 
 
         switch (stemFilterType) {
