@@ -20,11 +20,7 @@ import it.unipd.dei.se.analyzer.CloseAnalyzer;
 import it.unipd.dei.se.parser.Text.ClefParser;
 import it.unipd.dei.se.searcher.Searcher;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.StopFilterFactory;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
-import org.apache.lucene.analysis.miscellaneous.StemmerOverrideFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.codecs.TermStats;
@@ -52,11 +48,11 @@ public class CloseSearchEngine {
                     "Usage: java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>"
             );
         }*/
-        //final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Documents\\Json";;
-        //final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Queries\\train.trec";
-        final String collectionPath = "C:\\Users\\39392\\OneDrive\\Desktop\\Search Engines\\collections\\longeval-train-v2\\French\\Documents\\Json";
-        final String topicPath = "C:\\Users\\39392\\OneDrive\\Desktop\\Search Engines\\collections\\longeval-train-v2\\French\\Queries\\train.trec";
-        final String indexPath ="experiment/french-newStoplist-v1";
+        // final String collectionPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Documents/Json";
+        //final String topicPath = "/Users/farzad/Projects/uni/search_engine/publish/English/Queries/train.trec";
+        final String collectionPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Documents\\Json";
+        final String topicPath = "C:\\Users\\Mirco\\Desktop\\Search Engines\\publish\\French\\Queries\\train.trec";
+        final String indexPath ="experiment/index-stop-stem";
 
         // ram buffer size
         final int ramBuffer = 256;
@@ -81,9 +77,8 @@ public class CloseSearchEngine {
         final String charsetName = "ISO-8859-1";
 
         // creating the similarity to be used for ranking the documents
-        //final Similarity[] similarities = {new BM25Similarity(true)};
-        final Similarity sim = new BM25Similarity();
-        //final Similarity sim = new LMDirichletSimilarity(1000.0f);
+
+        final Similarity sim = new BM25Similarity((float)1.2,(float)0.90);
 
         // creating the analyzer to be used for indexing and searching the collection
         /*final Analyzer closeAnalyzer = CustomAnalyzer.builder().withTokenizer(
@@ -95,7 +90,7 @@ public class CloseSearchEngine {
         ).build();*/
 
         // analyzer with all the options
-        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 0, 15, false, "french-stoplist.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false, true);
+        final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, true, "long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false);
 
         // indexing the collection of documents in the specified path and with the specified extension
         final DirectoryIndexer directoryIndexer = new DirectoryIndexer(
@@ -122,7 +117,8 @@ public class CloseSearchEngine {
                 runID,
                 runPath,
                 maxDocsRetrieved,
-                false
+                false,
+                "all-MiniLM-L6-v2"
         );
         searcher.search();
 
