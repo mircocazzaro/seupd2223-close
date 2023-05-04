@@ -2,3 +2,42 @@
 \label{sec:methodology}
 
 Describe the methodology you have adopted, the architecture of your system, your workflow, etc.
+
+
+
+
+
+\subsection{Analyzer}
+The Analyzer is responsible for analyzing the extracted documents and so preparing them for Indexing and Searching phases. It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal and many more.
+\newline
+We extended Apache Lucene's Analyzer abstract class by creating a custom CloseAnalyzer, which is fully customizable by means of its parameters that can be chosen when creating an instance of the class. This is because we tried different settings and approaches to maximize the results and kept all the possible variations as optional settings.
+This CloseAnalyzer is passed as parameter and then used by the DirectoryIndexer and the Searcher.
+\newline
+The constructor of CloseAnalyzer accepts the following parameters:
+\begin{itemize}
+  \item \textbf{tokenizerType}: used to choose between three standard Lucene tokenizers: WhitespaceTokenizer, LetterTokenizer and StandardTokenizer.
+  \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard Lucene filters : EnglishMinimalStemFilter, KStemFilter, PorterStemFilter and FrenchLightStemFilter. We also tried using FrenchMinimalStemFilter and a custom filter called LovinsStemmerFilter that bases off a LovinsStemmer implementation, but decided to keep them commented as they didn't improve the results.
+  \item \textbf{minLength} and \textbf{maxLength}: these are integers that simply specifiy the minimum and maximum length of a token, applying Lucene's LengthFilter.
+  \item \textbf{isEnglishPossessiveFilter}: specifies whether to use Lucene's EnglishPossessiveFilter or not. Of course this can be useful when operating with the English dataset.
+  \item \textbf{stopFilterListName}: with this parameter it's possible to insert the path of an eventual word stoplist .txt file located in the \textit{resources} folder. To do this we use Lucene's StopFilter and a custom class called AnalyzerUtil that uses a \textit{loadStopList} method to actually read and load all the stoplist words from the specified file. The stoplists we created are based on the standard ones but modified after inspecting the index with Luke tool. We have lists of different lengths and different ones for French and English.
+  \item \textbf{nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's NGramTokenFilter.
+  \item \textbf{shingleFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's ShingleFilter that allows the creation of combination of words.
+  \item \textbf{useNLPFilter}: this boolean allows the use of Lucene's OpenNLPPPOSFilter for Part-Of-Speech Tagging and of a custom class called OpenNLPNERFilter for Named Entity Recognition. To actually load the .bin models, which are located in the \textit{resources} folder, we use two methods from AnalyzerUtil: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
+  \item \textbf{lemmatization}: specifies whether to use Lucene's OpenNLPLemmatizerFilter by loading a .bin model file in the \textit{resources} folder using AnalyzerUtil \textit{loadLemmatizerModel} function
+  \item \textbf{frenchElisionFilter}: we applied this only when using the French dataset by adding Lucene's ElisionFilter with an array of the following characters: 'l', 'd', 's', 't', 'n', 'm'.
+\end{itemize}
+On top of this a LowerCaseFilter is always applied.
+\newline
+We also tried Lucene's ASCIIFoldingFilter and SynonymGraphFilter. For the second one, only for the French Dataset we used a SynonymMap based on a .txt file containing french synonyms.
+\newline
+After different trials with different variations of the parameter, the following is the instance of the CloseAnalyzer we used:
+
+\begin{lstlisting}
+final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, false, "new-long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false, true);
+\end{lstlisting}
+We have opted for the French dataset and by doing so we have the StandardTokenizer, 2 and 15 as minimum and maximum token length, we use frenchElisionFilter, FrenchLightStemFilter and a list of 662 french words as stoplist. We don't use any of the other parameters.
+
+
+
+
+\subsection{Searcher}
