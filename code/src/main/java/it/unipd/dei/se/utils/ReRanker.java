@@ -84,7 +84,7 @@ public class ReRanker {
      * @throws TranslateException if an error occurs during translation
      * @throws IOException        if an I/O error occurs
      */
-    public ScoreDoc[] sort(String query, ScoreDoc[] scoreDocs) throws TranslateException, IOException {
+    public ScoreDoc[] sort(String query, List<String> sum_queries, ScoreDoc[] scoreDocs) throws TranslateException, IOException {
         // Create the fields to get the body of the documents
         final Set<String> fields = new HashSet<>();
         fields.add(ParsedTextDocument.Fields.BODY);
@@ -95,8 +95,8 @@ public class ReRanker {
             documents[i] = storedFields.document(scoreDocs[i].doc, fields).get(ParsedTextDocument.Fields.BODY);
         }
 
-        // Add the query to the list of documents
-        documents[scoreDocs.length] = query;
+        // Add the query to the list of documents, Join sum_queries with a space
+        documents[scoreDocs.length] = query + " " +String.join(" ", sum_queries);
 
         // Get the embeddings of the documents
         List<INDArray> embeddings = get_embeddings(documents);
