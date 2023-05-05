@@ -8,7 +8,7 @@ Describe the methodology you have adopted, the architecture of your system, your
 
 
 \subsection{Analyzer}
-The Analyzer is responsible for analyzing the extracted documents and so preparing them for Indexing and Searching phases. It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal and many more.
+The Analyzer is responsible for analyzing the extracted documents and preparing them for Indexing and Searching phases. It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal and many more.
 \newline
 We extended Apache Lucene's Analyzer abstract class by creating a custom CloseAnalyzer, which is fully customizable by means of its parameters that can be chosen when creating an instance of the class. This is because we tried different settings and approaches to maximize the results and kept all the possible variations as optional settings.
 This CloseAnalyzer is passed as parameter and then used by the DirectoryIndexer and the Searcher.
@@ -23,7 +23,7 @@ The constructor of CloseAnalyzer accepts the following parameters:
   \item \textbf{nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's NGramTokenFilter.
   \item \textbf{shingleFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's ShingleFilter that allows the creation of combination of words.
   \item \textbf{useNLPFilter}: this boolean allows the use of Lucene's OpenNLPPPOSFilter for Part-Of-Speech Tagging and of a custom class called OpenNLPNERFilter for Named Entity Recognition. To actually load the .bin models, which are located in the \textit{resources} folder, we use two methods from AnalyzerUtil: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
-  \item \textbf{lemmatization}: specifies whether to use Lucene's OpenNLPLemmatizerFilter by loading a .bin model file in the \textit{resources} folder using AnalyzerUtil \textit{loadLemmatizerModel} function
+  \item \textbf{lemmatization}: specifies whether to use Lucene's OpenNLPLemmatizerFilter by loading a .bin model file in the \textit{resources} folder using AnalyzerUtil \textit{loadLemmatizerModel} function.
   \item \textbf{frenchElisionFilter}: we applied this only when using the French dataset by adding Lucene's ElisionFilter with an array of the following characters: 'l', 'd', 's', 't', 'n', 'm'.
 \end{itemize}
 On top of this a LowerCaseFilter is always applied.
@@ -41,3 +41,31 @@ We have opted for the French dataset and by doing so we have the StandardTokeniz
 
 
 \subsection{Searcher}
+The purpose of the Searcher is to search through the indexed documents to retrieve relevant information based on user queries after analyzing them and to
+return a ranked list of documents that match the user’s information needs.
+\newline
+Our implementation does so by accepting the following parameters:
+\begin{itemize}
+  \item \textbf{analyzer}: in this case, an instance of CloseAnalyzer.
+  \item \textbf{similarity}: we decided to opt for the BM25Similarity function with the parameters \textit{k1} and \textit{b} tuned at 1.2 and 0.90.
+  \item \textbf{Run options}: there are parameters for the index path, the topics path, the run path and the run name, the expected topics number (in our case 50) and the maximum number of documents retrieved (in our case 1000).
+  \item \textbf{useEmbeddings}: a boolean value to decide whether to use embeddings or not. If it set to true we don't use the similarity function. In our implementation we opted to not use them.
+  \item \textbf{reRankModel}: this is the type of model used to do a Re-Ranking on the retrieved documents. In our case we use a model called \textit{all-MiniLM-L6-v2}, explained in the following subsection. If the parameter is set to null, no model is used and the documents are scored normally.
+\end{itemize}
+
+\subsubsection{Document Re-Ranking}
+This is the process of ranking the documents retrieved by the search function of the Searcher a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} sentence-transformer model.
+\newline
+It works in the following way: in the constructor of the Searcher the Re-Ranker is initialized and a predictor is created to perform inference. At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents that is finally multiplied with the actual documents score. The documents are then sorted by looking at this new scores.
+
+
+\subsubsection{Query Expansion}
+When running the search function, one of the first actions performed is getting the new queries generated with query expansion.
+We created a python script that, given the \textit{train.trec} file, generates all the expanded terms for each query and stores everything in a .json file called \textit{result}.
+\newline
+Queries are reformulated to increase the probability of matches.
+
+
+\subsubsection{Query Boosting}
+Query boosting is a technique used to assign greater relevance to certain query terms or queries.\newline
+We tried the following approach that seemed to improved the overall results: when building the queries in the search function of the Searcher, for each query, a BooleanQuery is built in the following way: after getting the query expansions, each of them is added to the BooleanQuery with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must me satisfied. This main query is boosted using Lucene's BoostQuery, with a boost value tuned at 14.68 multiplied by the number of expansions.
