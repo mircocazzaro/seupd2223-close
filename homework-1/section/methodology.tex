@@ -1,18 +1,122 @@
 \section{Methodology}
 \label{sec:methodology}
 
-Describe the methodology you have adopted, the architecture of your system, your workflow, etc.
+\subsection{General Overview of Our IR System}
+In the development of our \ac{IR} system, we followed the classic Y model suggested by Apache Lucene \cite{lucene}. The workflow of our system, starting from the train collection provided by \ac{CLEF}, is as follows:
+\begin{enumerate}
+    \item \textbf{Parsing}: The first phase consists of parsing the documents in the collection, which is a pre-processing operation performed to clean them from unnecessary noises. Since the collection is composed of web pages, the documents contain many leftovers like JavaScript scripts, HTML and CSS codes, HTTP and HTTPS URIs, and so on. The purpose of this phase is to ease the processing performed in the following phases.
 
+    \item \textbf{Indexing}: Each parsed document is then analyzed and indexed keeping only the necessary information. Indexed documents are composed of two fields: an \textit{id} field, containing the identifier of the document in the collection, and a \textit{content} field, containing the entire body of the document cleaned by the parsing and indexing phases.
 
+    \item \textbf{Query Formulation}: Topics are then parsed using the same analyzer used for documents, and used to formulate queries. For each topic, together with the already provided query, around 15 others are computed and used altogether for searching relevant documents.
 
+    \item \textbf{Re-ranking}: The retrieved documents are re-ranked combining the scores obtained with two different approaches which compute the similarity of the document to the query given in the topic.
+
+\end{enumerate}
+\subsection{Class Diagram}
+\begin{center}
+    \textbf{TODO}
+\end{center}
+
+\subsection{Project Structure}
+The project is developed mainly in \textit{Java}, with the addition of some \textit{Python} scripts for performing the expansion of the queries and for the re-ranking of the retrieved documents for each topic. The overall structure is as follows:
+\begin{itemize}
+    \item \textbf{experiment}: This folder contains the results of the indexing obtained with different approaches, stored in different sub-folders.
+
+    \item \textbf{python\_scripts}: This folder contains the above-mentioned \textit{Python} scripts, together with other \textit{txt} and \textit{JSON} files that these scripts use.
+
+\item \textbf{src/main/java}: This folder contains all the \textit{Java} classes used for the implementation of the \ac{IR} system, divided into the following packages:
+
+\begin{itemize}
+    \item \textbf{parser}: This package contains the classes involved in the pre-processing of the document, i.e., the parsing phase.
+    
+    \item \textbf{analyzer}: This package contains the classes used for analyzing the parsed documents and topics of the collection.
+    
+    \item \textbf{indexer}: This package performs the indexing of the documents processed by the analyzer.
+    
+    \item \textbf{searcher}: Once the documents are indexed, the queries contained in the topics of the collection are parsed and then expanded in this package. Relevant (or assumed to be so) documents are retrieved and scored.
+    
+    \item \textbf{utils}: This package contains general utility classes, one of which performs the re-ranking of the documents retrieved by the \textit{searcher}.
+
+\end{itemize}
+
+\subsection{Parser}
+As stated before, the documents in the collection provided by the \ac{CLEF} \textit{Long Eval LAB 2023} are essentially the corpus of web pages, to better represent the nature of a web test collection. From this, the need for performing a pre-processing phase of parsing the documents before analyzing and indexing them arises.
+In this phase, the documents are cleaned from all the residuals of codes not useful for our purposes. We extended Apache Lucene's \textit{DocumentParser} abstract class by creating a custom \textit{ClefParser}, which contains many functions for removing sundry types of noises that can be present in documents. This was the result of the trial and error approach we adopted for implementing this class:
+\begin{itemize}
+\item We started by reading a large statistical sample size of the documents in the collection to decide which types of noises needed to be removed.
+\item Then we implemented the parser and ran it.
+\item The results of the parsing were stored, and a sample of the parsed documents was analyzed to start this procedure again.
+\end{itemize}
+The types of noises we tried to remove are the following:
+\begin{itemize}
+\item \textit{JavaScript} scripts
+\item \textit{HTTP} and \textit{HTTPS} URIs
+\item \textit{HTML} tags and \textit{CSS} stylesheets
+\item \textit{XML} and \textit{JSON} codes
+\item Meta tags and document properties
+\item Navigation menus
+\item Advertisements
+\item Footers
+\item Social media handlers
+\item Hashtags and mentions
+\end{itemize}
+We also identified some patterns of words and symbols to remove:
+\begin{itemize}
+\item Two words separated by an underscore, like \textit{word1\_word2}
+\item Two words separated by a colon, like \textit{word1:word2}
+\item Two words separated by a point, like ``\textit{word1.word2}''
+\end{itemize}
+We used \textit{Regular Expressions} to define the patterns to identify and remove. The code below shows the \textit{removePatterns} function, used by the parser for removing the patterns mentioned above together with the \textit{HTTP} and \textit{HTTPS} URIs.
+\begin{lstlisting}[language=Java]
+    // Function to remove patterns like "word1_word2", "word1.word2", "word1.word2", and HTTP/HTTPS URIs from a string
+    public String removePatterns(String input) {
+
+        // Define regular expression pattern to match the desired patterns
+        Pattern pattern = Pattern.compile("(\\w+)[_.:](\\w+) |
+            (https?://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)
+            ");
+            
+        // Replace all matched patterns with a space character
+        Matcher matcher = pattern.matcher(input);
+        String output = matcher.replaceAll(" ");
+
+        return output;
+    }
+\end{lstlisting}
+
+After different tries, we decided to use only the function above for removing noises, together with another one used to remove \textit{JavaScript} codes.
+
+The structure of the parsed document is defined in the \textit{ParsedTextDocument} class, and it is composed of just two fields, as provided by \ac{CLEF}:
+\begin{enumerate}
+\item \textit{id}: the identifier of the document,
+\item \textit{body}: the (parsed) content of the document.
+\end{enumerate}
+The constructor of \textit{ParsedTextDocument} is the following:
+\begin{lstlisting}[language=Java]
+    /**
+     * Creates a new parsed document.
+     *
+     * @param id  the document identifier.
+     * @param body the document body.
+     */
+    public ParsedTextDocument(final String id, final String body) 
+\end{lstlisting}
+Inside it, multiple controls about the validity and integrity of the parameters are performed, then an object of the class is instantiated. \\
+The class also contains the following utility methods:
+\begin{itemize}
+\item \textit{getIdentifier}, which returns the (unique) document identifier,
+\item \textit{getBody}, which returns the body of the document,
+\item \textit{toString}, which returns a \textit{String} representation of the document,
+\item \textit{hashCode}, which returns the hash code of the document identifier,
+\item \textit{equals(Object o)}, which returns true if the two objects have the same identifier.
+\end{itemize}
 
 
 \subsection{Analyzer}
-The Analyzer is responsible for analyzing the extracted documents and preparing them for Indexing and Searching phases. It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal and many more.
-\newline
+The Analyzer is responsible for analyzing the extracted documents and preparing them for Indexing and Searching phases. It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal and many more.\\
 We extended Apache Lucene's Analyzer abstract class by creating a custom CloseAnalyzer, which is fully customizable by means of its parameters that can be chosen when creating an instance of the class. This is because we tried different settings and approaches to maximize the results and kept all the possible variations as optional settings.
-This CloseAnalyzer is passed as parameter and then used by the DirectoryIndexer and the Searcher.
-\newline
+This CloseAnalyzer is passed as parameter and then used by the DirectoryIndexer and the Searcher. \\
 The constructor of CloseAnalyzer accepts the following parameters:
 \begin{itemize}
   \item \textbf{tokenizerType}: used to choose between three standard Lucene tokenizers: WhitespaceTokenizer, LetterTokenizer and StandardTokenizer.
@@ -26,9 +130,8 @@ The constructor of CloseAnalyzer accepts the following parameters:
   \item \textbf{lemmatization}: specifies whether to use Lucene's OpenNLPLemmatizerFilter by loading a .bin model file in the \textit{resources} folder using AnalyzerUtil \textit{loadLemmatizerModel} function.
   \item \textbf{frenchElisionFilter}: we applied this only when using the French dataset by adding Lucene's ElisionFilter with an array of the following characters: 'l', 'd', 's', 't', 'n', 'm'.
 \end{itemize}
-On top of this a LowerCaseFilter is always applied.
-\newline
-We also tried Lucene's ASCIIFoldingFilter and SynonymGraphFilter. For the second one, only for the French Dataset we used a SynonymMap based on a .txt file containing french synonyms.
+On top of this a LowerCaseFilter is always applied. \\
+We also tried Lucene's \textit{ASCIIFoldingFilter} and SynonymGraphFilter. For the second one, only for the French Dataset we used a SynonymMap based on a .txt file containing french synonyms.
 \newline
 After different trials with different variations of the parameter, the following is the instance of the CloseAnalyzer we used:
 
@@ -38,7 +141,61 @@ final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Sta
 We have opted for the French dataset and by doing so we have the StandardTokenizer, 2 and 15 as minimum and maximum token length, we use frenchElisionFilter, FrenchLightStemFilter and a list of 662 french words as stoplist. We don't use any of the other parameters.
 
 
+\subsection{Indexer}
+The indexer is in charge of calling the \textit{Parser} and the \textit{Analyzer}, taking the document processed by these two and indexing them as an object of the \textit{ParsedTextDocument} defined in the \textit{Parser}. \\
+The class which performs the document processing mentioned above is \textit{DirectoryIndexer}, whose constructor is the following:
+\begin{lstlisting}
+    public DirectoryIndexer(final Analyzer analyzer, final Similarity similarity, final int ramBufferSizeMB,
+                            final String indexPath, final String docsPath, final String extension,
+                            final String charsetName, final long expectedDocs,
+                            final Class<? extends DocumentParser> dpCls) {
+\end{lstlisting}
+It takes the following inputs:
+\begin{itemize}
+\item \textbf{analyzer}: the \textit{Analyzer} to be used, in our case \textit{CloseAnalyzer};
+\item \textbf{similarity}: the \textit{Similarity} to be used by the \textit{Analyzer};
+\item \textbf{ramBufferSizeMB}: the size in megabytes of the RAM buffer for indexing the documents;
+\item \textbf{indexPath}: the directory where to store the index;
+\item \textbf{docsPath}: the directory from which the documents of the collection have to be read;
+\item \textbf{extension}: the extension of the files in the collection to be indexed;
+\item \textbf{charsetName}: the name of the charset used for encoding documents;
+\item \textbf{expectedDocs}: the total number of documents expected to be indexed;
+\item \textbf{dpCls}: the class of the \textit{DocumentParser} to be used, in our case \textit{ClefParser}.
+\end{itemize}
+The function which actually performs the storing of the index is:
+\begin{verbatim}
+public void index()
+\end{verbatim}
+Its main functionality is shown below:
+\begin{lstlisting}
+    // Create a stream of parsed documents from the file with the given Parser class(dpCls)
+    DocumentParser.create(dpCls, Files.newBufferedReader(file, cs)).forEach(pd -> {
+        Document doc = new Document();
+        ParsedTextDocument ptd = (ParsedTextDocument) pd;
 
+        // add the document identifier
+        doc.add(new StringField(ParsedTextDocument.Fields.ID, ptd.getIdentifier(), Field.Store.YES));
+
+        // add the processed document content
+        doc.add(new BodyField(ptd.getBody()));
+        try {
+            writer.addDocument(doc);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        docsCount++;
+
+        // print progress every 10000 indexed documents
+        if (docsCount % 10000 == 0) {
+            System.out.printf("%d document(s) (%d files, %d Mbytes) indexed in %d seconds.%n",
+            docsCount, filesCount, bytesCount / MBYTE,
+            (System.currentTimeMillis() - start) / 1000);
+        }
+    });
+\end{lstlisting}
+which reads, indexes and stores the processed documents. \\
+The indexer contains some printouts used to see the progress of the indexing during the executions, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than the expected, and some other eventual warning that can come out during this operation.
 
 \subsection{Searcher}
 The purpose of the Searcher is to search through the indexed documents to retrieve relevant information based on user queries after analyzing them and to
