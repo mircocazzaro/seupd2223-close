@@ -323,6 +323,7 @@ public class Searcher {
 
                 System.out.printf("Searching for topic %s.%n", t.getQueryID());
 
+                List<String> queries = null;
                 String query = QueryParserBase.escape(t.getValue(TOPIC_FIELDS.TITLE));
 
                 if (useEmbeddings) {
@@ -332,7 +333,6 @@ public class Searcher {
                 } else {
                     bq = new BooleanQuery.Builder();
 
-                    List<String> queries = null;
                     queries = getExpansion(t.getQueryID());
 
                     List<Query> lq = new ArrayList<Query>();
@@ -358,7 +358,7 @@ public class Searcher {
                 if (reRanker == null) {
                     sd = docs.scoreDocs;
                 } else {
-                    sd = reRanker.sort(query, docs.scoreDocs);
+                    sd = reRanker.sort(query, queries, docs.scoreDocs);
                 }
 
                 for (int i = 0, n = sd.length; i < n; i++) {
