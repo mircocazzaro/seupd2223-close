@@ -54,7 +54,7 @@ Our implementation does so by accepting the following parameters:
 \end{itemize}
 
 \subsubsection{Document Re-Ranking}
-This is the process of ranking the documents retrieved by the search function of the Searcher a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} sentence-transformer model.
+This is the process of ranking the documents retrieved by the search function of the Searcher a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} sentence-transformer model, coming from a Python framework called \textit{Sentence Transformers} available at \url{https://huggingface.co/sentence-transformers}.
 \newline
 It works in the following way: in the constructor of the Searcher the Re-Ranker is initialized and a predictor is created to perform inference. At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents that is finally multiplied with the actual documents score. The documents are then sorted by looking at this new scores.
 
