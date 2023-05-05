@@ -318,7 +318,8 @@ public class Searcher {
 
         // the set of document identifiers already retrieved
         try {
-            for (QualityQuery t : topics) {
+            for (int j = 0; j < 50; j++) {
+                QualityQuery t = topics[j];
                 HashSet<String> docIDs = new HashSet<>();
 
                 System.out.printf("Searching for topic %s.%n", t.getQueryID());
