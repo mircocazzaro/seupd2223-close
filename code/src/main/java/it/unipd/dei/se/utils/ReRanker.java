@@ -1,5 +1,6 @@
 package it.unipd.dei.se.utils;
 
+import ai.djl.Device;
 import ai.djl.MalformedModelException;
 import ai.djl.huggingface.translator.TextEmbeddingTranslatorFactory;
 import ai.djl.inference.Predictor;
@@ -23,7 +24,7 @@ public class ReRanker {
     /**
      * The model
      */
-    private final Predictor<String, float[]> predictor;
+    private final Predictor<String[], float[][]> predictor;
 
     /**
      * The stored fields of the index
@@ -41,15 +42,15 @@ public class ReRanker {
      */
     public ReRanker(StoredFields storedFields, String model_name) throws ModelNotFoundException, MalformedModelException, IOException {
         // Create the criteria for the model
-        Criteria<String, float[]> criteria = Criteria.builder()
-                        .setTypes(String.class, float[].class)
-                        .optModelUrls("djl://ai.djl.huggingface.pytorch/sentence-transformers/" + model_name)
-                        .optEngine("PyTorch")
-                        .optTranslatorFactory(new TextEmbeddingTranslatorFactory())
-                        .optProgress(new ProgressBar())
-                        .build();
+        Criteria<String[], float[][]> criteria = Criteria.builder()
+                .setTypes(String[].class, float[][].class)
+                .optModelUrls("djl://ai.djl.huggingface.pytorch/sentence-transformers/" + model_name)
+                .optEngine("PyTorch")
+                .optTranslatorFactory(new TextEmbeddingTranslatorFactory())
+                .optProgress(new ProgressBar())
+                .build();
 
-        ZooModel<String, float[]> model = ModelZoo.loadModel(criteria);
+        ZooModel<String[], float[][]> model = ModelZoo.loadModel(criteria);
 
         // Create a predictor to perform inference
         this.predictor = model.newPredictor();
@@ -64,12 +65,12 @@ public class ReRanker {
      * @return the embeddings of the documents
      * @throws TranslateException if an error occurs during translation
      */
-    public List<INDArray> get_embeddings(List<String> documents) throws TranslateException {
-            // Todo: batch creating embeddings
+    public List<INDArray> get_embeddings(String[] documents) throws TranslateException {
             List<INDArray> embeddings = new ArrayList<>();
-            for (String document : documents) {
-                // Predict the embedding of the document
-                embeddings.add(Nd4j.create(predictor.predict(document)));
+            for (float[][] results : predictor.batchPredict(Collections.singletonList(documents))) {
+                for (float[] result : results) {
+                    embeddings.add(Nd4j.create(result));
+                }
             }
             return embeddings;
     }
@@ -83,19 +84,19 @@ public class ReRanker {
      * @throws TranslateException if an error occurs during translation
      * @throws IOException        if an I/O error occurs
      */
-    public ScoreDoc[] sort(String query, ScoreDoc[] scoreDocs) throws TranslateException, IOException {
+    public ScoreDoc[] sort(String query, List<String> sum_queries, ScoreDoc[] scoreDocs) throws TranslateException, IOException {
         // Create the fields to get the body of the documents
         final Set<String> fields = new HashSet<>();
         fields.add(ParsedTextDocument.Fields.BODY);
 
-        List<String> documents = new ArrayList<>();
-        for (ScoreDoc sd : scoreDocs) {
-            // Get the body of the document
-            documents.add(storedFields.document(sd.doc, fields).get(ParsedTextDocument.Fields.BODY));
+        String[] documents = new String[scoreDocs.length + 1];
+        for (int i = 0; i < scoreDocs.length; i++) {
+            // Get the body of the document and add it to the list of documents
+            documents[i] = storedFields.document(scoreDocs[i].doc, fields).get(ParsedTextDocument.Fields.BODY);
         }
 
-        // Add the query to the list of documents
-        documents.add(query);
+        // Add the query to the list of documents, Join sum_queries with a space
+        documents[scoreDocs.length] = query + " " +String.join(" ", sum_queries);
 
         // Get the embeddings of the documents
         List<INDArray> embeddings = get_embeddings(documents);
@@ -105,9 +106,24 @@ public class ReRanker {
         // Calculate the similarity between the query and the documents
         for (int i = 0; i < embeddings.size(); i++) {
             INDArray de = embeddings.get(i);
+            
+            // Calculate the cosine similarity between the query and the document, the higher, is better
             double similarity = de.mul(query_embedding).sumNumber().doubleValue() / (de.norm2Number().doubleValue() * query_embedding.norm2Number().doubleValue());
+
+            // Calculate the Manhattan similarity between the query and the document, the lower, is better
+            // double similarity = de.sub(query_embedding).norm1Number().doubleValue();
+
+            // Calculate the Jaccard similarity between the query and the document, the higher, is better
+            // double similarity = de.mul(query_embedding).sumNumber().doubleValue() / de.add(query_embedding).sub(de.mul(query_embedding)).sumNumber().doubleValue();
+
+            // Calculate the Pearson correlation coefficient similarity between the query and the document, the higher, is better
+            // double similarity = de.sub(de.meanNumber()).mul(query_embedding.sub(query_embedding.meanNumber())).sumNumber().doubleValue() / (de.stdNumber().doubleValue() * query_embedding.stdNumber().doubleValue());
+
+            // Calculate the Mahalanobis distance similarity between the query and the document, the lower, is better
+            // double similarity = de.sub(query_embedding).mmul(de.sub(query_embedding).transpose()).sumNumber().doubleValue();
+
             // Change the score of the doc to the similarity
-            scoreDocs[i].score = (float) similarity;
+            scoreDocs[i].score = (float) (similarity * scoreDocs[i].score);
         }
 
         // Sort the score docs by similarity
@@ -122,6 +138,11 @@ public class ReRanker {
     public void close() {
         // Clean up resources
         this.predictor.close();
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(Device.fromName("cuda"));
     }
 
 }

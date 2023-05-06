@@ -318,11 +318,13 @@ public class Searcher {
 
         // the set of document identifiers already retrieved
         try {
-            for (QualityQuery t : topics) {
+            for (int j = 0; j < 50; j++) {
+                QualityQuery t = topics[j];
                 HashSet<String> docIDs = new HashSet<>();
 
                 System.out.printf("Searching for topic %s.%n", t.getQueryID());
 
+                List<String> queries = null;
                 String query = QueryParserBase.escape(t.getValue(TOPIC_FIELDS.TITLE));
 
                 if (useEmbeddings) {
@@ -332,7 +334,6 @@ public class Searcher {
                 } else {
                     bq = new BooleanQuery.Builder();
 
-                    List<String> queries = null;
                     queries = getExpansion(t.getQueryID());
 
                     List<Query> lq = new ArrayList<Query>();
@@ -358,7 +359,7 @@ public class Searcher {
                 if (reRanker == null) {
                     sd = docs.scoreDocs;
                 } else {
-                    sd = reRanker.sort(query, docs.scoreDocs);
+                    sd = reRanker.sort(query, queries, docs.scoreDocs);
                 }
 
                 for (int i = 0, n = sd.length; i < n; i++) {
@@ -428,7 +429,7 @@ public class Searcher {
 
     public List<String> getExpansion (String queryID) throws IOException {
         Gson gson = new Gson();
-        BufferedReader reader = new BufferedReader(new FileReader("code/python_scripts/result.json"));
+        BufferedReader reader = new BufferedReader(new FileReader("python_scripts/result.json"));
         HashMap<String, ArrayList<String>> hmap = gson.fromJson(reader, HashMap.class);
 
         ArrayList <String> list = hmap.get(queryID);
