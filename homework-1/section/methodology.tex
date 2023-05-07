@@ -13,10 +13,7 @@ In the development of our \ac{IR} system, we followed the classic Y model sugges
     \item \textbf{Re-ranking}: The retrieved documents are re-ranked combining the scores obtained with two different approaches which compute the similarity of the document to the query given in the topic.
 
 \end{enumerate}
-\subsection{Class Diagram}
-\begin{center}
-    \textbf{TODO}
-\end{center}
+
 
 \subsection{Project Structure}
 The project is developed mainly in \textit{Java}, with the addition of some \textit{Python} scripts for performing the expansion of the queries and for the re-ranking of the retrieved documents for each topic. The overall structure is as follows:
@@ -25,20 +22,27 @@ The project is developed mainly in \textit{Java}, with the addition of some \tex
 
     \item \textbf{python\_scripts}: This folder contains the above-mentioned \textit{Python} scripts, together with other \textit{txt} and \textit{JSON} files that these scripts use.
 
-\item \textbf{src/main/java}: This folder contains all the \textit{Java} classes used for the implementation of the \ac{IR} system, divided into the following packages:
+    \item \textbf{src/main/java}: This folder contains all the \textit{Java} classes used for the implementation of the \ac{IR} system, divided into the following packages:
 
-\begin{itemize}
+
     \item \textbf{parser}: This package contains the classes involved in the pre-processing of the document, i.e., the parsing phase.
-    
+
     \item \textbf{analyzer}: This package contains the classes used for analyzing the parsed documents and topics of the collection.
-    
+
     \item \textbf{indexer}: This package performs the indexing of the documents processed by the analyzer.
-    
+
     \item \textbf{searcher}: Once the documents are indexed, the queries contained in the topics of the collection are parsed and then expanded in this package. Relevant (or assumed to be so) documents are retrieved and scored.
-    
+
     \item \textbf{utils}: This package contains general utility classes, one of which performs the re-ranking of the documents retrieved by the \textit{searcher}.
 
 \end{itemize}
+\subsection{Class Diagram}
+The following is the class diagram of the implementation of our IR system:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\linewidth]{figure/classdiagram.pdf}
+\end{figure}
 
 \subsection{Parser}
 As stated before, the documents in the collection provided by the \ac{CLEF} \textit{Long Eval LAB 2023} are essentially the corpus of web pages, to better represent the nature of a web test collection. From this, the need for performing a pre-processing phase of parsing the documents before analyzing and indexing them arises.
