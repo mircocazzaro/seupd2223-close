@@ -4,7 +4,9 @@
 \usepackage{subcaption}
 \usepackage{dirtree}
 \usepackage{listings}
-\usepackage[figuresleft]{rotating}
+\usepackage{float}
+
+
 
 \lstset{frame=tb,
   language=Java,
@@ -76,10 +78,10 @@ email=gianluca.antolini@studenti.unipd.it
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-  This paper presents the work of the CLOSE group, a team of students from the University of Padua, Italy, for the 2023 CLEF LongEval Task 1. 
-  Our work involved developing an information retrieval system that can handle changes in data over time while maintaining high performance. 
-  We first introduce the problem as stated by CLEF and then describe our system, explaining the different methodologies we implemented. 
-  We provide the results of our experiments and analyze them based on the choices we made regarding various techniques. 
+  This paper presents the work of the CLOSE group, a team of students from the University of Padua, Italy, for the 2023 CLEF LongEval Task 1.
+  Our work involved developing an information retrieval system that can handle changes in data over time while maintaining high performance.
+  We first introduce the problem as stated by CLEF and then describe our system, explaining the different methodologies we implemented.
+  We provide the results of our experiments and analyze them based on the choices we made regarding various techniques.
   Finally, we propose potential avenues for future improvement of our system.
 \end{abstract}
 
@@ -110,75 +112,12 @@ email=gianluca.antolini@studenti.unipd.it
 \input{section/conclusion}
 
 
-\section{Misc [TO BE REMOVED]}
-
-\subsection{Tex Files}
-
-Put your \LaTeX files into the \texttt{section} folder as shown in the examples above.
-
-\subsection{Figures}
-
-Put your figures into the \texttt{figure} folder and put the caption under the figure. Example of reference to Figure~\ref{fig:sample-figure}.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\linewidth]{figure/sample.pdf}
-  \caption{1907 Franklin Model D roadster. Photograph by Harris \& Ewing, Inc. [Public domain], via Wikimedia Commons. (\url{https://goo.gl/VLCRBB}).}
-  \label{fig:sample-figure}
-\end{figure}
-
-\subsection{Tables}
-
-Put the caption above the table. Example of reference to Table~\ref{tab:sample-table}.
-
-\begin{table}
-  \caption{Frequency of Special Characters}
-  \label{tab:sample-table}
-  \centering
-  \begin{tabular}{|c|c|l|}
-    \toprule
-    Non-English or Math&Frequency&Comments\\
-    \midrule
-    \O & 1 in 1,000& For Swedish names\\
-    $\pi$ & 1 in 5& Common in math\\
-    \$ & 4 in 5 & Used in business\\
-    $\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-See the \texttt{booktab} packaged documentation for further options.
-
-\subsection{Bibliography}
-
-Example of citations:
-\begin{itemize}
-	\item name: \citet{Salton1968}
-	\item parenthesis: \citep{Salton1968}
-\end{itemize}
-
-An initial list of references is provided in the files \texttt{bibliography.bib} and \texttt{proceedings.bib} that you can expand.
-
-See the \texttt{natbib} packaged documentation for further options.
-
-\subsection{Acronyms}
-
-Use the 
-
-\begin{verbatim}
- \ac{acronym}
- \end{verbatim}
-
-command to insert acronyms, eg. \ac{AP}. The command will expand the acronym the first time it is used.
-
-An initial list of acronyms is provided in the file \texttt{acronyms.tex} that you can expand.
-
-See the \texttt{acronym} packaged documentation for further options.
 
 
 %% Define the bibliography file to be used
 \bibliography{bibliography,proceedings}
 
 \input{acronyms}
+
 
 \end{document}

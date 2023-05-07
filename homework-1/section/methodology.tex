@@ -2,7 +2,7 @@
 \label{sec:methodology}
 
 \subsection{General Overview of Our IR System}
-In the development of our \ac{IR} system, we followed the traditional Y model suggested by Apache Lucene \cite{lucene}, represented in the figure below.  
+In the development of our \ac{IR} system, we followed the traditional Y model suggested by Apache Lucene \cite{lucene}, represented in the figure below.
 
 \begin{figure}[!h]
     \centering
@@ -10,7 +10,7 @@ In the development of our \ac{IR} system, we followed the traditional Y model su
     \caption{Apache Lucene Y Model.}
     \label{fig:lucene_yModel}
 \end{figure}
-  
+
 The workflow of our system, starting from the train collection provided by \ac{CLEF}, is as follows:
 \begin{enumerate}
     \item \textbf{Parsing}: The first phase consists of parsing the documents in the collection, which is a pre-processing operation performed to clean them from unnecessary noises. Since the collection is composed of web pages, the documents contain many leftovers like JavaScript scripts, HTML and CSS codes, HTTP and HTTPS URIs, and so on. The purpose of this phase is to ease the processing performed in the following phases.
@@ -45,21 +45,21 @@ The project is developed mainly in \textit{Java}, with the addition of some \tex
     \item \textbf{src/main/java}: This folder contains all the \textit{Java} classes used for the implementation of the \ac{IR} system, divided into the following packages:
     \begin{itemize}
         \item \textbf{parser}: This package contains the classes involved in the pre-processing of the document, i.e., the parsing phase.
-        
+
         \item \textbf{analyzer}: This package contains the classes used for analyzing the parsed documents and topics of the collection.
-        
+
         \item \textbf{indexer}: This package performs the indexing of the documents processed by the analyzer.
-        
+
         \item \textbf{searcher}: Once the documents are indexed, the queries contained in the topics of the collection are parsed and then expanded in this package. Relevant (or assumed to be so) documents are retrieved and scored.
-        
-        \item \textbf{utils}: This package contains general utility classes, one of which performs the re-ranking of the documents retrieved by the \textit{searcher}.   
+
+        \item \textbf{utils}: This package contains general utility classes, one of which performs the re-ranking of the documents retrieved by the \textit{searcher}.
     \end{itemize}
-\end{itemize}   
+\end{itemize}
 
 \newpage
 
 A schema of the overall project structure is the following:
-\begin{lstlisting}    
+\begin{lstlisting}
     /code
     |------ experiment
     |------ python_scripts
@@ -78,7 +78,7 @@ As stated before, the documents in the collection provided by the \ac{CLEF} \tex
 In this phase, the documents are cleaned from all the residuals of codes not useful for our purposes. We extended Apache Lucene's \textit{DocumentParser} abstract class by creating a custom \textit{ClefParser}, which contains many functions for removing sundry types of noises that can be present in documents. This was the result of the trial and error approach we adopted for implementing this class:
 \begin{itemize}
 \item We started by reading a large statistical sample size of the documents in the collection to decide which types of noises needed to be removed.
-\item Then we implemented the parser for the identified noise(s) and ran it.
+\item Then we implemented the parser and ran it.
 \item The results of the parsing were stored, and a sample of the parsed documents was analyzed to start this procedure again.
 \end{itemize}
 
@@ -135,7 +135,7 @@ The code of the \textit{JavaScript} parser function is the one below:
         StringBuilder bodyBuilder = new StringBuilder(documentBody);
 
         //compiles regular expression for JS and all caps text
-        Pattern jspattern=Pattern.compile("function.(.)[{]"); 
+        Pattern jspattern=Pattern.compile("function.(.)[{]");
 
         int start=0;
         int end=0;
@@ -174,10 +174,10 @@ The code of the \textit{JavaScript} parser function is the one below:
                 }
             }
         }
-        
+
         return bodyBuilder.toString();
     }
-\end{lstlisting} 
+\end{lstlisting}
 
 The structure of the parsed document is defined in the \textit{ParsedTextDocument} class, and it is composed of just two fields, as provided by \ac{CLEF}:
 \begin{enumerate}
