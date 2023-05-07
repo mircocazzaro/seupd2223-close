@@ -2,7 +2,16 @@
 \label{sec:methodology}
 
 \subsection{General Overview of Our IR System}
-In the development of our \ac{IR} system, we followed the classic Y model suggested by Apache Lucene \cite{lucene}. The workflow of our system, starting from the train collection provided by \ac{CLEF}, is as follows:
+In the development of our \ac{IR} system, we followed the traditional Y model suggested by Apache Lucene \cite{lucene}, represented in the figure below.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figure/lucene_yModel.png}
+    \caption{Apache Lucene Y Model.}
+    \label{fig:lucene_yModel}
+\end{figure}
+
+The workflow of our system, starting from the train collection provided by \ac{CLEF}, is as follows:
 \begin{enumerate}
     \item \textbf{Parsing}: The first phase consists of parsing the documents in the collection, which is a pre-processing operation performed to clean them from unnecessary noises. Since the collection is composed of web pages, the documents contain many leftovers like JavaScript scripts, HTML and CSS codes, HTTP and HTTPS URIs, and so on. The purpose of this phase is to ease the processing performed in the following phases.
 
@@ -14,6 +23,13 @@ In the development of our \ac{IR} system, we followed the classic Y model sugges
 
 \end{enumerate}
 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{figure/CLOSE_IR_Workflow (2).pdf}
+    \caption{Workflow of the IR system implemented by \textit{CLOSE}.}
+    \label{fig:CLOSE_IR_Workflow}
+\end{figure}
+
 
 \subsection{Project Structure}
 The project is developed mainly in \textit{Java}, with the addition of some \textit{Python} scripts for performing the expansion of the queries and for the re-ranking of the retrieved documents for each topic. The overall structure is as follows:
@@ -23,26 +39,45 @@ The project is developed mainly in \textit{Java}, with the addition of some \tex
     \item \textbf{python\_scripts}: This folder contains the above-mentioned \textit{Python} scripts, together with other \textit{txt} and \textit{JSON} files that these scripts use.
 
     \item \textbf{src/main/java}: This folder contains all the \textit{Java} classes used for the implementation of the \ac{IR} system, divided into the following packages:
+    \begin{itemize}
+        \item \textbf{parser}: This package contains the classes involved in the pre-processing of the document, i.e., the parsing phase.
 
+        \item \textbf{analyzer}: This package contains the classes used for analyzing the parsed documents and topics of the collection.
 
-    \item \textbf{parser}: This package contains the classes involved in the pre-processing of the document, i.e., the parsing phase.
+        \item \textbf{indexer}: This package performs the indexing of the documents processed by the analyzer.
 
-    \item \textbf{analyzer}: This package contains the classes used for analyzing the parsed documents and topics of the collection.
+        \item \textbf{searcher}: Once the documents are indexed, the queries contained in the topics of the collection are parsed and then expanded in this package. Relevant (or assumed to be so) documents are retrieved and scored.
 
-    \item \textbf{indexer}: This package performs the indexing of the documents processed by the analyzer.
-
-    \item \textbf{searcher}: Once the documents are indexed, the queries contained in the topics of the collection are parsed and then expanded in this package. Relevant (or assumed to be so) documents are retrieved and scored.
-
-    \item \textbf{utils}: This package contains general utility classes, one of which performs the re-ranking of the documents retrieved by the \textit{searcher}.
-
+        \item \textbf{utils}: This package contains general utility classes, one of which performs the re-ranking of the documents retrieved by the \textit{searcher}.
+    \end{itemize}
 \end{itemize}
-\subsection{Class Diagram}
-The following is the class diagram of the implementation of our IR system:
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=1\linewidth]{figure/classdiagram.pdf}
+\newpage
+A schema of the overall project structure is the following:
+\begin{lstlisting}
+    /code
+    |------ experiment
+    |------ python_scripts
+    |------ src
+               |------ main
+                          |------ java
+                                     |------ parser
+                                     |------ analyzer
+                                     |------ indexer
+                                     |------ searcher
+                                     |------ utils
+\end{lstlisting}
+
+
+\subsection{Class Diagram}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figure/Classes_diagram_white.pdf}
+    \caption{Diagram of the classes implemented by \textit{CLOSE} \ac{IR} system}
+    \label{fig:Classes_diagram_white}
 \end{figure}
+\clearpage
+
 
 \subsection{Parser}
 As stated before, the documents in the collection provided by the \ac{CLEF} \textit{Long Eval LAB 2023} are essentially the corpus of web pages, to better represent the nature of a web test collection. From this, the need for performing a pre-processing phase of parsing the documents before analyzing and indexing them arises.
@@ -52,6 +87,15 @@ In this phase, the documents are cleaned from all the residuals of codes not use
 \item Then we implemented the parser and ran it.
 \item The results of the parsing were stored, and a sample of the parsed documents was analyzed to start this procedure again.
 \end{itemize}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figure/Parser_implementation_workflow.pdf}
+    \caption{Workflow of the parser implementation.}
+    \label{fig:Parser_implementation_workflow}
+\end{figure}
+
+\newpage
 The types of noises we tried to remove are the following:
 \begin{itemize}
 \item \textit{JavaScript} scripts
@@ -89,13 +133,65 @@ We used \textit{Regular Expressions} to define the patterns to identify and remo
     }
 \end{lstlisting}
 
-After different tries, we decided to use only the function above for removing noises, together with another one used to remove \textit{JavaScript} codes.
+After different tries, we decided to use only the function above for removing noises, which gave an improving in MAP of +0.5\%, together with another one used to remove \textit{JavaScript} codes, which by itself gave +3\% on MAP. \\
+The code of the \textit{JavaScript} parser function is the one below:
+\begin{lstlisting}[language=Java]
+    public String removeJavaScript(String documentBody) {
+        // Get the body of the document.
+        StringBuilder bodyBuilder = new StringBuilder(documentBody);
+
+        //compiles regular expression for JS and all caps text
+        Pattern jspattern=Pattern.compile("function.(.)[{]");
+
+        int start=0;
+        int end=0;
+        //removes all <scripts>
+        while((start=bodyBuilder.indexOf("<script", start))!=-1){
+            if((end=bodyBuilder.indexOf("script>", start))!=-1){
+                end=end+7;
+                bodyBuilder.replace(start, end, "");
+                continue;
+            }
+            if((end=bodyBuilder.indexOf(">", start))!=-1){
+                end++;
+                bodyBuilder.replace(start, end, "");
+                continue;
+            }
+            start++;
+        }
+
+        //removes JS
+        Matcher m = jspattern.matcher(bodyBuilder);
+        while(m.find()){
+            start=m.start();
+            int count=1;
+            for(int i=start; i<bodyBuilder.length(); i++){
+                if(bodyBuilder.charAt(i)=='{'){
+                    count++;
+                    continue;
+                }
+                if((bodyBuilder.charAt(i)=='}')){
+                    if(--count==0){
+                        bodyBuilder.replace(start, i, "");
+                        m = jspattern.matcher(bodyBuilder);
+                        break;
+
+                    }
+                }
+            }
+        }
+
+        return bodyBuilder.toString();
+    }
+\end{lstlisting}
 
 The structure of the parsed document is defined in the \textit{ParsedTextDocument} class, and it is composed of just two fields, as provided by \ac{CLEF}:
 \begin{enumerate}
 \item \textit{id}: the identifier of the document,
 \item \textit{body}: the (parsed) content of the document.
 \end{enumerate}
+
+\newpage
 The constructor of \textit{ParsedTextDocument} is the following:
 \begin{lstlisting}[language=Java]
     /**
@@ -118,31 +214,31 @@ The class also contains the following utility methods:
 
 
 \subsection{Analyzer}
-The Analyzer is responsible for analyzing the extracted documents and preparing them for Indexing and Searching phases. It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal and many more.\\
-We extended Apache Lucene's Analyzer abstract class by creating a custom CloseAnalyzer, which is fully customizable by means of its parameters that can be chosen when creating an instance of the class. This is because we tried different settings and approaches to maximize the results and kept all the possible variations as optional settings.
-This CloseAnalyzer is passed as parameter and then used by the DirectoryIndexer and the Searcher. \\
+The Analyzer is responsible for analyzing the extracted documents and preparing them for the Indexing and Searching phases. It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal, and many more.\\
+We extended Apache Lucene's Analyzer abstract class by creating a custom CloseAnalyzer, which is fully customizable using its parameters that can be chosen when creating an instance of the class. This is because we tried different settings and approaches to maximize the results and kept all the possible variations as optional settings.
+This CloseAnalyzer is passed as a parameter and then used by the DirectoryIndexer and the Searcher. \\
 The constructor of CloseAnalyzer accepts the following parameters:
 \begin{itemize}
-  \item \textbf{tokenizerType}: used to choose between three standard Lucene tokenizers: WhitespaceTokenizer, LetterTokenizer and StandardTokenizer.
-  \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard Lucene filters : EnglishMinimalStemFilter, KStemFilter, PorterStemFilter and FrenchLightStemFilter. We also tried using FrenchMinimalStemFilter and a custom filter called LovinsStemmerFilter that bases off a LovinsStemmer implementation, but decided to keep them commented as they didn't improve the results.
-  \item \textbf{minLength} and \textbf{maxLength}: these are integers that simply specifiy the minimum and maximum length of a token, applying Lucene's LengthFilter.
-  \item \textbf{isEnglishPossessiveFilter}: specifies whether to use Lucene's EnglishPossessiveFilter or not. Of course this can be useful when operating with the English dataset.
-  \item \textbf{stopFilterListName}: with this parameter it's possible to insert the path of an eventual word stoplist .txt file located in the \textit{resources} folder. To do this we use Lucene's StopFilter and a custom class called AnalyzerUtil that uses a \textit{loadStopList} method to actually read and load all the stoplist words from the specified file. The stoplists we created are based on the standard ones but modified after inspecting the index with Luke tool. We have lists of different lengths and different ones for French and English.
+  \item \textbf{tokenizerType}: used to choose between three standard Lucene tokenizers: WhitespaceTokenizer, LetterTokenizer, and StandardTokenizer.
+  \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard Lucene filters: EnglishMinimalStemFilter, KStemFilter, PorterStemFilter, and FrenchLightStemFilter. We also tried using FrenchMinimalStemFilter and a custom filter called LovinsStemmerFilter based off a LovinsStemmer implementation but decided to keep them commented as they didn't improve the results.
+  \item \textbf{minLength} and \textbf{maxLength}: these are integers that simply specify the minimum and maximum length of a token, applying Lucene's LengthFilter.
+  \item \textbf{isEnglishPossessiveFilter}: specifies whether to use Lucene's EnglishPossessiveFilter or not. Of course, this can be useful when operating with the English dataset.
+  \item \textbf{stopFilterListName}: with this parameter, it's possible to insert the path of an eventual word stoplist .txt file located in the \textit{resources} folder. To do this we use Lucene's StopFilter and a custom class called AnalyzerUtil that uses a \textit{loadStopList} method to read and load all the stoplist words from the specified file. The stoplists we created are based on the standard ones but modified after inspecting the index with the Luke tool. We have lists of different lengths and different ones for French and English.
   \item \textbf{nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's NGramTokenFilter.
-  \item \textbf{shingleFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's ShingleFilter that allows the creation of combination of words.
-  \item \textbf{useNLPFilter}: this boolean allows the use of Lucene's OpenNLPPPOSFilter for Part-Of-Speech Tagging and of a custom class called OpenNLPNERFilter for Named Entity Recognition. To actually load the .bin models, which are located in the \textit{resources} folder, we use two methods from AnalyzerUtil: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
+  \item \textbf{shingleFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's ShingleFilter that allows the creation of a combination of words.
+  \item \textbf{useNLPFilter}: this boolean allows the use of Lucene's OpenNLPPPOSFilter for Part-Of-Speech Tagging and of a custom class called OpenNLPNERFilter for Named Entity Recognition. To load the .bin models, which are located in the \textit{resources} folder, we use two methods from AnalyzerUtil: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
   \item \textbf{lemmatization}: specifies whether to use Lucene's OpenNLPLemmatizerFilter by loading a .bin model file in the \textit{resources} folder using AnalyzerUtil \textit{loadLemmatizerModel} function.
   \item \textbf{frenchElisionFilter}: we applied this only when using the French dataset by adding Lucene's ElisionFilter with an array of the following characters: 'l', 'd', 's', 't', 'n', 'm'.
 \end{itemize}
-On top of this a LowerCaseFilter is always applied. \\
-We also tried Lucene's \textit{ASCIIFoldingFilter} and SynonymGraphFilter. For the second one, only for the French Dataset we used a SynonymMap based on a .txt file containing french synonyms.
+On top of this, a LowerCaseFilter is always applied. \\
+We also tried Lucene's \textit{ASCIIFoldingFilter} and SynonymGraphFilter. For the second one, only for the French Dataset, we used a SynonymMap based on a .txt file containing French synonyms.
 \newline
 After different trials with different variations of the parameter, the following is the instance of the CloseAnalyzer we used:
 
 \begin{lstlisting}
 final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, false, "new-long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false, true);
 \end{lstlisting}
-We have opted for the French dataset and by doing so we have the StandardTokenizer, 2 and 15 as minimum and maximum token length, we use frenchElisionFilter, FrenchLightStemFilter and a list of 662 french words as stoplist. We don't use any of the other parameters.
+We have opted for the French dataset and by doing so we have the StandardTokenizer, 2 and 15 as minimum and maximum token length, we use frenchElisionFilter, FrenchLightStemFilter, and a list of 662 French words as a stoplist. We didn't use any of the other parameters.
 
 
 \subsection{Indexer}
@@ -198,8 +294,16 @@ Its main functionality is shown below:
         }
     });
 \end{lstlisting}
-which reads, indexes and stores the processed documents. \\
-The indexer contains some printouts used to see the progress of the indexing during the executions, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than the expected, and some other eventual warning that can come out during this operation.
+which reads, indexes, and stores the processed documents. \\
+The indexer contains some printouts used to see the progress of the indexing during the executions, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than expected, and some other eventual warning that can come out during this operation. \\
+The overall workflow, starting from the documents collection and ending with having the indexed documents stored, is the following:
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figure/Indexer_workflow.pdf}
+    \caption{Workflow of the indexer.}
+    \label{fig:Indexer_workflow}
+\end{figure}
+
 
 \subsection{Searcher}
 The purpose of the Searcher is to search through the indexed documents to retrieve relevant information based on user queries after analyzing them and to
@@ -209,24 +313,24 @@ Our implementation does so by accepting the following parameters:
 \begin{itemize}
   \item \textbf{analyzer}: in this case, an instance of CloseAnalyzer.
   \item \textbf{similarity}: we decided to opt for the BM25Similarity function with the parameters \textit{k1} and \textit{b} tuned at 1.2 and 0.90.
-  \item \textbf{Run options}: there are parameters for the index path, the topics path, the run path and the run name, the expected topics number (in our case 50) and the maximum number of documents retrieved (in our case 1000).
-  \item \textbf{useEmbeddings}: a boolean value to decide whether to use embeddings or not. If it set to true we don't use the similarity function. In our implementation we opted to not use them.
-  \item \textbf{reRankModel}: this is the type of model used to do a Re-Ranking on the retrieved documents. In our case we use a model called \textit{all-MiniLM-L6-v2}, explained in the following subsection. If the parameter is set to null, no model is used and the documents are scored normally.
+  \item \textbf{Run options}: there are parameters for the index path, the topics path, the run path and the run name, the number of the expected topic (in our case 50), and the maximum number of documents retrieved (in our case 1000).
+  \item \textbf{useEmbeddings}: a boolean value to decide whether to use embeddings or not. If it is set to true we don't use the similarity function. In our implementation, we opted to not use them.
+  \item \textbf{reRankModel}: this is the type of model used to do a Re-Ranking on the retrieved documents. In our case, we use a model called \textit{all-MiniLM-L6-v2}, explained in the following subsection. If the parameter is set to null, no model is used and the documents are scored normally.
 \end{itemize}
 
 \subsubsection{Document Re-Ranking}
 This is the process of ranking the documents retrieved by the search function of the Searcher a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} sentence-transformer model, coming from a Python framework called \textit{Sentence Transformers} available at \url{https://huggingface.co/sentence-transformers}.
 \newline
-It works in the following way: in the constructor of the Searcher the Re-Ranker is initialized and a predictor is created to perform inference. At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents that is finally multiplied with the actual documents score. The documents are then sorted by looking at this new scores.
+It works in the following way: in the constructor of the Searcher the Re-Ranker is initialized and a predictor is created to perform inference. At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents that are finally multiplied by the actual document's score. The documents are then sorted by looking at these new scores.
 
 
 \subsubsection{Query Expansion}
 When running the search function, one of the first actions performed is getting the new queries generated with query expansion.
-We created a python script that, given the \textit{train.trec} file, generates all the expanded terms for each query and stores everything in a .json file called \textit{result}.
+We created a Python script that, given the \textit{train.trec} file, generates all the expanded terms for each query and stores everything in a .json file called \textit{result}.
 \newline
 Queries are reformulated to increase the probability of matches.
 
 
 \subsubsection{Query Boosting}
 Query boosting is a technique used to assign greater relevance to certain query terms or queries.\newline
-We tried the following approach that seemed to improved the overall results: when building the queries in the search function of the Searcher, for each query, a BooleanQuery is built in the following way: after getting the query expansions, each of them is added to the BooleanQuery with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must me satisfied. This main query is boosted using Lucene's BoostQuery, with a boost value tuned at 14.68 multiplied by the number of expansions.
+We tried the following approach that seemed to improve the overall results: when building the queries in the search function of the Searcher, for each query, a BooleanQuery is built in the following way: after getting the query expansions, each of them is added to the BooleanQuery with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must be satisfied. This main query is boosted using Lucene's BoostQuery, with a boost value tuned at 14.68 multiplied by the number of expansions.
