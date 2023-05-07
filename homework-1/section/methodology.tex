@@ -30,10 +30,6 @@ The workflow of our system, starting from the train collection provided by \ac{C
     \label{fig:CLOSE_IR_Workflow}
 \end{figure}
 
-\subsection{Class Diagram}
-\begin{center}
-    \textbf{TODO}
-\end{center}
 
 \subsection{Project Structure}
 The project is developed mainly in \textit{Java}, with the addition of some \textit{Python} scripts for performing the expansion of the queries and for the re-ranking of the retrieved documents for each topic. The overall structure is as follows:
@@ -57,7 +53,6 @@ The project is developed mainly in \textit{Java}, with the addition of some \tex
 \end{itemize}
 
 \newpage
-
 A schema of the overall project structure is the following:
 \begin{lstlisting}
     /code
@@ -72,6 +67,17 @@ A schema of the overall project structure is the following:
                                      |------ searcher
                                      |------ utils
 \end{lstlisting}
+
+
+\subsection{Class Diagram}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figure/Classes_diagram_white.pdf}
+    \caption{Diagram of the classes implemented by \textit{CLOSE} \ac{IR} system}
+    \label{fig:Classes_diagram_white}
+\end{figure}
+\clearpage
+
 
 \subsection{Parser}
 As stated before, the documents in the collection provided by the \ac{CLEF} \textit{Long Eval LAB 2023} are essentially the corpus of web pages, to better represent the nature of a web test collection. From this, the need for performing a pre-processing phase of parsing the documents before analyzing and indexing them arises.
