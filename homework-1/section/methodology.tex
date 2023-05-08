@@ -266,7 +266,7 @@ The function which actually performs the storing of the index is:
 \begin{verbatim}
 public void index()
 \end{verbatim}
-Its main functionality is shown below:
+Its main functionality, which consists of reading, indexing, and storing the processed documents, is shown below:
 \begin{lstlisting}
     // Create a stream of parsed documents from the file with the given Parser class(dpCls)
     DocumentParser.create(dpCls, Files.newBufferedReader(file, cs)).forEach(pd -> {
@@ -294,8 +294,8 @@ Its main functionality is shown below:
         }
     });
 \end{lstlisting}
-which reads, indexes, and stores the processed documents. \\
-The indexer contains some printouts used to see the progress of the indexing during the executions, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than expected, and some other eventual warning that can come out during this operation. \\
+
+The indexer contains some printouts used to see the progress of the indexing during the execution, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than expected, and some other eventual warning that can come out during this operation. \\
 The overall workflow, starting from the documents collection and ending with having the indexed documents stored, is the following:
 \begin{figure}[!h]
     \centering
