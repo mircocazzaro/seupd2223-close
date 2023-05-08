@@ -9,9 +9,9 @@ We are considering five principal milestones that, within many different trials,
 
 First of all, given that we were provided with two different version of the same document's \textit{corpora}, our first idea was to try with english version.\\ 
 We noticed that the best combination of basic IR tools were to use the Porter stemmer, a lenght filter from 1 to 10, and a list of stopword composed by some standard terms and more from the top 600 extracted from the index.
-The very first big milestone, that helped us to increment the MAP of around 3.5 points, was the JavaScript code parser, since we noticed by inspection that many documents were having code inside.\\
+The very first big milestone, that helped us to increment the MAP of around 3.5 points, was the JavaScript code cleaer, since we noticed by inspection that many documents were having JS scripts inside.\\
 Always by inspecting some documents and queries, and also considering that the original collection was the french version (translated then in english), we observed that the translation was very poor: by switching to french
-with just parsing the JS code and some other minor parsers, without even using an adequate stoplist and a correct stemmer for the french language, the MAP was increasing by 5 percentual points; 2 more points were achieved with
+with just cleaning the JS code and some other minor cleaning tools, without even using an adequate stoplist and a correct stemmer for the french language, the MAP was increasing by 5 percentual points; 2 more points were achieved with
 a stop list built for french in the same way we did for previously for english, the \textit{FrenchLightStemFilter} as stemmer, and moving the lenght filter from 2 to 15 (as french probabily usually has longer words).
 We tried some NLP techniques for english, in particular using \textit{Part-Of-Speech} techniques, to see if there were improvements, and in case apply it to our main implementation for french with an appropriate model, but results 
 were not interesting, and also the computing time were definitely too costly.
@@ -19,6 +19,8 @@ Another approach we tried and that carried an improvement was to use \textit{Que
 of expansion used, and without boosting the expansion: this carried to us an extra MAP point.
 We tried to combine different similarities rather than using the classic BM25Similarity: we tried to use the Lucene MultiSimilarity, that allows to combine equally the score of two or more similarity scores, but it does not allow to
 tune the weights. Then, we tried to reimplement the MultiSimilarity class with tuning options, but results were always lower than the standard BM25Similarity. Some minor improvements came up by fine tuning the document-length
-normalization \textit{b}, and the term frequency component \textit{k1} parameters of the BM25.
+normalization \textit{b} parameter and the term frequency component \textit{k1} parameter of the BM25Similarity.
 The last main implementation we did was to use some \textit{Reranking} techniques:  
-Lastly, some minor addings were setted on the analyzer by implementing the Lucene ElisionFilter (for french), that aims to remove apostrophed articles and prepositions from tokens.
+Lastly, some minor addings were setted on the analyzer by implementing the Lucene ElisionFilter (for french), that aims to remove apostrophed articles and prepositions from tokens (for example, \textit{m'appelle} and \textit{t'appelle} become the same token).
+
+
