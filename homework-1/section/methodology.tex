@@ -349,14 +349,28 @@ This is the process of ranking the documents retrieved by the search function of
 It works in the following way: in the constructor of the \textit{Searcher} the Re-Ranker is initialized and a predictor is created to perform inference. 
 At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents that are finally multiplied by the actual document's score. 
 The documents are then sorted by looking at these new scores.
-
+\newline
+We test different combinations of parameters to find the best one, and we found that the best combination is multiplying the document's score by the \textit{BM25Similarity}, with the similarity calculated with the \textit{cosine} function.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{figure/re-ranking}\label{fig:re-rankinge}
+\end{figure}
 
 \subsubsection{Query Expansion}
 When running the search function, one of the first actions performed is getting the new queries generated with query expansion.
-We created a Python script that, given the \textit{train.trec} file, generates all the expanded terms for each query and stores everything in a \textit{.json} file called \textit{result}.
+We created a Python script that, given the \textit{*.trec} file, generates all the expanded terms for each query and stores everything in a \textit{.json} file called \textit{result}.
 \newline
-Queries are reformulated to increase the probability of matches.
-
+We use \textit{OpenAi's} \textit{Text completion} endpoints to generate the expansions, we can use our need as prompt and the model will generate the result. we use the \textit{davinci} model, which is the most powerful one, and we set the \textit{temperature} parameter to 0.6, which is the value that gives the best results.
+\newline
+The sample result for prompt \textit{``Expand the following query with {num\_expansions} related terms or phrases for information retrieval (search-engine): {query} and the result should be in array format without any numbers at first [expanded\_term1, expanded\_term2, ...]''} is:
+\begin{table}[H]
+    \begin{tabular}{|l|l|l|}
+        \hline
+        Query                 & text-davinci-002                                                                                                                                                                  & text-davinci-003                                                                                                                                                                    \\ \hline
+        antivirus comparaison & \begin{tabular}[c]{@{}l@{}}1. Antivirus software\\ 2. Antivirus protection\\ 3. Best antivirus\\ 4. Free antivirus\\ 5. Antivirus for Windows\\ 6. Antivirus for Mac\end{tabular} & \begin{tabular}[c]{@{}l@{}}1. Antivirus Reviews \\ 2. Antivirus Software \\ 3. Antivirus Protection \\ 4. Malware Protection \\ 5. Virus Scanner \\ 6. Online Security\end{tabular} \\ \hline
+    \end{tabular}\label{tab:table}
+\end{table}
+The main difference between davinci-text-002 and davinci-text-003 is that the latter has been trained on a larger dataset, allowing it to generate more accurate results.
 \enlargethispage{2\baselineskip}
 \subsubsection{Query Boosting}
 Query boosting is a technique used to assign greater relevance to certain query terms or queries.\newline
