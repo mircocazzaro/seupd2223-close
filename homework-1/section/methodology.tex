@@ -79,7 +79,7 @@ A schema of the overall project structure is the following:
 \clearpage
 
 
-\subsection{Parser}
+\subsection{Parser} \label{parser_subsec}
 As stated before, the documents in the collection provided by the \ac{CLEF} \textit{Long Eval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection. 
 From this, the need for performing a pre-processing phase of parsing the documents before analyzing and indexing them arises.
 In this phase, the documents are cleaned from all the residuals of codes not useful for our purposes. 
@@ -217,39 +217,39 @@ The class also contains the following utility methods:
 \end{itemize}
 
 
-\subsection{Analyzer}
+\subsection{Analyzer} \label{analyzer_subsec}
 The Analyzer is responsible for analyzing the extracted documents and preparing them for the Indexing and Searching phases. 
 It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal, and many more.\\
 We extended Apache Lucene's Analyzer abstract class \cite{luceneanalyzer} by creating a custom class \textit{CloseAnalyzer}, which is fully customizable by its parameters that can be chosen when creating an instance of the class. 
 This has been done because we tried different settings and approaches to maximize the results and kept all the possible variations as optional settings.
-This \textit{CloseAnalyzer} is passed as a parameter and then used by the \textit{DirectoryIndexer} and the \textit{Searcher}. \\
+This \textit{CloseAnalyzer} is passed as a parameter and then used by the \textit{DirectoryIndexer} and by the \textit{Searcher}. \\
 The constructor of \textit{CloseAnalyzer} accepts the following parameters:
 \begin{itemize}
-  \item \textbf{tokenizerType}: used to choose between three standard \textit{Lucene} \cite{lucene} tokenizers: WhitespaceTokenizer \cite{lucenetokenizer}, LetterTokenizer \cite{lucenelettertokenizer}, and StandardTokenizer \cite{lucenestandardtokenizer}.
+  \item \textbf{tokenizerType}: used to choose between three standard \textit{Lucene} tokenizers: \textit{WhitespaceTokenizer} \cite{lucenetokenizer}, \textit{LetterTokenizer} \cite{lucenelettertokenizer}, and \textit{StandardTokenizer} \cite{lucenestandardtokenizer}.
   
-  \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard \textit{Apache Solr} \cite{solr} filters: EnglishMinimalStemFilter \cite{solrminimalstemfilter}, KStemFilter \cite{solrkstemfilter}, PorterStemFilter \cite{solrporterstemfilter}, and FrenchLightStemFilter \cite{solrfrenchlightstemfilter}. 
-  We also tried using FrenchMinimalStemFilter \cite{solrfrenchminimalstemfilter} and a custom filter called LovinsStemmerFilter based off a LovinsStemmer implementation but decided to keep them commented as they didn't improve the results.
+  \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard \textit{Apache Solr} \cite{solr} filters: \textit{EnglishMinimalStemFilter} \cite{solrminimalstemfilter}, \textit{KStemFilter} \cite{solrkstemfilter}, \textit{PorterStemFilter} \cite{solrporterstemfilter}, and \textit{FrenchLightStemFilter} \cite{solrfrenchlightstemfilter}. 
+  We also tried using \textit{FrenchMinimalStemFilter} \cite{solrfrenchminimalstemfilter} and a custom filter called \textit{LovinsStemmerFilter} based off a LovinsStemmer \cite{lucenelovinsstemmer} implementation but decided to keep them commented as they didn't improve the results.
   
-  \item \textbf{minLength} and \textbf{maxLength}: these are integers that simply specify the minimum and maximum length of a token, applying Lucene's LengthFilter \cite{lucenelengthfilter}.
+  \item \textbf{minLength} and \textbf{maxLength}: these are integers that simply specify the minimum and maximum length of a token, applying Lucene's \textit{LengthFilter} \cite{lucenelengthfilter}.
   
-  \item \textbf{isEnglishPossessiveFilter}: specifies whether to use Lucene's EnglishPossessiveFilter \cite{luceneenglishpossessivefilter} or not. 
+  \item \textbf{isEnglishPossessiveFilter}: specifies whether to use Lucene's \textit{EnglishPossessiveFilter} \cite{luceneenglishpossessivefilter} or not. 
   Of course, this can be useful when operating with the English dataset.
   
   \item \textbf{stopFilterListName}: with this parameter, it's possible to insert the path of an eventual word stoplist \textit{.txt} file located in the \textit{resources} folder. 
-  To do this we use Lucene's StopFilter \cite{lucenestopfilter} and a custom class called \textit{AnalyzerUtil} that uses a \textit{loadStopList} method to read and load all the stoplist words from the specified file. 
-  The stoplists we created are based on the standard ones but modified after inspecting the index with the Luke \cite{luke} tool. 
+  To do this we use Lucene's \textit{StopFilter} \cite{lucenestopfilter} and a custom class called \textit{AnalyzerUtil} that uses a \textit{loadStopList} method to read and load all the stoplist words from the specified file. 
+  The stoplists we created are based on the standard ones but modified after inspecting the index with the \textit{Luke} \cite{luke} tool. 
   We have lists of different lengths and different ones for French and English.
   
-  \item \textbf{nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's NGramTokenFilter \cite{lucenengramtokenfilter}.
+  \item \textbf{nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's \textit{NGramTokenFilter} \cite{lucenengramtokenfilter}.
   
-  \item \textbf{shingleFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's ShingleFilter \cite{luceneshinglefilter} that allows the creation of a combination of words.
+  \item \textbf{shingleFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's \textit{ShingleFilter} \cite{luceneshinglefilter} that allows the creation of a combination of words.
   
-  \item \textbf{useNLPFilter}: this boolean allows the use of Solr's \cite{solr} OpenNLPPPOSFilter \cite{solropennlpposfilter} for Part-Of-Speech Tagging and of a custom class called \textit{OpenNLPNERFilter} for Named Entity Recognition. 
-  To load the .bin models, which are located in the \textit{resources} folder, we use two methods from AnalyzerUtil: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
+  \item \textbf{useNLPFilter}: this boolean allows the use of Solr's \cite{solr} \textit{OpenNLPPPOSFilter} \cite{solropennlpposfilter} for Part-Of-Speech Tagging and of a custom class called \textit{OpenNLPNERFilter} for Named Entity Recognition. 
+  To load the \textit{.bin} models, which are located in the \textit{resources} folder, we use two methods from \textit{AnalyzerUtil}: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
   
-  \item \textbf{lemmatization}: specifies whether to use Solr's OpenNLPLemmatizerFilter \cite{solropennlplemmafilter} by loading a .bin model file in the \textit{resources} folder using AnalyzerUtil \textit{loadLemmatizerModel} function.
+  \item \textbf{lemmatization}: specifies whether to use Solr's \textit{OpenNLPLemmatizerFilter} \cite{solropennlplemmafilter} by loading a \textit{.bin} model file in the \textit{resources} folder using AnalyzerUtil's \textit{loadLemmatizerModel} function.
   
-  \item \textbf{frenchElisionFilter}: we applied this only when using the French dataset by adding Lucene's ElisionFilter \cite{luceneelisionfilter} with an array of the following characters: 'l', 'd', 's', 't', 'n', 'm'.
+  \item \textbf{frenchElisionFilter}: we applied this only when using the French dataset by adding Lucene's \textit{ElisionFilter} \cite{luceneelisionfilter} with an array of the following characters: 'l', 'd', 's', 't', 'n', 'm'.
 \end{itemize}
 On top of this, a \textit{LowerCaseFilter} \cite{lucenelowercasefilter} is always applied. \\
 We also tried Lucene's \textit{ASCIIFoldingFilter} \cite{luceneasciifoldingfilter} and \textit{SynonymGraphFilter} \cite{lucenesynonymgraphfilter}. 
@@ -260,11 +260,12 @@ After different trials with different variations of the parameter, the following
 \begin{lstlisting}
 final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, false, "new-long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false, true);
 \end{lstlisting}
-We have opted for the French dataset and by doing so we have the StandardTokenizer, 2 and 15 as minimum and maximum token length, we use frenchElisionFilter, FrenchLightStemFilter, and a list of 662 French words as a stoplist. We didn't use any of the other parameters.
+We have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist. 
+We didn't use any of the other parameters.
 
 
 \subsection{Indexer}
-The indexer is in charge of calling the \textit{Parser} and the \textit{Analyzer}, taking the document processed by these two and indexing them as an object of the \textit{ParsedTextDocument} defined in the \textit{Parser}. \\
+The \textit{Indexer} is in charge of calling the \textit{Parser} (\ref{parser_subsec}) and the \textit{Analyzer} (\ref{analyzer_subsec}), taking the document processed by these two and indexing them as an object of the \textit{ParsedTextDocument} defined in the \textit{Parser}. \\
 The class which performs the document processing mentioned above is \textit{DirectoryIndexer}, whose constructor is the following:
 \begin{lstlisting}
     public DirectoryIndexer(final Analyzer analyzer, final Similarity similarity, final int ramBufferSizeMB,
@@ -275,7 +276,7 @@ The class which performs the document processing mentioned above is \textit{Dire
 It takes the following inputs:
 \begin{itemize}
 \item \textbf{analyzer}: the \textit{Analyzer} to be used, in our case \textit{CloseAnalyzer};
-\item \textbf{similarity}: the \textit{Similarity} to be used by the \textit{Analyzer};
+\item \textbf{similarity}: the \textit{Similarity} function to be used by the \textit{Analyzer};
 \item \textbf{ramBufferSizeMB}: the size in megabytes of the RAM buffer for indexing the documents;
 \item \textbf{indexPath}: the directory where to store the index;
 \item \textbf{docsPath}: the directory from which the documents of the collection have to be read;
@@ -317,7 +318,7 @@ Its main functionality, which consists of reading, indexing, and storing the pro
     });
 \end{lstlisting}
 
-The indexer contains some printouts used to see the progress of the indexing during the execution, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than expected, and some other eventual warning that can come out during this operation. \\
+The \textit{Indexer} contains some printouts used to see the progress of the indexing during the execution, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than expected, and some other eventual warning that can come out during this operation. \\
 The overall workflow, starting from the documents collection and ending with having the indexed documents stored, is the following:
 \begin{figure}[!h]
     \centering
@@ -327,14 +328,14 @@ The overall workflow, starting from the documents collection and ending with hav
 \end{figure}
 
 
-\subsection{Searcher}
-The purpose of the Searcher is to search through the indexed documents to retrieve relevant information based on user queries after analyzing them and to
+\subsection{Searcher} \label{searcher_subsec}
+The purpose of the \textit{Searcher} is to search through the indexed documents to retrieve relevant information based on user queries after analyzing them and to
 return a ranked list of documents that match the user’s information needs.
 \newline
 Our implementation does so by accepting the following parameters:
 \begin{itemize}
   \item \textbf{analyzer}: in this case, an instance of \textit{CloseAnalyzer}.
-  \item \textbf{similarity}: we decided to opt for the BM25Similarity \cite{lucenebm25similarity} function with the parameters \textit{k1} and \textit{b} tuned at 1.2 and 0.90.
+  \item \textbf{similarity}: we decided to opt for the \textit{BM25Similarity} \cite{lucenebm25similarity} function with the parameters \textit{k1} and \textit{b} tuned at 1.2 and 0.90.
   \item \textbf{Run options}: there are parameters for the index path, the topics path, the run path and the run name, the number of the expected topic (in our case 50), and the maximum number of documents retrieved (in our case 1000).
   \item \textbf{useEmbeddings}: a boolean value to decide whether to use embeddings or not. 
   If it is set to true we don't use the similarity function. In our implementation, we opted to not use them.
@@ -344,36 +345,47 @@ Our implementation does so by accepting the following parameters:
 \end{itemize}
 
 \subsubsection{Document Re-Ranking}
-This is the process of ranking the documents retrieved by the search function of the Searcher a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2} sentence-transformer model, coming from a Python framework called \textit{Sentence Transformers} \cite{sentence-transformers}.
+This is the process of ranking the documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}) a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2} sentence-transformer model, coming from a Python framework called \textit{Sentence Transformers} \cite{sentence-transformers}.
 \newline
 It works in the following way: in the constructor of the \textit{Searcher} the Re-Ranker is initialized and a predictor is created to perform inference. 
-At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents that are finally multiplied by the actual document's score. 
-The documents are then sorted by looking at these new scores.
+At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents.
+Finally, these scores are multiplied by the actual document's scores, and the documents are then sorted by looking at these new scores.
 \newline
-We test different combinations of parameters to find the best one, and we found that the best combination is multiplying the document's score by the \textit{BM25Similarity}, with the similarity calculated with the \textit{cosine} function.
-\begin{figure}[h!]
+We tested different combinations of parameters to find the best one, and we found that the best combination is multiplying the document's score by the \textit{BM25Similarity} function, with the similarity calculated with the \textit{cosine} function.
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.8\textwidth, keepaspectratio]{figure/re-ranking}\label{fig:re-rankinge}
+    \includegraphics[scale=0.45, keepaspectratio]{figure/re-ranking}
+    \caption{Plot of the re-ranking operation performed on 50 sample queries}
+    \label{fig:re-rankinge}
 \end{figure}
 
+\clearpage
 \subsubsection{Query Expansion}
-When running the search function, one of the first actions performed is getting the new queries generated with query expansion.
+When running the search function, one of the first actions performed is to generate new queries from the original ones by query expansion.
 We created a Python script that, given the \textit{*.trec} file, generates all the expanded terms for each query and stores everything in a \textit{.json} file called \textit{result}.
 \newline
-We use \textit{OpenAi's} \textit{Text completion} endpoints to generate the expansions, we can use our need as prompt and the model will generate the result. we use the \textit{davinci} model, which is the most powerful one, and we set the \textit{temperature} parameter to 0.6, which is the value that gives the best results.
+We use \textit{OpenAI's} \textit{Text completion} \cite{openaicompletionapi} endpoints to generate the expansions, we can use our need as prompt and the model will generate the result. 
+We used the \textit{davinci} model, which is the most powerful one, and we set the \textit{temperature} parameter to 0.6, which is the value that gives the best results.
 \newline
-The sample result for prompt \textit{``Expand the following query with {num\_expansions} related terms or phrases for information retrieval (search-engine): {query} and the result should be in array format without any numbers at first [expanded\_term1, expanded\_term2, ...]''} is:
+The sample result for prompt 
+\begin{center}
+    \textit{``Expand the following query with {num\_expansions} related terms or phrases for information retrieval (search-engine): {query} and the result should be in array format without any numbers at first [expanded\_term1, expanded\_term2, ...]''}     
+\end{center}
+is:
 \begin{table}[H]
     \begin{tabular}{|l|l|l|}
         \hline
         Query                 & text-davinci-002                                                                                                                                                                  & text-davinci-003                                                                                                                                                                    \\ \hline
         antivirus comparaison & \begin{tabular}[c]{@{}l@{}}1. Antivirus software\\ 2. Antivirus protection\\ 3. Best antivirus\\ 4. Free antivirus\\ 5. Antivirus for Windows\\ 6. Antivirus for Mac\end{tabular} & \begin{tabular}[c]{@{}l@{}}1. Antivirus Reviews \\ 2. Antivirus Software \\ 3. Antivirus Protection \\ 4. Malware Protection \\ 5. Virus Scanner \\ 6. Online Security\end{tabular} \\ \hline
-    \end{tabular}\label{tab:table}
+    \end{tabular}
+    \label{tab:query_expansion}
 \end{table}
-The main difference between davinci-text-002 and davinci-text-003 is that the latter has been trained on a larger dataset, allowing it to generate more accurate results.
+The main difference between \textit{davinci-text-002} and \textit{davinci-text-003} is that the latter has been trained on a larger dataset, allowing it to generate more accurate results \cite{davincicomparison}.
+
+
 \enlargethispage{2\baselineskip}
 \subsubsection{Query Boosting}
 Query boosting is a technique used to assign greater relevance to certain query terms or queries.\newline
-We tried the following approach that seemed to improve the overall results: when building the queries in the search function of the \textit{Searcher}, for each query, a \textit{BooleanQuery} \cite{lucenebooleanquery} is built in the following way: 
-after getting the query expansions, each of them is added to the \textit{BooleanQuery} with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must be satisfied. 
-This main query is boosted using Lucene's BoostQuery \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions.
+We tried the following approach that seemed to improve the overall results: when building the queries in the search function of the \textit{Searcher} (\ref{searcher_subsec}), for each query, a \textit{BooleanQuery} \cite{lucenebooleanquery} is built in the following way: 
+after getting the query expansions, each of them is added to the \textit{BooleanQuery} with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must be satisfied. \\
+This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions.
