@@ -19,6 +19,8 @@ were not interesting, and also the computing time was definitely too costly.
 Another approach we tried and that carried an improvement was to use \textit{Query expansion}: first we used some generative text models to expand our queries, then we decided to weight different query scores by boosting the original one linearly with respect to the number
 %of expansion used, and without boosting the expansion: this carried to us an extra MAP point.
 of expansion used. This made us gain an extra \ac{MAP} point.
+\newline
+We try to generate the embeddings for each document based on word2vector, we use pre-trained word2vec model \textit{frWac\_no\_postag\_no\_phrase\_500\_cbow\_cut100}~\cite{fauconnier_2015} for French. Then we calculate the embedding for each document and index them as KnnFloatVectorField in lucene and use KnnFloatVectorQuery for searching the query to find the k nearest documents to the target vector according to the vectors in the given field, but the results (overall map ~0.08) are not satisfying us and everything goes worser than the case of indexing and searching without anything.
 We tried to combine different similarities rather than using the classic \textit{BM25Similarity}: we tried to use the Lucene \textit{MultiSimilarity} \cite{lucenemultisimilarity}, that allows to combine equally the score of two or more similarity scores, but it does not allow to
 tune the weights. Then, we tried to reimplement the \textit{MultiSimilarity} class with tuning options, but results were always lower than the standard \textit{BM25Similarity}. Some minor improvements came up by fine tuning the document-length
 normalization \textit{b} parameter and the term frequency component \textit{k1} parameter of the \textit{BM25Similarity}.
