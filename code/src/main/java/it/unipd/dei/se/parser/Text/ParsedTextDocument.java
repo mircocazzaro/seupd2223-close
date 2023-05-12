@@ -33,6 +33,11 @@ public record ParsedTextDocument(String id, String body) {
      * The fields of a parsed document.
      */
     public final static class Fields {
+        /** Default constructor for the class
+         */
+        public Fields(){
+            super();
+        }
         /**
          * BODY: the document body.
          */

@@ -18,6 +18,8 @@ public class ClefQueryParser extends TrecTopicsReader {
 
     private static final String newline = System.getProperty("line.separator");
 
+    /** Default constructor for the class
+     */
     public ClefQueryParser() {
         super();
     }

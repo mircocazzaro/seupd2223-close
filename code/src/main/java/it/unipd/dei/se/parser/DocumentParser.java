@@ -31,6 +31,11 @@ import java.util.Spliterators;
  * @version 1.0
  */
 public abstract class DocumentParser {
+    /** Default constructor for the class
+     */
+    public DocumentParser(){
+        super();
+    }
 
     /**
      * Create a Json Iterator from a JsonReader.

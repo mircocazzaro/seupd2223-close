@@ -28,10 +28,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public record ParsedEmbeddedDocument(String id, float[] body) {
 
+
+
     /**
      * The fields of a parsed document.
     */
     public final static class Fields {
+        /** Default constructor for the class
+         */
+        public Fields(){
+            super();
+        }
+
         /** ID: the document identifier.
          */
         public static final String ID = "id";

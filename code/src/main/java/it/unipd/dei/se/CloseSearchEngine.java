@@ -38,6 +38,12 @@ import java.io.IOException;
  * @since 1.00
  */
 public class CloseSearchEngine {
+
+    /** Default constructor for the class
+     */
+    public CloseSearchEngine(){
+        super();
+    }
     /**
      * Main method to try the whole IR system
      *

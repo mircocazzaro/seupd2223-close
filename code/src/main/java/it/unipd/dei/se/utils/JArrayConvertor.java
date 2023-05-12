@@ -10,6 +10,12 @@ import com.google.gson.JsonIOException;
  */
 public class JArrayConvertor {
 
+    /** Default constructor for the class
+     */
+    public JArrayConvertor(){
+        super();
+    }
+
     /**
      * Convert a JsonArray to a float array
      *
