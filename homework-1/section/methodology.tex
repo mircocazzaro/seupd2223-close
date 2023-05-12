@@ -98,7 +98,6 @@ This was the result of the trial and error approach we adopted for implementing 
     \label{fig:Parser_implementation_workflow}
 \end{figure}
 
-\newpage
 The types of noises we tried to remove are the following:
 \begin{itemize}
 \item \textit{JavaScript} scripts,
@@ -112,6 +111,8 @@ The types of noises we tried to remove are the following:
 \item Social media handlers,
 \item Hashtags and mentions.
 \end{itemize}
+
+\newpage
 We also identified some patterns of words and symbols to remove:
 \begin{itemize}
 \item Two words separated by an underscore, like \textit{word1\_word2}
@@ -194,8 +195,6 @@ The structure of the parsed document is defined in the \textit{ParsedTextDocumen
 \item \textit{id}: the identifier of the document,
 \item \textit{body}: the (parsed) content of the document.
 \end{enumerate}
-
-\newpage
 The constructor of \textit{ParsedTextDocument} is the following:
 \begin{lstlisting}[language=Java]
     /**
