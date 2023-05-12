@@ -19,24 +19,35 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
+ * A parsed document.
  * @author CLOSE GROUP
  * @version 1.0
- * <p>
- * A parsed document.
+ * @param id the document identifier
+ * @param body the document body
  */
 
 public record ParsedEmbeddedDocument(String id, float[] body) {
 
+
+
     /**
      * The fields of a parsed document.
-     * ID: the document identifier.
-     * BODY: the document body.
-     * EMB_BODY: the document body for the embedded model.
-     */
+    */
     public final static class Fields {
-        public static final String ID = "id";
-        public static final String BODY = "contents";
+        /** Default constructor for the class
+         */
+        public Fields(){
+            super();
+        }
 
+        /** ID: the document identifier.
+         */
+        public static final String ID = "id";
+        /** BODY: the document body.
+         */
+        public static final String BODY = "contents";
+        /** EMB_BODY: the document body for the embedded model.
+         */
         public static final String EMB_BODY = "emb_contents";
     }
 

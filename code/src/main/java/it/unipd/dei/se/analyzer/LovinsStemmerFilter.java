@@ -7,11 +7,20 @@ import org.tartarus.snowball.ext.LovinsStemmer;
 
 import java.io.IOException;
 
+/**
+ * A custom stemming filter using LovinsStemmer
+ * @author CLOSE GROUP
+ * @version 1.0
+ */
 public class LovinsStemmerFilter extends TokenFilter {
 
     private LovinsStemmer stemmer;
     private CharTermAttribute termAtt;
 
+    /**
+     * Method to create the LovinsStemmerFilter.
+     * @param input the tokens to be stemmed.
+     */
     public LovinsStemmerFilter(TokenStream input) {
         super(input);
         stemmer = new LovinsStemmer();

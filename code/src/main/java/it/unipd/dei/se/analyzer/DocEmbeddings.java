@@ -15,6 +15,13 @@ import org.deeplearning4j.util.ModelSerializer;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Class for embeddings for the documents
+ *
+ * @author Close Group
+ * @version 1.00
+ * @since 1.00
+ */
 public class DocEmbeddings {
     private static DocEmbeddings instance;
     private Word2Vec model;
@@ -24,6 +31,11 @@ public class DocEmbeddings {
         );
     }
 
+    /**
+     * Get embeddings for a query.
+     * @param query the query from which we get the embeddings.
+     * @return the embeddings for the query.
+     */
     public float[] getEmbeddingForQuery(String query) {
         String[] words = query.split("\\s+");
         float[] queryEmbedding = new float[words.length];
@@ -33,6 +45,10 @@ public class DocEmbeddings {
         return queryEmbedding;
     }
 
+    /**
+     * Get an instance of DocEmbeddings
+     * @return instance of DocEmbeddings or new instance of DocEmbeddings
+     */
     public static synchronized DocEmbeddings getInstance() {
         if (instance == null) {
             instance = new DocEmbeddings();
@@ -40,9 +56,19 @@ public class DocEmbeddings {
         return instance;
     }
 
+    /**
+     * get the Word2Vec model
+     * @return the Word2Vec model
+     */
     public Word2Vec getModel() {
         return model;
     }
+
+    /**
+     * Generate embeddings for a given document
+     * @param doc the document from which the embeddings are generated.
+     * @return the generated embeddings.
+     */
     public INDArray generateDocEmbedding(String doc) {
         List<String> tokens = Arrays.asList(doc.split("\\s+"));
         INDArray embeddings = Nd4j.zeros(tokens.size(), model.getLayerSize());
@@ -58,6 +84,10 @@ public class DocEmbeddings {
         return embeddings.mean(0);
     }
 
+    /**
+     * Main method to try the class and get embeddings for a text
+     * @param args the arguments of the method.
+     */
     public static void main(String[] args) {
         try {
             String doc = "aeroport bordeaux";
