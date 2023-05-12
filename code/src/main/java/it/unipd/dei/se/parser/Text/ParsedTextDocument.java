@@ -19,21 +19,27 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * @author CLOSE GROUP
- * @version 1.0
  * <p>
  * A parsed document.
+ * @author CLOSE GROUP
+ * @version 1.0
+ * @param id : the document identifier
+ * @param body : the document body
  */
 
 public record ParsedTextDocument(String id, String body) {
 
     /**
      * The fields of a parsed document.
-     * ID: the document identifier.
-     * BODY: the document body.
      */
     public final static class Fields {
+        /**
+         * BODY: the document body.
+         */
         public static final String ID = "id";
+        /**
+         * BODY: the document body.
+         */
         public static final String BODY = "contents";
     }
 

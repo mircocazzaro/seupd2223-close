@@ -59,10 +59,10 @@ import java.util.Vector;
 import java.util.stream.Stream;
 
 /**
+ * Indexes documents processing a whole directory tree.
+ *
  * @author Close Group
  * @version 1.0
- *
- * Indexes documents processing a whole directory tree.
  */
 public class DirectoryIndexer {
 
@@ -271,6 +271,11 @@ public class DirectoryIndexer {
 
     }
 
+    /**
+     * Method to create embedded documents
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     public void docEmbedding() throws IOException {
         System.out.printf("%n#### Start Creating Embedded Data ####%n");
         Files.walkFileTree(docsDir, new SimpleFileVisitor<>() {

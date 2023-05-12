@@ -28,6 +28,8 @@ import org.apache.lucene.search.similarities.*;
 
 import it.unipd.dei.se.indexer.DirectoryIndexer;
 
+import java.io.IOException;
+
 /**
  * The main class of the search engine.
  *
@@ -36,6 +38,12 @@ import it.unipd.dei.se.indexer.DirectoryIndexer;
  * @since 1.00
  */
 public class CloseSearchEngine {
+    /**
+     * Main method to try the whole IR system
+     *
+     * @param args the arguments to be passed to the method.
+     * @throws Exception if an error occurs.
+     */
     public static void main(String[] args) throws Exception {
         /*
          * Check the command line arguments.

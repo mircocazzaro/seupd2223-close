@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * A query parser for queries. This parser is used to parse the queries in the CLEF(LongEval Lab).
+ * @author CLOSE GROUP
+ * @version 1.0
+ */
 public class ClefQueryParser extends TrecTopicsReader {
 
     private static final String newline = System.getProperty("line.separator");
