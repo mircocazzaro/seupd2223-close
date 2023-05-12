@@ -62,7 +62,6 @@ tomcat-logs/
 *.jar
 *.war
 *.ear
-*.zip
 *.tar.gz
 *.rar
 
