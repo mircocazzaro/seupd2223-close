@@ -25,10 +25,9 @@ import java.io.*;
 import java.util.stream.Stream;
 
 /**
+ * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
  * @author CLOSE GROUP
  * @version 1.0
- * <p>
- * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
  */
 public class ClefEmbeddedParser extends DocumentParser {
 
@@ -59,6 +58,12 @@ public class ClefEmbeddedParser extends DocumentParser {
         return DocumentParser.readJsonFromFile(builder.create(), ParsedEmbeddedDocument.class, in);
     }
 
+    /**
+     * Main method to try the parser.
+     *
+     * @param args arguments for the method.
+     * @throws IOException if an I/O error occurs.
+     */
     public static void main(String[] args) throws Exception {
         // Read the documents from a file.
         Reader reader = new FileReader(

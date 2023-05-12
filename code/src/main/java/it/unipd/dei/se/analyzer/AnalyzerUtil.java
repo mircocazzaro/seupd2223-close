@@ -42,6 +42,12 @@ import java.io.*;
  */
 public class AnalyzerUtil {
 
+    /** Default constructor for the class
+      */
+    public AnalyzerUtil(){
+        super();
+    }
+
     /**
      * The class loader of this class. Needed for reading files from the {@code resource} directory.
      */

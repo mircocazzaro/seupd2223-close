@@ -26,13 +26,16 @@ import java.util.stream.StreamSupport;
 import java.util.Spliterators;
 
 /**
+ * A parser for documents.
  * @author CLOSE GROUP
  * @version 1.0
- * <p>
- * A parser for documents.
  */
-
 public abstract class DocumentParser {
+    /** Default constructor for the class
+     */
+    public DocumentParser(){
+        super();
+    }
 
     /**
      * Create a Json Iterator from a JsonReader.
@@ -112,6 +115,7 @@ public abstract class DocumentParser {
      * <p>
      * It assumes the {@code DocumentParser} has a single-parameter constructor which takes a {@code Reader} as input.
      *
+     * @param <T> the type of the elements in the returned stream.
      * @param cls the class of the document parser to be instantiated.
      * @param in  the reader to the document(s) to be parsed.
      * @return a new instance of {@code DocumentParser} for the given class.
@@ -139,6 +143,7 @@ public abstract class DocumentParser {
     /**
      * Returns a stream of parsed documents.
      *
+     * @param <T> the type of the elements in the returned stream.
      * @param in the reader to the document(s) to be parsed.
      * @return a stream of parsed documents.
      * @throws IOException if something goes wrong in parsing the document(s).

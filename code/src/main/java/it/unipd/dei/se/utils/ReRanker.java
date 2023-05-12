@@ -19,6 +19,12 @@ import org.nd4j.linalg.factory.Nd4j;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * The re-ranking model to re-rank documents.
+ * @author CLOSE GROUP
+ * @version 1.0
+ */
+
 public class ReRanker {
 
     /**
@@ -80,6 +86,7 @@ public class ReRanker {
      *
      * @param query     the query to check similarity to
      * @param scoreDocs the list of documents to sort
+     * @param sum_queries list of additional queries used to calculate the similarity score
      * @return the sorted score docs
      * @throws TranslateException if an error occurs during translation
      * @throws IOException        if an I/O error occurs
@@ -141,6 +148,10 @@ public class ReRanker {
     }
 
 
+    /**
+     * Method to print the device that will use the model
+     * @param args the arguments for the method.
+     */
     public static void main(String[] args) {
         System.out.println(Device.fromName("cuda"));
     }

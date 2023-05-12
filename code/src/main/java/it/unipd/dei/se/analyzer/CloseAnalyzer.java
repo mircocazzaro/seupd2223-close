@@ -34,6 +34,12 @@ import java.util.List;
 
 import static it.unipd.dei.se.analyzer.AnalyzerUtil.*;
 
+/**
+ * An analyzer to analyze the parsed documents and topics of the CLEF(LongEval Lab) collection
+ * and to prepare them for the Indexing and Searching phases.
+ * @author CLOSE GROUP
+ * @version 1.0
+ */
 public class CloseAnalyzer extends Analyzer {
     /**
      * The class loader of this class. Needed for reading files from the {@code resource} directory.
@@ -41,23 +47,55 @@ public class CloseAnalyzer extends Analyzer {
     private static final ClassLoader CL = CloseAnalyzer.class.getClassLoader();
 
 
+    /**
+     * The different possible types of tokenizer
+     * WhitespaceTokenizer
+     * LetterTokenizer
+     * StandardTokenizer
+     */
     public enum TokenizerType
     {
+        /**
+         * WhitespaceTokenizer
+         */
         Whitespace,
+        /**
+         * LetterTokenizer
+         */
         Letter,
+        /**
+         * StandardTokenizer
+         */
         Standard,
 
 
     }
 
+    /**
+     * The different possible types of tokenizer:
+     */
     public enum StemFilterType
     {
+        /**
+         * EnglishMinimalStmFilter
+         */
         EnglishMinimal,
+        /**
+         * PorterStemFilter
+         */
         Porter,
+        /**
+         * KStemFilter
+         */
         K,
+        /**
+         * FrenchLightStemFilter
+         */
         French,
-        Boh
-        //Lovins
+        /**
+         * LovinsStemFilter
+         */
+        Lovins
     }
 
     private final TokenizerType tokenizerType;
@@ -85,6 +123,17 @@ public class CloseAnalyzer extends Analyzer {
 
     /**
      * Creates a new instance of the analyzer.
+     * @param frenchElisionFilter boolean to indicate whether to use or not use the French elision filter
+     * @param lemmatization boolean to indicate whether to use or not lemmatization
+     * @param isEnglishPossessiveFilter boolean to indicate whether to use or not use the English possessive filter
+     * @param maxLength maximum length of the token
+     * @param minLength minimum length of the token
+     * @param nGramFilterSize size of the n-grams (if null, the filter is not applied)
+     * @param shingleFilterSize size of the shingles (if null, the filter is not applied)
+     * @param stemFilterType type of stemming to use
+     * @param stopFilterListName name of the file in the "resources" folder to use as a word stop list
+     * @param tokenizerType type of tokenizer to use
+     * @param useNLPFilter boolean to indicate whether to use or not use the NLP filter
      */
     public CloseAnalyzer(TokenizerType tokenizerType, int minLength, int maxLength,
                          boolean isEnglishPossessiveFilter, String stopFilterListName, StemFilterType stemFilterType,
@@ -253,6 +302,12 @@ public class CloseAnalyzer extends Analyzer {
 
     }
 
+    /**
+     * Main method to try the analyzer with the different configurations
+     *
+     * @param args the arguments to be passed to the method.
+     * @throws IOException if an I/O error occurs.
+     */
     public static void main(String[] args) throws IOException {
         final String text = "100 - This text; is used $ to see (and test) what our Analyzer does, in order to improve it." +
                 "% So, I think it's appropriate to add lot of noise to this";
