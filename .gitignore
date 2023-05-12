@@ -33,7 +33,6 @@
 
 # LaTeX files
 *.aux
-*.out
 *.log
 *.toc
 *.synctex.gz
@@ -81,11 +80,8 @@ experiment
 *.acn
 *.acr
 *.alg
-*.aux
 *.bak
-*.bbl
 *.bcf
-*.blg
 *.brf
 *.bst
 *.dvi
@@ -99,7 +95,6 @@ experiment
 *.ind
 *.ist
 *.lof
-*.log
 *.lol
 *.lot
 *.maf
@@ -108,20 +103,17 @@ experiment
 *.nav
 *.nlo
 *.nls
-*.out
 *.pdf
 *.pyg
 *.run.xml
 *.snm
-*.synctex.gz
 *.tex.backup
 *.tex~
 *.thm
-*.toc
 *.vrb
 *.xdy
 *.xml
 *blx.bib
-.bak 
+.bak
 .mtc
 build/
