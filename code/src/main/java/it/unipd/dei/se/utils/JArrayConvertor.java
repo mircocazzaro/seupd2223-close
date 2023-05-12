@@ -4,12 +4,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
 
 /**
+ * A class to convert a JsonArray to a different type of array.
  * @author CLOSE GROUP
  * @version 1.0
- * <p>
- * A class to convert a JsonArray to a different type of array.
  */
 public class JArrayConvertor {
+
+    /** Default constructor for the class
+     */
+    public JArrayConvertor(){
+        super();
+    }
 
     /**
      * Convert a JsonArray to a float array

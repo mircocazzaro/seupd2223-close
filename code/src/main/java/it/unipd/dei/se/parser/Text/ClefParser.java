@@ -27,14 +27,11 @@ import java.util.stream.Stream;
 
 import javax.annotation.RegEx;
 
-import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.stack;
-import org.nd4j.linalg.cpu.nativecpu.bindings.Nd4jCpu.static_bidirectional_rnn;
 
 /**
+ * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
  * @author CLOSE GROUP
  * @version 1.0
- * <p>
- * A parser for documents. This parser is used to parse the documents in the CLEF(LongEval Lab).
  */
 public class ClefParser extends DocumentParser {
 
@@ -172,6 +169,9 @@ public class ClefParser extends DocumentParser {
      *      - Non-ASCII characters
      *      - Social media handles
      *      - Hashtags and mentions
+     *
+     * @param text the text from which the noise will be removed.
+     * @return the processed text.
      */
     public static String removeNoise(String text) {
 
@@ -207,7 +207,12 @@ public class ClefParser extends DocumentParser {
         
     }
 
-    // Function to remove patterns like "word1_word2", "word1.word2", and HTTP/HTTPS URIs from a string
+    /**
+     * Function to remove patterns like "word1_word2", "word1.word2",
+     * and HTTP/HTTPS URIs from a string.
+     * @param input the text from which the noise will be removed.
+     * @return the processed text.
+     */
     public String removePatterns(String input) {
 
         // Define regular expression pattern to match the desired patterns
@@ -231,6 +236,12 @@ public class ClefParser extends DocumentParser {
         return DocumentParser.readJsonFromFile(builder.create(), ParsedTextDocument.class, in);
     }
 
+    /**
+     * Main method to try the parser.
+     *
+     * @param args the arguments to be passed to the method.
+     * @throws IOException if an I/O error occurs.
+     */
     public static void main(String[] args) throws Exception {
         // Read the documents from a file.
         Reader reader = new FileReader(

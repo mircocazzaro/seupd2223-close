@@ -74,10 +74,8 @@ tomcat-logs/
 code/data/*
 code/experiment/*
 code/test/*
-.vscode
-experiment
 
-#latex
+# latex
 *.acn
 *.acr
 *.alg
