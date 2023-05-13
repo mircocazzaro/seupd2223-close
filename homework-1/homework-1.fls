@@ -1,6 +1,6 @@
-PWD c:\Users\Mirco\Desktop\Search Engines\seupd2223-close\homework-1
+PWD c:\Users\Mirco\Desktop\Search Engines\second_clone\seupd2223-close\homework-1
 INPUT C:\Users\Mirco\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
-INPUT c:\Users\Mirco\Desktop\Search Engines\seupd2223-close\homework-1\homework-1.tex
+INPUT c:\Users\Mirco\Desktop\Search Engines\second_clone\seupd2223-close\homework-1\homework-1.tex
 OUTPUT homework-1.log
 INPUT .\ceurart.cls
 INPUT .\ceurart.cls
@@ -1372,9 +1372,6 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmr10.tfm
 INPUT .\homework-1.aux
 INPUT homework-1.aux
 INPUT homework-1.aux
-INPUT .\section\tablesResultsFrench.aux
-INPUT section\tablesResultsFrench.aux
-INPUT section\tablesResultsFrench.aux
 OUTPUT homework-1.aux
 INPUT C:\Program Files\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 INPUT C:\Program Files\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
@@ -1551,6 +1548,7 @@ INPUT .\section\introduction.tex
 INPUT section\introduction.tex
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmss10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmri10.tfm
 INPUT .\section\methodology.tex
 INPUT .\section\methodology.tex
 INPUT .\section\methodology.tex
@@ -1558,7 +1556,22 @@ INPUT section\methodology.tex
 INPUT .\section\methodology.tex
 INPUT .\section\methodology.tex
 INPUT section\methodology.tex
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmr10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\lmmi10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\lmsy10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmss10.tfm
+INPUT .\figure\lucene_yModel.png
+INPUT .\figure\lucene_yModel.png
+INPUT figure\lucene_yModel.png
+INPUT .\figure\lucene_yModel.png
+INPUT .\figure\lucene_yModel.png
+INPUT .\figure\lucene_yModel.png
+INPUT .\figure\lucene_yModel.png
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmr10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmr10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmr7.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\lmmi10.tfm
@@ -1569,26 +1582,9 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam7.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmr10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
 INPUT C:\Program Files\MiKTeX\fonts\enc\dvips\fontawesome5\fa5free1.enc
 INPUT C:\Program Files\MiKTeX\fonts\enc\dvips\lm\lm-ts1.enc
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmro10.tfm
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmr10.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\lmmi10.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\lmsy10.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmri10.tfm
 INPUT .\figure\CLOSE_IR_Workflow (2).pdf
 INPUT .\figure\CLOSE_IR_Workflow (2).pdf
 INPUT figure\CLOSE_IR_Workflow (2).pdf
@@ -1623,6 +1619,12 @@ INPUT figure\Indexer_workflow.pdf
 INPUT .\figure\Indexer_workflow.pdf
 INPUT .\figure\Indexer_workflow.pdf
 INPUT .\figure\Indexer_workflow.pdf
+INPUT .\figure\re-ranking.png
+INPUT figure\re-ranking.png
+INPUT .\figure\re-ranking.png
+INPUT .\figure\re-ranking.png
+INPUT .\figure\re-ranking.png
+INPUT .\figure\re-ranking.png
 INPUT .\section\setup.tex
 INPUT .\section\setup.tex
 INPUT .\section\setup.tex
@@ -1642,23 +1644,17 @@ INPUT section\results.tex
 INPUT .\section\results.tex
 INPUT .\section\results.tex
 INPUT section\results.tex
-INPUT .\section\tablesResultsFrench.tex
-INPUT .\section\tablesResultsFrench.tex
-INPUT .\section\tablesResultsFrench.tex
-OUTPUT section\tablesResultsFrench.aux
-INPUT .\section\tablesResultsFrench.tex
-INPUT .\section\tablesResultsFrench.tex
-INPUT .\section\tablesResultsFrench.tex
-INPUT section\tablesResultsFrench.tex
-INPUT .\section\tablesResultsFrench.tex
-INPUT section\tablesResultsFrench.tex
-INPUT .\figure\rp_french.png
-INPUT .\figure\rp_french.png
-INPUT figure\rp_french.png
-INPUT .\figure\rp_french.png
-INPUT .\figure\rp_french.png
-INPUT .\figure\rp_french.png
-INPUT .\figure\rp_french.png
+INPUT .\section\tableResults.tex
+INPUT section\tableResults.tex
+INPUT .\section\tableResults.tex
+INPUT section\tableResults.tex
+INPUT .\figure\PRgraph.png
+INPUT .\figure\PRgraph.png
+INPUT figure\PRgraph.png
+INPUT .\figure\PRgraph.png
+INPUT .\figure\PRgraph.png
+INPUT .\figure\PRgraph.png
+INPUT .\figure\PRgraph.png
 INPUT .\section\conclusion.tex
 INPUT .\section\conclusion.tex
 INPUT .\section\conclusion.tex
@@ -1678,9 +1674,6 @@ INPUT .\acronyms.tex
 INPUT .\acronyms.tex
 INPUT acronyms.tex
 INPUT homework-1.aux
-INPUT .\section\tablesResultsFrench.aux
-INPUT section\tablesResultsFrench.aux
-INPUT section\tablesResultsFrench.aux
 INPUT .\homework-1.out
 INPUT .\homework-1.out
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\fontawesome5\FontAwesome5Free-Regular.pfb
@@ -1711,8 +1704,6 @@ INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmri8.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmri8.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmri9.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmri9.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmro10.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmro10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmss10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmss10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmssbx10.pfb

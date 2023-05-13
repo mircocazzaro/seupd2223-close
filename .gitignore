@@ -33,7 +33,6 @@
 
 # LaTeX files
 *.aux
-*.out
 *.log
 *.toc
 *.synctex.gz
@@ -73,16 +72,15 @@ tomcat-logs/
 code/data/*
 code/experiment/*
 code/test/*
+.vscode
+experiment
 
-# latex
+#latex
 *.acn
 *.acr
 *.alg
-*.aux
 *.bak
-*.bbl
 *.bcf
-*.blg
 *.brf
 *.bst
 *.dvi
@@ -96,7 +94,6 @@ code/test/*
 *.ind
 *.ist
 *.lof
-*.log
 *.lol
 *.lot
 *.maf
@@ -105,20 +102,17 @@ code/test/*
 *.nav
 *.nlo
 *.nls
-*.out
 *.pdf
 *.pyg
 *.run.xml
 *.snm
-*.synctex.gz
 *.tex.backup
 *.tex~
 *.thm
-*.toc
 *.vrb
 *.xdy
 *.xml
 *blx.bib
-.bak 
+.bak
 .mtc
 build/
