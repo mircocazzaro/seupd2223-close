@@ -80,7 +80,7 @@ A schema of the overall project structure is the following:
 
 
 \subsection{Parser} \label{parser_subsec}
-As stated before, the documents in the collection provided by the \ac{CLEF} \textit{LongEval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection. 
+As stated before, the documents in the collection provided by the \ac{CLEF} \textit{LongEval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection.
 From this, the need for performing a pre-processing phase of parsing the documents before analyzing and indexing them arises.
 In this phase, the documents are cleaned from all the residuals of codes not useful for our purposes. 
 We first created an abstract class \textit{DocumentParser} and then extended it by implementing a custom \textit{ClefParser} class, which contains many functions for removing sundry types of noises that can be present in documents. 
@@ -376,9 +376,9 @@ after getting the query expansions, each of them is added to the \textit{Boolean
 This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions.
 
 \subsubsection{Document Re-Ranking}
-This is the process of ranking the documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}) a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2} sentence-transformer model, coming from a Python framework called \textit{Sentence Transformers} \cite{sentence-transformers}.
+This is the process of ranking the documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}) a second time, using, in our case, a model that maps sentences and paragraphs to a 384-dimensional dense vector space called \textit{all-MiniLM-L6-v2}~\cite{huggingfaceallminilml6v2}. This sentence transformer model is coming from a Python framework called \textit{Sentence Transformers}~\cite{sentence-transformers}, also \textit{all-MiniLM-L6-v2} aims to train sentence embedding models on very large sentence level datasets using a self-supervised contrastive learning objective.
 \newline
-It works in the following way: in the constructor of the \textit{Searcher} the Re-Ranker is initialized and a predictor is created to perform inference. 
+It works in the following way: in the constructor of the \textit{Searcher} the Re-Ranker is initialized and a predictor is created to perform inference.
 At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents.
 Finally, these scores are multiplied by the actual document's scores, and the documents are then sorted by looking at these new scores.
 \newline
