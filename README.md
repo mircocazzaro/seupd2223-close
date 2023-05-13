@@ -20,14 +20,9 @@ This repository is carried out by groups of students and consists in participati
 | Shami		| Farzad		   | 2090160	 |
 
 ---
-*Search Engines* is a course of the
+## Project Description ##
+Our approach involves using the training data provided by Qwant search engine, which includes user searches and web documents in both French and English. We believe that this data will enable our system to better adapt to changes in user search behavior and the content of web documents.
 
-* [Master Degree in Computer Engineering](https://degrees.dei.unipd.it/master-degrees/computer-engineering/) of the  [Department of Information Engineering](https://www.dei.unipd.it/en/), [University of Padua](https://www.unipd.it/en/), Italy.
-* [Master Degree in Data Science](https://datascience.math.unipd.it/) of the  [Department of Mathematics "Tullio Levi-Civita"](https://www.math.unipd.it/en/), [University of Padua](https://www.unipd.it/en/), Italy.
-
-*Search Engines* is part of the teaching activities of the [Intelligent Interactive Information Access (IIIA) Hub](http://iiia.dei.unipd.it/).
-
----
 ### Organisation of the repository ###
 
 The project is developed mainly in Java, with the addition of some Python scripts for performing the expansion of the queries and for the re-ranking of the retrieved documents for each topic. The overall structure is as follows:
@@ -39,9 +34,6 @@ The project is developed mainly in Java, with the addition of some Python script
 * `homework-2`: this folder contains the final paper submitted to CLEF.
 * `slides`: this folder contains the slides used for presenting the conducted project.
 ---
-## Project Description ##
-Our approach involves using the training data provided by Qwant search engine, which includes user searches and web documents in both French and English. We believe that this data will enable our system to better adapt to changes in user search behavior and the content of web documents.
-
 
 ## How to run and use the codes? ##
 
@@ -58,6 +50,16 @@ that automatically creates its own working environment and change the parameters
 ```
 java -jar close-1.00-jar-with-dependencies.jar <collection path> <topic path> <index path>
 ```
+----
+
+*Search Engines* is a course of the
+
+* [Master Degree in Computer Engineering](https://degrees.dei.unipd.it/master-degrees/computer-engineering/) of the  [Department of Information Engineering](https://www.dei.unipd.it/en/), [University of Padua](https://www.unipd.it/en/), Italy.
+* [Master Degree in Data Science](https://datascience.math.unipd.it/) of the  [Department of Mathematics "Tullio Levi-Civita"](https://www.math.unipd.it/en/), [University of Padua](https://www.unipd.it/en/), Italy.
+
+*Search Engines* is part of the teaching activities of the [Intelligent Interactive Information Access (IIIA) Hub](http://iiia.dei.unipd.it/).
+
+
 ----
 ### License ###
 
