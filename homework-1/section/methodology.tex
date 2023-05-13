@@ -36,7 +36,7 @@ The project is developed mainly in \textit{Java}, with the addition of some \tex
 \begin{itemize}
     \item \textbf{experiment}: This folder contains the results of the indexing obtained with different approaches, stored in different sub-folders.
 
-    \item \textbf{python\_scripts}: This folder contains the above-mentioned \textit{Python} scripts, together with other \textit{txt} and \textit{JSON} files that these scripts use.
+    \item \textbf{python\_scripts}: This folder contains the above-mentioned \textit{Python} scripts, together with other \textit{txt} and \textit{JSON} data files produced or read by these scripts (i.e. query expansions, synonyms, etc.).
 
     \item \textbf{src/main/java}: This folder contains all the \textit{Java} classes used for the implementation of the \ac{IR} system, divided into the following packages:
     \begin{itemize}
@@ -80,7 +80,7 @@ A schema of the overall project structure is the following:
 
 
 \subsection{Parser} \label{parser_subsec}
-As stated before, the documents in the collection provided by the \ac{CLEF} \textit{Long Eval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection. 
+As stated before, the documents in the collection provided by the \ac{CLEF} \textit{LongEval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection. 
 From this, the need for performing a pre-processing phase of parsing the documents before analyzing and indexing them arises.
 In this phase, the documents are cleaned from all the residuals of codes not useful for our purposes. 
 We first created an abstract class \textit{DocumentParser} and then extended it by implementing a custom \textit{ClefParser} class, which contains many functions for removing sundry types of noises that can be present in documents. 
@@ -261,6 +261,7 @@ final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Sta
 \end{lstlisting}
 We have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist. 
 We didn't use any of the other parameters.
+We utilized the Gson library to efficiently parse a JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects, enabling effortless manipulation and integration of the query expansions into our application.
 
 
 \subsection{Indexer}
@@ -343,22 +344,7 @@ Our implementation does so by accepting the following parameters:
   If the parameter is set to null, no model is used and the documents are scored normally.
 \end{itemize}
 
-\subsubsection{Document Re-Ranking}
-This is the process of ranking the documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}) a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2} sentence-transformer model, coming from a Python framework called \textit{Sentence Transformers} \cite{sentence-transformers}.
-\newline
-It works in the following way: in the constructor of the \textit{Searcher} the Re-Ranker is initialized and a predictor is created to perform inference. 
-At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents.
-Finally, these scores are multiplied by the actual document's scores, and the documents are then sorted by looking at these new scores.
-\newline
-We tested different combinations of parameters to find the best one, and we found that the best combination is multiplying the document's score by the \textit{BM25Similarity} function, with the similarity calculated with the \textit{cosine} function.
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[scale=0.45, keepaspectratio]{figure/re-ranking}
-    \caption{Plot of the re-ranking operation performed on 50 sample queries}
-    \label{fig:re-rankinge}
-\end{figure}
 
-\clearpage
 \subsubsection{Query Expansion}
 When running the search function, one of the first actions performed is to generate new queries from the original ones by query expansion.
 We created a Python script that, given the \textit{*.trec} file, generates all the expanded terms for each query and stores everything in a \textit{.json} file called \textit{result}.
@@ -388,3 +374,18 @@ Query boosting is a technique used to assign greater relevance to certain query 
 We tried the following approach that seemed to improve the overall results: when building the queries in the search function of the \textit{Searcher} (\ref{searcher_subsec}), for each query, a \textit{BooleanQuery} \cite{lucenebooleanquery} is built in the following way: 
 after getting the query expansions, each of them is added to the \textit{BooleanQuery} with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must be satisfied. \\
 This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions.
+
+\subsubsection{Document Re-Ranking}
+This is the process of ranking the documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}) a second time, using, in our case, a sorting algorithm done with the help of \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2} sentence-transformer model, coming from a Python framework called \textit{Sentence Transformers} \cite{sentence-transformers}.
+\newline
+It works in the following way: in the constructor of the \textit{Searcher} the Re-Ranker is initialized and a predictor is created to perform inference. 
+At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents.
+Finally, these scores are multiplied by the actual document's scores, and the documents are then sorted by looking at these new scores.
+\newline
+We tested different combinations of parameters to find the best one, and we found that the best combination is multiplying the document's score by the \textit{BM25Similarity} function, with the similarity calculated with the \textit{cosine} function.
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.45, keepaspectratio]{figure/re-ranking}
+    \caption{Plot of the re-ranking operation performed on 50 sample queries}
+    \label{fig:re-rankinge}
+\end{figure}
