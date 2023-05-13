@@ -70,12 +70,12 @@
    <dc:format>application/pdf</dc:format> 
    <dc:type><rdf:Bag><rdf:li>journal</rdf:li></rdf:Bag></dc:type>
    <dc:title><rdf:Alt><rdf:li xml:lang="x-default">SEUPD@CLEF: Team CLOSE</rdf:li></rdf:Alt></dc:title>
-   <dc:creator><rdf:Seq><rdf:li>Farzad Shami</rdf:li>
-     <rdf:li>Mirco Cazzaro</rdf:li>
-     <rdf:li>Marco Martinelli</rdf:li>
-     <rdf:li>Nicola Boscolo Cegion</rdf:li>
-     <rdf:li>Seyedreza Safavi</rdf:li>
-     <rdf:li>Gianluca Antolini</rdf:li></rdf:Seq></dc:creator>
+   <dc:creator><rdf:Seq><rdf:li>Antolini Gianluca</rdf:li>
+     <rdf:li>Boscolo Cegion Nicola</rdf:li>
+     <rdf:li>Cazzaro Mirco</rdf:li>
+     <rdf:li>Martinelli Marco</rdf:li>
+     <rdf:li>Safavi Seyedreza</rdf:li>
+     <rdf:li>Shami Farzad</rdf:li></rdf:Seq></dc:creator>
    <dc:rights><rdf:Alt><rdf:li xml:lang="x-default">© 2023 Copyright for this paper by its authors.\\ Use permitted under Creative Commons License Attribution 4.0 International (CC BY 4.0).</rdf:li></rdf:Alt></dc:rights>
    <dc:description><rdf:Alt><rdf:li xml:lang="x-default">CEUR Workshop Proceedings (CEUR-WS.org)</rdf:li></rdf:Alt></dc:description>
    <dc:subject><rdf:Bag><rdf:li>Information Retrieval </rdf:li>
@@ -95,9 +95,9 @@
   </rdf:Description> 
   <rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/"> 
    <xmp:CreatorTool>LaTeX with hyperref</xmp:CreatorTool> 
-   <xmp:ModifyDate>2023-05-08T14:56:14+02:00</xmp:ModifyDate> 
-   <xmp:CreateDate>2023-05-08T14:56:14+02:00</xmp:CreateDate> 
-   <xmp:MetadataDate>2023-05-08T14:56:14+02:00</xmp:MetadataDate> 
+   <xmp:ModifyDate>2023-05-13T19:27:57+02:00</xmp:ModifyDate> 
+   <xmp:CreateDate>2023-05-13T19:27:57+02:00</xmp:CreateDate> 
+   <xmp:MetadataDate>2023-05-13T19:27:57+02:00</xmp:MetadataDate> 
   </rdf:Description> 
   <rdf:Description rdf:about="" xmlns:xmpRights = "http://ns.adobe.com/xap/1.0/rights/"> 
    <xmpRights:Marked>True</xmpRights:Marked>
@@ -106,7 +106,7 @@
   </rdf:Description> 
   <rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"> 
    <xmpMM:DocumentID>uuid:AED1DDBC-D24F-2551-4950-9F33EC0F2242</xmpMM:DocumentID> 
-   <xmpMM:InstanceID>uuid:5F7D7D23-D6C0-6B42-A5C7-6638EF6B69CB</xmpMM:InstanceID> 
+   <xmpMM:InstanceID>uuid:F5BD738A-36F1-2059-5C78-DBEA910F6834</xmpMM:InstanceID> 
   </rdf:Description> 
  </rdf:RDF> 
 </x:xmpmeta> 

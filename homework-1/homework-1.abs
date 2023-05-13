@@ -1,5 +1,5 @@
-This paper presents the work of the CLOSE group, a team of students from the University of Padua, Italy, for the 2023 CLEF LongEval Task 1.
-  Our work involved developing an information retrieval system that can handle changes in data over time while maintaining high performance.
-  We first introduce the problem as stated by CLEF and then describe our system, explaining the different methodologies we implemented.
+This paper presents the work of the \textit{CLOSE} group, a team of students from the University of Padua, Italy, for the 2023 \ac{CLEF} Task 1 \cite{cleflongeval}.
+  Our work involved developing an Information Retrieval system that can handle changes in data over time while maintaining high performance.
+  We first introduce the problem as stated by \ac{CLEF} and then describe our system, explaining the different methodologies we implemented.
   We provide the results of our experiments and analyze them based on the choices we made regarding various techniques.
   Finally, we propose potential avenues for future improvement of our system.
