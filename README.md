@@ -9,6 +9,7 @@ This repository is developed for the [Search Engines](https://iiia.dei.unipd.it/
 This repository is carried out by groups of students and consists in participating to one of the labs organized yearly by [CLEF](https://www.clef-initiative.eu/) (Conference and Labs of the Evaluation Forum).
 
 ### Group members ###
+CLOSE (Clef LOngeval Search Engine) Group
 
 | Surname       | Name       | ID       |
 | ------------- |------------|----------|
