@@ -1,6 +1,6 @@
-PWD c:\Users\Mirco\Desktop\Search Engines\second_clone\seupd2223-close\homework-1
+PWD c:\Users\Mirco\Desktop\Search Engines\seupd2223-close\homework-1
 INPUT C:\Users\Mirco\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
-INPUT c:\Users\Mirco\Desktop\Search Engines\second_clone\seupd2223-close\homework-1\homework-1.tex
+INPUT c:\Users\Mirco\Desktop\Search Engines\seupd2223-close\homework-1\homework-1.tex
 OUTPUT homework-1.log
 INPUT .\ceurart.cls
 INPUT .\ceurart.cls
@@ -1515,7 +1515,6 @@ INPUT .\homework-1.abs
 INPUT .\homework-1.abs
 INPUT .\homework-1.abs
 INPUT homework-1.abs
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmb10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmr6.tfm
 INPUT C:\Program Files\MiKTeX\tex\latex\fontawesome5\ufontawesomefree1.fd
 INPUT C:\Program Files\MiKTeX\tex\latex\fontawesome5\ufontawesomefree1.fd
@@ -1564,13 +1563,12 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\lmsy10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmss10.tfm
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
-INPUT .\figure\lucene_yModel.png
+INPUT .\figure\Y.pdf
+INPUT .\figure\Y.pdf
+INPUT figure\Y.pdf
+INPUT .\figure\Y.pdf
+INPUT .\figure\Y.pdf
+INPUT .\figure\Y.pdf
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmr10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmr10.tfm
