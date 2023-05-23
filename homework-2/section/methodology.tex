@@ -2,7 +2,7 @@
 \label{sec:methodology}
 
 \subsection{General Overview of Our IR System}
-In the development of our \ac{IR} system, we followed the traditional \textit{Y model} suggested by Apache Lucene \cite{lucene}, represented in the figure below.
+In the development of our \ac{IR} system, we followed the traditional \textit{Y model}, represented in the figure below.
 
 \begin{figure}[!h]
     \centering
@@ -11,7 +11,7 @@ In the development of our \ac{IR} system, we followed the traditional \textit{Y 
     \label{fig:lucene_yModel}
 \end{figure}
 
-The workflow of our system, starting from the train collection provided by \ac{CLEF} \cite{cleflongeval}, is as follows:
+The workflow of our system, starting from the train collection provided by \ac{LongEval} \cite{cleflongeval}, is as follows:
 \begin{enumerate}
     \item \textbf{Parsing}: The first phase consists of parsing the documents in the collection, which is a pre-processing operation performed to clean them from unnecessary noises. Since the collection is composed of web pages, the documents contain many leftovers like JavaScript scripts, HTML and CSS codes, HTTP and HTTPS URIs, and so on. The purpose of this phase is to ease the processing performed in the following phases.
 
@@ -23,55 +23,13 @@ The workflow of our system, starting from the train collection provided by \ac{C
 
 \end{enumerate}
 
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{figure/CLOSE_IR_Workflow (2).pdf}
-    \caption{Workflow of the IR system implemented by \textit{CLOSE}.}
-    \label{fig:CLOSE_IR_Workflow}
-\end{figure}
-
-\subsection{Project Structure}
-The project is developed mainly in \textit{Java}, with the addition of some \textit{Python} scripts for performing the expansion of the queries and for the re-ranking of the retrieved documents for each topic. The overall structure is as follows:
-\begin{itemize}
-    \item \textbf{experiment}: This folder contains the results of the indexing obtained with different approaches, stored in different sub-folders.
-
-    \item \textbf{python\_scripts}: This folder contains the above-mentioned \textit{Python} scripts, together with other \textit{txt} and \textit{JSON} data files produced or read by these scripts (i.e. query expansions, synonyms, etc.).
-
-    \item \textbf{src/main/java}: This folder contains all the \textit{Java} classes used for the implementation of the \ac{IR} system, divided into the following packages:
-    \begin{itemize}
-        \item \textbf{parser}: This package contains the classes involved in the pre-processing of the document, i.e., the parsing phase.
-
-        \item \textbf{analyzer}: This package contains the classes used for analyzing the parsed documents and topics of the collection.
-
-        \item \textbf{indexer}: This package performs the indexing of the documents processed by the analyzer.
-
-        \item \textbf{searcher}: Once the documents are indexed, the queries contained in the topics of the collection are parsed and then expanded in this package. Relevant (or assumed to be so) documents are retrieved and scored.
-
-        \item \textbf{utils}: This package contains general utility classes, one of which performs the re-ranking of the documents retrieved by the \textit{searcher}.
-    \end{itemize}
-\end{itemize}
-
-\vspace{\baselineskip}
-A schema of the overall project structure is the following:
-\begin{lstlisting}
-    /code
-    |------ experiment
-    |------ python_scripts
-    |------ src
-               |------ main
-                          |------ java
-                                     |------ parser
-                                     |------ analyzer
-                                     |------ indexer
-                                     |------ searcher
-                                     |------ utils
-\end{lstlisting}
 
 \newpage
 \subsection{Class Diagram}
+\centering
+
 \begin{figure}[!h]
-    \centering
-    \includegraphics[width=\textwidth]{figure/Classes_diagram_white.pdf}
+    \includegraphics[height=\textheight, angle =90, keepaspectratio]{figure/Classes_diagram_white.pdf}
     \caption{Diagram of the classes implemented by \textit{CLOSE} \ac{IR} system}
     \label{fig:Classes_diagram_white}
 \end{figure}
@@ -85,7 +43,7 @@ In this phase, the documents are cleaned from all the residuals of codes not use
 We first created an abstract class \textit{DocumentParser} and then extended it by implementing a custom \textit{ClefParser} class, which contains many functions for removing sundry types of noises that can be present in documents. 
 This was the result of the trial and error approach we adopted for implementing this class:
 \begin{itemize}
-\item We started by reading a large statistical sample size of the documents in the collection to decide which types of noises needed to be removed.
+\item We started by our own read of a large statistical sample size of the documents in the collection to decide which types of noises needed to be removed.
 \item Then we implemented the parser and ran it.
 \item The results of the parsing were stored, and a sample of the parsed documents was analyzed to start this procedure again.
 \end{itemize}
@@ -205,14 +163,6 @@ The constructor of \textit{ParsedTextDocument} is the following:
     public ParsedTextDocument(final String id, final String body) 
 \end{lstlisting}
 Inside it, multiple controls about the validity and integrity of the parameters are performed, then an object of the class is instantiated. \\
-The class also contains the following utility methods:
-\begin{itemize}
-\item \textit{getIdentifier}, which returns the (unique) document identifier,
-\item \textit{getBody}, which returns the body of the document,
-\item \textit{toString}, which returns a \textit{String} representation of the document,
-\item \textit{hashCode}, which returns the hash code of the document identifier,
-\item \textit{equals(Object o)}, which returns true if the two objects have the same identifier.
-\end{itemize}
 
 
 \subsection{Analyzer} \label{analyzer_subsec}
@@ -226,7 +176,7 @@ The constructor of \textit{CloseAnalyzer} accepts the following parameters:
   \item \textbf{tokenizerType}: used to choose between three standard \textit{Lucene} tokenizers: \textit{WhitespaceTokenizer} \cite{lucenetokenizer}, \textit{LetterTokenizer} \cite{lucenelettertokenizer}, and \textit{StandardTokenizer} \cite{lucenestandardtokenizer}.
   
   \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard \textit{Apache Solr} \cite{solr} filters: \textit{EnglishMinimalStemFilter} \cite{solrminimalstemfilter}, \textit{KStemFilter} \cite{solrkstemfilter}, \textit{PorterStemFilter} \cite{solrporterstemfilter}, and \textit{FrenchLightStemFilter} \cite{solrfrenchlightstemfilter}. 
-  We also tried using \textit{FrenchMinimalStemFilter} \cite{solrfrenchminimalstemfilter} and a custom filter called \textit{LovinsStemmerFilter} based off a LovinsStemmer \cite{lucenelovinsstemmer} implementation but decided to keep them commented as they didn't improve the results.
+  We also tried using \textit{FrenchMinimalStemFilter} \cite{solrfrenchminimalstemfilter} and a custom filter called \textit{LovinsStemmerFilter} based on a LovinsStemmer \cite{lucenelovinsstemmer} implementation but decided to keep them commented as they didn't improve the results.
   
   \item \textbf{minLength} and \textbf{maxLength}: these are integers that simply specify the minimum and maximum length of a token, applying Lucene's \textit{LengthFilter} \cite{lucenelengthfilter}.
   
@@ -238,9 +188,9 @@ The constructor of \textit{CloseAnalyzer} accepts the following parameters:
   The stoplists we created are based on the standard ones but modified after inspecting the index with the \textit{Luke} \cite{luke} tool. 
   We have lists of different lengths and different ones for French and English.
   
-  \item \textbf{nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's \textit{NGramTokenFilter} \cite{lucenengramtokenfilter}.
+  \item \textbf{Character nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's \textit{NGramTokenFilter} \cite{lucenengramtokenfilter}.
   
-  \item \textbf{shingleFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's \textit{ShingleFilter} \cite{luceneshinglefilter} that allows the creation of a combination of words.
+  \item \textbf{Word nGramFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's \textit{ShingleFilter} \cite{luceneshinglefilter} that allows the creation of a combination of words.
   
   \item \textbf{useNLPFilter}: this boolean allows the use of Solr's \cite{solr} \textit{OpenNLPPPOSFilter} \cite{solropennlpposfilter} for Part-Of-Speech Tagging and of a custom class called \textit{OpenNLPNERFilter} for Named Entity Recognition. 
   To load the \textit{.bin} models, which are located in the \textit{resources} folder, we use two methods from \textit{AnalyzerUtil}: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
@@ -261,70 +211,6 @@ final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Sta
 We have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist. 
 We didn't use any of the other parameters.
 We utilized the Gson library to efficiently parse a JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects, enabling effortless manipulation and integration of the query expansions into our application.
-
-
-\subsection{Indexer}
-The \textit{Indexer} is in charge of calling the \textit{Parser} (\ref{parser_subsec}) and the \textit{Analyzer} (\ref{analyzer_subsec}), taking the document processed by these two and indexing them as an object of the \textit{ParsedTextDocument} defined in the \textit{Parser}. \\
-The class which performs the document processing mentioned above is \textit{DirectoryIndexer}, whose constructor is the following:
-\begin{lstlisting}
-    public DirectoryIndexer(final Analyzer analyzer, final Similarity similarity, final int ramBufferSizeMB,
-                            final String indexPath, final String docsPath, final String extension,
-                            final String charsetName, final long expectedDocs,
-                            final Class<? extends DocumentParser> dpCls) {
-\end{lstlisting}
-It takes the following inputs:
-\begin{itemize}
-\item \textbf{analyzer}: the \textit{Analyzer} to be used, in our case \textit{CloseAnalyzer};
-\item \textbf{similarity}: the \textit{Similarity} function to be used by the \textit{Analyzer};
-\item \textbf{ramBufferSizeMB}: the size in megabytes of the RAM buffer for indexing the documents;
-\item \textbf{indexPath}: the directory where to store the index;
-\item \textbf{docsPath}: the directory from which the documents of the collection have to be read;
-\item \textbf{extension}: the extension of the files in the collection to be indexed;
-\item \textbf{charsetName}: the name of the charset used for encoding documents;
-\item \textbf{expectedDocs}: the total number of documents expected to be indexed;
-\item \textbf{dpCls}: the class of the \textit{DocumentParser} to be used, in our case \textit{ClefParser}.
-\end{itemize}
-The function which actually performs the storing of the index is:
-\begin{verbatim}
-public void index()
-\end{verbatim}
-Its main functionality, which consists of reading, indexing, and storing the processed documents, is shown below:
-\begin{lstlisting}
-    // Create a stream of parsed documents from the file with the given Parser class(dpCls)
-    DocumentParser.create(dpCls, Files.newBufferedReader(file, cs)).forEach(pd -> {
-        Document doc = new Document();
-        ParsedTextDocument ptd = (ParsedTextDocument) pd;
-
-        // add the document identifier
-        doc.add(new StringField(ParsedTextDocument.Fields.ID, ptd.getIdentifier(), Field.Store.YES));
-
-        // add the processed document content
-        doc.add(new BodyField(ptd.getBody()));
-        try {
-            writer.addDocument(doc);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        docsCount++;
-
-        // print progress every 10000 indexed documents
-        if (docsCount % 10000 == 0) {
-            System.out.printf("%d document(s) (%d files, %d Mbytes) indexed in %d seconds.%n",
-            docsCount, filesCount, bytesCount / MBYTE,
-            (System.currentTimeMillis() - start) / 1000);
-        }
-    });
-\end{lstlisting}
-
-The \textit{Indexer} contains some printouts used to see the progress of the indexing during the execution, such as the number of indexed documents, the time elapsed, if the number of documents indexed is less than expected, and some other eventual warning that can come out during this operation. \\
-The overall workflow, starting from the documents collection and ending with having the indexed documents stored, is the following:
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=0.8\linewidth]{figure/Indexer_workflow.pdf}
-    \caption{Workflow of the indexer.}
-    \label{fig:Indexer_workflow}
-\end{figure}
 
 
 \subsection{Searcher} \label{searcher_subsec}
