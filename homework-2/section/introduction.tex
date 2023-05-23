@@ -1,6 +1,16 @@
+\enlargethispage{2\baselineskip}
 \section{Introduction}
 \label{sec:introduction}
 
-Introduce the context, motivations, and goals of your project.
+Recent research has shown that the performance of information retrieval systems can deteriorate over time as the data they are trained on becomes less relevant to current search queries. 
+This problem is particularly acute when dealing with temporal information, as web documents and user search preferences evolve over time. 
+In this paper, we propose a solution to this problem by developing an information retrieval system that can adapt to changes in the data over time, while maintaining high performance.
 
-The paper is organized as follows: Section~\ref{sec:related} introduces related works; Section~\ref{sec:methodology} describes our approach; Section~\ref{sec:setup} explains our experimental setup; Section~\ref{sec:results} discusses our main findings; finally, Section~\ref{sec:conclusion} draws some conclusions and outlooks for future work.
+Our approach involves using the training data provided by \textit{Qwant}~\cite{qwant} search engine, which includes user searches and web documents in both French and English.
+We believe that this data will enable our system to better adapt to changes in user search behavior and the content of web documents.
+
+The remainder of this paper is organized as follows: 
+Section~\ref{sec:methodology} describes our approach in more detail, including the different techniques we used. 
+Section~\ref{sec:setup} explains our experimental setup, including the datasets and evaluation metrics we used. 
+Section~\ref{sec:results} presents our main findings and analyzes them based on the choices we made regarding various techniques. 
+Finally, Section~\ref{sec:conclusion} summarizes our conclusions and outlines potential avenues for future work.
