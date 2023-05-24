@@ -45,13 +45,11 @@
 \pagebreak
 \begin{itemize}
     \item \textbf{run1}: PorterStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter, BM25Similarity;
-    \item \textbf{run2}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter, BM25Similarity;
-    \item \textbf{run3}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90);
-    \item \textbf{run4}: PorterStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist.txt" for StopFilter, LowerCaseFilter, BM25Similarity((float)1.2,(float)0.90), EnglishPossessiveFilter;
-    \item \textbf{run5}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "new-long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90), ElisionFilter with some common french articles and prepositions;
+    \item \textbf{run2}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter, BM25Similarity, Query Expansion;
+    \item \textbf{run3}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90), Query Expansion, Re-ranking;
+    \item \textbf{run4}: PorterStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist.txt" for StopFilter, LowerCaseFilter, BM25Similarity((float)1.2,(float)0.90), EnglishPossessiveFilter, Query Expansion, Re-ranking;
+    \item \textbf{run5}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "new-long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90), ElisionFilter with some common french articles and prepositions, Query Expansion, Re-ranking;
 \end{itemize}
-
-
 
 
 \begin{figure}[h!]

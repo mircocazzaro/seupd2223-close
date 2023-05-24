@@ -6,35 +6,41 @@ In the development of our \ac{IR} system, we followed the traditional \textit{Y 
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.9\linewidth]{figure/Y.pdf}
+    \includegraphics[width=0.9\linewidth]{figure/Y.pdf} 
     \caption{Apache Lucene Y Model.}
     \label{fig:lucene_yModel}
 \end{figure}
 
-The workflow of our system, starting from the train collection provided by \ac{LongEval} \cite{cleflongeval}, is as follows:
+The workflow of our system, starting from the train collection provided by \textit{LongEval} \cite{cleflongeval}, is as follows:
 \begin{enumerate}
     \item \textbf{Parsing}: The first phase consists of parsing the documents in the collection, which is a pre-processing operation performed to clean them from unnecessary noises. Since the collection is composed of web pages, the documents contain many leftovers like JavaScript scripts, HTML and CSS codes, HTTP and HTTPS URIs, and so on. The purpose of this phase is to ease the processing performed in the following phases.
 
     \item \textbf{Indexing}: Each parsed document is then analyzed and indexed keeping only the necessary information. Indexed documents are composed of two fields: an \textit{id} field, containing the identifier of the document in the collection, and a \textit{content} field, containing the entire body of the document cleaned by the parsing and indexing phases.
 
-    \item \textbf{Query Formulation}: Topics are then parsed using the same analyzer used for documents, and used to formulate queries. For each topic, together with the already provided query, around 15 others are computed and used altogether for searching relevant documents.
+    \item \textbf{Query Formulation}: Topics are then parsed using the same analyzer used for documents, and used to formulate queries. For each topic, together with the already provided query, around 15 others query variants are computed and used altogether for searching relevant documents.
 
     \item \textbf{Re-ranking}: The retrieved documents are re-ranked combining the scores obtained with two different approaches which compute the similarity of the document to the query given in the topic.
 
 \end{enumerate}
 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{figure/CLOSE_IR_Workflow (2).pdf}
+    \caption{Workflow of the IR system implemented by \textit{CLOSE}.}
+    \label{fig:CLOSE_IR_Workflow}
+\end{figure}
 
 \newpage
+\enlargethispage{5\baselineskip}
 \subsection{Class Diagram}
-\centering
 
 \begin{figure}[!h]
-    \includegraphics[height=\textheight, angle =90, keepaspectratio]{figure/Classes_diagram_white.pdf}
+    \centering
+    \includegraphics[height=0.7\textheight, angle =90, keepaspectratio]{figure/Classes_diagram_white.pdf}
     \caption{Diagram of the classes implemented by \textit{CLOSE} \ac{IR} system}
     \label{fig:Classes_diagram_white}
 \end{figure}
 \clearpage
-
 
 \subsection{Parser} \label{parser_subsec}
 As stated before, the documents in the collection provided by the \ac{CLEF} \textit{LongEval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection.
@@ -208,7 +214,8 @@ After different trials with different variations of the parameter, the following
 \begin{lstlisting}
 final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, false, "new-long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false, true);
 \end{lstlisting}
-We have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist. 
+We have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist.
+This stoplist has been built upon a popular French stoplist together with the most frequent stopwords in the collection.  
 We didn't use any of the other parameters.
 We utilized the Gson library to efficiently parse a JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects, enabling effortless manipulation and integration of the query expansions into our application.
 
@@ -222,8 +229,6 @@ Our implementation does so by accepting the following parameters:
   \item \textbf{analyzer}: in this case, an instance of \textit{CloseAnalyzer}.
   \item \textbf{similarity}: we decided to opt for the \textit{BM25Similarity} \cite{lucenebm25similarity} function with the parameters \textit{k1} and \textit{b} tuned at 1.2 and 0.90.
   \item \textbf{Run options}: there are parameters for the index path, the topics path, the run path and the run name, the number of the expected topic (in our case 50), and the maximum number of documents retrieved (in our case 1000).
-  \item \textbf{useEmbeddings}: a boolean value to decide whether to use embeddings or not. 
-  If it is set to true we don't use the similarity function. In our implementation, we opted to not use them.
   \item \textbf{reRankModel}: this is the type of model used to do a Re-Ranking on the retrieved documents. 
   In our case, we use a model called \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2}, explained in the following subsection. 
   If the parameter is set to null, no model is used and the documents are scored normally.
@@ -231,8 +236,9 @@ Our implementation does so by accepting the following parameters:
 
 
 \subsubsection{Query Expansion}
-When running the search function, one of the first actions performed is to generate new queries from the original ones by query expansion.
-We created a Python script that, given the \textit{*.trec} file, generates all the expanded terms for each query and stores everything in a \textit{.json} file called \textit{result}.
+When running the search function, one of the first actions performed is to generate new queries from the original ones by query expansion \cite{wang2023}. \\
+% For this task we have taken inspiration from the work of Shuai Wang \cite{wang2023}. 
+We created a Python script that, given the \textit{*.trec} topic file, generates all the expanded terms for each query and stores everything in a \textit{.json} file called \textit{result}, containing all the expansions.
 \newline
 We use \textit{OpenAI's} \textit{Text completion} \cite{openaicompletionapi} endpoints to generate the expansions, we can use our need as prompt and the model will generate the result. 
 We used the \textit{davinci} model, which is the most powerful one, and we set the \textit{temperature} parameter to 0.6, which is the value that gives the best results.
@@ -258,7 +264,7 @@ The main difference between \textit{davinci-text-002} and \textit{davinci-text-0
 Query boosting is a technique used to assign greater relevance to certain query terms or queries.\newline
 We tried the following approach that seemed to improve the overall results: when building the queries in the search function of the \textit{Searcher} (\ref{searcher_subsec}), for each query, a \textit{BooleanQuery} \cite{lucenebooleanquery} is built in the following way: 
 after getting the query expansions, each of them is added to the \textit{BooleanQuery} with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must be satisfied. \\
-This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions.
+This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions. We got this value by a trial \& error approach we used to fine tune this parameter.
 
 \subsubsection{Document Re-Ranking}
 This is the process of ranking the documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}) a second time, using, in our case, a model that maps sentences and paragraphs to a 384-dimensional dense vector space called \textit{all-MiniLM-L6-v2}~\cite{huggingfaceallminilml6v2}. This sentence transformer model is coming from a Python framework called \textit{Sentence Transformers}~\cite{sentence-transformers}, also \textit{all-MiniLM-L6-v2} aims to train sentence embedding models on very large sentence level datasets using a self-supervised contrastive learning objective.
