@@ -74,84 +74,15 @@ The types of noises we tried to remove are the following:
 \item Social media handlers,
 \item Hashtags and mentions.
 \end{itemize}
-
-\newpage
+The final decision about the type of noises to effectively remove for our runs was the most crucial part of this process. \\
+For establishing this we used a trial \& error approach, and at the end we decided to remove only the \textit{JavaScript} scripts and the \textit{HTTP} and \textit{HTTPS} URIs. Regarding \textit{URI}s, although these are usually important because they can contain valuable keywords, we noticed an improvement in \ac{MAP} of almost 0.5 points by just removing them. \\
 We also identified some patterns of words and symbols to remove:
 \begin{itemize}
 \item Two words separated by an underscore, like \textit{word1\_word2}
 \item Two words separated by a colon, like \textit{word1:word2}
 \item Two words separated by a point, like ``\textit{word1.word2}''
 \end{itemize}
-We used \textit{Regular Expressions} \cite{regexdefinition} to define the patterns to identify and remove. 
-The code below shows the \textit{removePatterns} function, used by the parser for removing the patterns mentioned above together with the \textit{HTTP} and \textit{HTTPS} URIs.
-\begin{lstlisting}[language=Java]
-    // Function to remove patterns like "word1_word2", "word1.word2", "word1.word2", and HTTP/HTTPS URIs from a string
-    public String removePatterns(String input) {
-
-        // Define regular expression pattern to match the desired patterns
-        Pattern pattern = Pattern.compile("(\\w+)[_.:](\\w+) |
-            (https?://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)
-            ");
-            
-        // Replace all matched patterns with a space character
-        Matcher matcher = pattern.matcher(input);
-        String output = matcher.replaceAll(" ");
-
-        return output;
-    }
-\end{lstlisting}
-
-After different tries, we decided to use only the function above for removing noises, which gave an improving in \ac{MAP} of +0.5\%, together with another one used to remove \textit{JavaScript} codes, which by itself gave +3\% on \ac{MAP}. \\
-The code of the \textit{JavaScript} parser function is the one below:
-\begin{lstlisting}[language=Java]
-    public String removeJavaScript(String documentBody) {
-        // Get the body of the document.
-        StringBuilder bodyBuilder = new StringBuilder(documentBody);
-
-        //compiles regular expression for JS and all caps text
-        Pattern jspattern=Pattern.compile("function.(.)[{]");
-
-        int start=0;
-        int end=0;
-        //removes all <scripts>
-        while((start=bodyBuilder.indexOf("<script", start))!=-1){
-            if((end=bodyBuilder.indexOf("script>", start))!=-1){
-                end=end+7;
-                bodyBuilder.replace(start, end, "");
-                continue;
-            }
-            if((end=bodyBuilder.indexOf(">", start))!=-1){
-                end++;
-                bodyBuilder.replace(start, end, "");
-                continue;
-            }
-            start++;
-        }
-
-        //removes JS
-        Matcher m = jspattern.matcher(bodyBuilder);
-        while(m.find()){
-            start=m.start();
-            int count=1;
-            for(int i=start; i<bodyBuilder.length(); i++){
-                if(bodyBuilder.charAt(i)=='{'){
-                    count++;
-                    continue;
-                }
-                if((bodyBuilder.charAt(i)=='}')){
-                    if(--count==0){
-                        bodyBuilder.replace(start, i, "");
-                        m = jspattern.matcher(bodyBuilder);
-                        break;
-
-                    }
-                }
-            }
-        }
-
-        return bodyBuilder.toString();
-    }
-\end{lstlisting}
+We used \textit{Regular Expressions} \cite{regexdefinition} to identify and remove these patterns.  
 
 The structure of the parsed document is defined in the \textit{ParsedTextDocument} class, and it is composed of just two fields, as provided by \ac{CLEF}:
 \begin{enumerate}
@@ -168,7 +99,7 @@ The constructor of \textit{ParsedTextDocument} is the following:
      */
     public ParsedTextDocument(final String id, final String body) 
 \end{lstlisting}
-Inside it, multiple controls about the validity and integrity of the parameters are performed, then an object of the class is instantiated. \\
+Inside it, multiple controls about the validity and integrity of the parameters are performed, then an object of the class is instantiated. 
 
 
 \subsection{Analyzer} \label{analyzer_subsec}
