@@ -1,0 +1,126 @@
+\documentclass{ceurart}
+
+\usepackage[footnote]{acronym}
+\usepackage{subcaption}
+\usepackage{dirtree}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{lmodern}
+
+\restylefloat{table}
+
+
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\renewcommand{\acffont}[1]{\textsl{#1}}
+
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% Rights management information.
+%% CC-BY is default license.
+\copyrightyear{2023}
+\copyrightclause{Copyright for this paper by its authors.\\
+  Use permitted under Creative Commons License Attribution 4.0
+  International (CC BY 4.0).}
+
+%%
+%% This command is for the conference information
+\conference{``Search Engines'', course at the master degree in ``Computer Engineering'', Department of Information Engineering, and at the master degree in ``Data Science'', Department of Mathematics ``Tullio Levi-Civita'', University of Padua, Italy. Academic Year 2022/2023}
+
+%%
+%% The "title" command
+\title{SEUPD@CLEF: Team CLOSE}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+\author[1]{Gianluca Antolini}[%
+email=gianluca.antolini@studenti.unipd.it
+]
+
+\author[1]{Nicola Boscolo}[%
+email=nicola.boscolocegion.1@studenti.unipd.it
+]
+
+\author[1]{Mirco Cazzaro}[%
+email=mirco.cazzaro@studenti.unipd.it
+]
+
+\author[1]{Marco Martinelli}[%
+email=marco.martinelli.4@studenti.unipd.it
+]
+
+\author[1]{Seyedreza Safavi}[%
+email=seyedreza.safavi@studenti.unipd.it
+]
+
+\author[1]{Farzad Shami}[%
+email=farzad.shami@studenti.unipd.it
+]
+
+\address[1]{University of Padua, Italy}
+
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+  This paper presents the work of the \textit{CLOSE} group, a team of students from the University of Padua, Italy, for the \ac{CLEF} LongEval LAB 2023 Task 1~\cite{cleflongeval}.
+  Our work involved developing an Information Retrieval system that can handle changes in data over time while maintaining high performance.
+  We first introduce the problem as stated by \ac{CLEF} and then describe our system, explaining the different methodologies we implemented.
+  We provide the results of our experiments and analyze them based on the choices we made regarding various techniques.
+  Finally, we propose potential avenues for future improvement of our system.
+\end{abstract}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\begin{keywords}
+  Information Retrieval \sep
+  Search Engines \sep
+  Longitudinal Evaluation \sep
+  Model Performance
+\end{keywords}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+
+\input{section/introduction}
+
+\input{section/methodology}
+
+\input{section/setup}
+
+\input{section/results}
+
+\input{section/conclusion}
+
+
+
+
+%% Define the bibliography file to be used
+\bibliography{bibliography,proceedings}
+
+\input{acronyms}
+
+
+\end{document}

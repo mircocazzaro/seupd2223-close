@@ -1,0 +1,5 @@
+This paper presents the work of the \textit{CLOSE} group, a team of students from the University of Padua, Italy, for the \ac{CLEF} LongEval LAB 2023 Task 1~\cite{cleflongeval}.
+  Our work involved developing an Information Retrieval system that can handle changes in data over time while maintaining high performance.
+  We first introduce the problem as stated by \ac{CLEF} and then describe our system, explaining the different methodologies we implemented.
+  We provide the results of our experiments and analyze them based on the choices we made regarding various techniques.
+  Finally, we propose potential avenues for future improvement of our system.

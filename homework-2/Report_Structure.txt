@@ -1,0 +1,82 @@
+### STRUCTURE OF THE REPORT ###
+
+## Section 0: Abstract & Keywords (Done) ##
+To check 
+
+
+## Section 1: Introduction (Done) ##
+Done, to check
+
+
+## Section 2: Methodology ##
+# SubSection 2.1: General Overview (To be done by Marco) #
+See IntSeg report for inspiration
+
+# SubSection 2.2: Class Diagram (To be done by Mirco) #
+
+# SubSection 2.3: Project Structure (To be done by Marco) #
+Insert a brief overview of the project structure, explaining the content of the folders:
+	- experiment
+	- python_scripts
+	- src
+		> java
+			+ analyzer
+			+ indexer
+			+ parser
+			+ searcher
+			+ utils
+			(here specify that a specific overview of these packages will be done in the next subsections)
+		> resources
+
+# SubSection 2.4: Parser (To be done by Marco) #
+# SubSection 2.5: Indexer (To be done by Marco) #
+# SubSection 2.6: Analyzer (To be done by Gianluca) #
+# SubSection 2.7: Searcher (To be done by Gianluca) #
+The content/structure of these four subsections is the following:
+	- What it does/What is it purpose
+	- How it's done (specify eventually some particular libraries used)
+	- Main challenges and issues encountered
+	- Approaches tried and approaches failed
+	- Current best approach being used
+	- Constructor with parameters and explanation of these
+	- Instance of the best approach (e.g. for the parser put a screenshot of a parsed document)
+
+
+## Section 3: Experimental Setup (Not assigned) ##
+# SubSection 3.1: Used Collection #
+Explain the collection being used, the conference from which is taken, the structure, the overall organization of the competition.
+Not much else to say, take inspiration from IntSeg and other past groups.
+
+# SubSection 3.2: Evaluation Measures #
+Explain the main evaluation measures taken into account to evaluate improvals in the effectiveness of our IR system:
+	- num ret
+	- num rel
+	- num rel ret
+	- map
+	- rprec
+	- p@5
+	- p@10
+	(insert formulas for computing these where needed)
+Explain why we decided to look at these.
+Brief explanation about trec_eval, what is, how it works, input & outputs...
+
+# SubSection 3.3: URL Link to BitBucket Repo and to Organization (?) #
+
+# SubSection 3.4: Architecture #
+Explain that for the most of the project everyone used to run on its own pc.
+Explain why at a certain point we decided to switch and make Mirco and Nicola run (deeplearning, GPU use).
+Insert system info of Nicola's and Mirco's PC
+
+
+## Section 4: Results and Discussion (To be done after the run to submit have been decided by the ones in charge) ##
+Take inspiration from IntSeg table for the result table.
+Take inspiration from IntSeg observations.
+Eventually (if appropriate) insert a ranking example as been done by IntSeg.
+
+
+## Section 5: Conclusion ##
+To be assigned
+
+## Optional Section: Contributions ##
+If done, this will be the Section (2).
+In this section we insert papers which avvalorate what we have done/implemented (see IntSeg paper).
