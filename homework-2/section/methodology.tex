@@ -36,11 +36,17 @@ The workflow of our system, starting from the train collection provided by \text
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[height=0.7\textheight, angle =90, keepaspectratio]{figure/Classes_diagram_white.pdf}
+    \includegraphics[height=0.7\textheight, angle =90, keepaspectratio]{figure/Classes_diagram_white_crop.pdf}
     \caption{Diagram of the classes implemented by \textit{CLOSE} \ac{IR} system}
     \label{fig:Classes_diagram_white}
 \end{figure}
 \clearpage
+The class diagram of the system [\ref{fig:Classes_diagram_white}] retraces the Y model [\ref{fig:lucene_yModel}] of an IR system: in fact, it is possible to see as an indexer class and a searcher class that are, in this order,
+called by the main class \textit{CloseSearchEngine} of our system. The \textit{Analyzer} class is instantiated before all, as it is used both from the two main branches stated before. Here many other Lucene and Solr tool are istantiated, as long as this component
+is responsible of analyzing tokens, and here most of our processing phase goes on: in particular, the tokenizer and the stemmer (and some NLP filters used in a trial).\\
+The other connected component of the diagram is related to the parsing section: here, while walking on the file tree, the \textit{Indexer} uses this component to generate, from a JSON document, an actual Java object (\textit{ParsedTextDocument}) representing it with its fields.\\
+The \textit{Searcher} class firstly parses the queries from the trec format in a Lucene \textit{QualityQuery} object, through our \textit{ClefQueryParser} class. It also istantiate the \textit{ReRanker}, responsible of the second ranking phase.\\
+Other utility classes are included but no longer used in our project.
 
 \subsection{Parser} \label{parser_subsec}
 As stated before, the documents in the collection provided by the \ac{CLEF} \textit{LongEval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection.
