@@ -204,16 +204,28 @@ after getting the query expansions, each of them is added to the \textit{Boolean
 This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions. We got this value by a trial \& error approach we used to fine tune this parameter.
 
 \subsubsection{Document Re-Ranking}
-This is the process of ranking the documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}) a second time, using, in our case, a model that maps sentences and paragraphs to a 384-dimensional dense vector space called \textit{all-MiniLM-L6-v2}~\cite{huggingfaceallminilml6v2}. This sentence transformer model is coming from a Python framework called \textit{Sentence Transformers}~\cite{sentence-transformers}, also \textit{all-MiniLM-L6-v2} aims to train sentence embedding models on very large sentence level datasets using a self-supervised contrastive learning objective.
+This is the process of ranking documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}).
+For this task, we used sentence transformers~\cite{sentence-transformers}, a Python framework for state-of-the-art sentence, text and image embeddings.
+We experimented with different models, but the one that gave us the best results was \textit{all-MiniLM-L6-v2}~\cite{huggingfaceallminilml6v2}, a model that aims to train sentence embedding models on very large sentence level datasets using a self-supervised contrastive learning objective. It maps sentences and paragraphs to a 384 dimensional dense vector.
+We load the \textit{all-MiniLM-L6-v2} model to create a \textit{SentenceTransformer} object, which is used to create embeddings for the documents and query retrieved by the search function.
+For calculating the similarity, we used the \textit{cosine similarity} formula, which is the most used formula for calculating the similarity between two vectors.
+The formula is:
+\begin{equation}
+    similarity = \frac{t \cdot d\_i}{\|t\| \|d\_i\|}\label{eq:similarity_equation}
+\end{equation}
+where $t$ is the query vector and $d\_i$ is the i'th document vector.
 \newline
-It works in the following way: in the constructor of the \textit{Searcher} the Re-Ranker is initialized and a predictor is created to perform inference.
-At the end of the search function, we call a \textit{sort} function that, using the predictor, creates embeddings for the documents and, for each query, calculates the similarity between the query and the documents.
-Finally, these scores are multiplied by the actual document's scores, and the documents are then sorted by looking at these new scores.
-\newline
-We tested different combinations of parameters to find the best one, and we found that the best combination is multiplying the document's score by the \textit{BM25Similarity} function, with the similarity calculated with the \textit{cosine} function.
+Then we try to merge this score with the BM25 score to achieve better rank for the documents.
+We tried different approaches, but the one that gave us the best results was the following:
+\begin{equation}
+    rank = BM25\_score * similarity\label{eq:rank_equation}
+\end{equation}
+
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.45, keepaspectratio]{figure/re-ranking}
     \caption{Plot of the re-ranking operation performed on 50 sample queries}
     \label{fig:re-rankinge}
 \end{figure}
+
+After all, sort the documents by the new rank and return them.
