@@ -43,17 +43,44 @@
     \label{table:results}
 \end{table}
 \pagebreak
-\begin{itemize}
-    \item \textbf{run1}: PorterStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter, BM25Similarity;
-    \item \textbf{run2}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter, BM25Similarity, Query Expansion;
-    \item \textbf{run3}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90), Query Expansion, Re-ranking;
-    \item \textbf{run4}: PorterStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist.txt" for StopFilter, LowerCaseFilter, BM25Similarity((float)1.2,(float)0.90), EnglishPossessiveFilter, Query Expansion, Re-ranking;
-    \item \textbf{run5}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "new-long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90), ElisionFilter with some common french articles and prepositions, Query Expansion, Re-ranking;
-\end{itemize}
 
+%\begin{itemize}
+%    \item \textbf{run1}: PorterStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter, BM25Similarity;
+%    \item \textbf{run2}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter, BM25Similarity, Query Expansion;
+%    \item \textbf{run3}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90), Query Expansion, Re-ranking;
+%    \item \textbf{run4}: PorterStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "long-stoplist.txt" for StopFilter, LowerCaseFilter, BM25Similarity((float)1.2,(float)0.90), EnglishPossessiveFilter, Query Expansion, Re-ranking;
+%    \item \textbf{run5}: FrenchLightStemFilter, Standard tokenizer, LenghtFilter between 2 and 15, "new-long-stoplist-fr.txt" for StopFilter, LowerCaseFilter,\\ BM25Similarity((float)1.2,(float)0.90), ElisionFilter with some common french articles and prepositions, Query Expansion, Re-ranking;
+%\end{itemize}
 
-\begin{figure}[h!]
-    \includegraphics[width=\textwidth]{figure/PRgraph.png}
-    \caption{Recall and precision graph}
-    \label{fig:recallPrecision}
-  \end{figure}
+\begin{table}
+    \hspace*{-2.4cm}
+    \begin{tabularx}{1.33\textwidth}{|l|X|X|X|X|X|} 
+    \hline
+    \textbf{Parameter} & \textbf{Run 1} & \textbf{Run 2} & \textbf{Run 3} & \textbf{Run 4} & \textbf{Run 5} \\
+    \hline
+    Token Filter & Porter- \newline StemFilter & FrenchLight- \newline StemFilter & FrenchLight- \newline StemFilter & PorterStem- \newline Filter & FrenchLight- \newline StemFilter \\
+    \hline
+    Tokenizer & Standard & Standard & Standard & Standard & Standard \\
+    \hline
+    Length Filter & 2-15 & 2-15 & 2-15 & 2-15 & 2-15 \\
+    \hline
+    Stop Filter & "\textit{long-stoplist-fr.txt}" & "\textit{long-stoplist-fr.txt}" & "\textit{long-stoplist-fr.txt}" & "\textit{long-stoplist.txt}" & "\textit{new-long-stoplist-fr.txt}" \\
+    \hline
+    Lower Case Filter & Yes & Yes & Yes & Yes & Yes \\
+    \hline
+    Similarity & BM25 & BM25 & BM25 & BM25 & BM25 \\
+    \hline
+    Query Expansion & No & Yes & Yes & Yes & Yes \\
+    \hline
+    Re-ranking & No & No & Yes & Yes & Yes \\
+    \hline
+    \end{tabularx}
+    \caption{Parameters used in the 5 different runs submitted to \ac{CLEF}}
+    \label{tab:run_parameters}
+\end{table}        
+
+%\begin{figure}[h!]
+%    \includegraphics[width=\textwidth]{figure/PRgraph.png}
+%    \caption{Recall and precision graph}
+%    \label{fig:recallPrecision}
+%  \end{figure}
