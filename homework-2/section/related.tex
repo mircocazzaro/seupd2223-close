@@ -1,0 +1,16 @@
+\section{Related Work}
+\label{sec:related}
+
+Our first approach in implementing our system was to try to look to the basic HelloTipster 
+experiment provided by professor Nicola Ferro in his repository, so to have a basic Lucene implementation
+of the main charateristics and functionalities that an information retrieval system has to have.
+Since the developement phase followed the same steps as an actual information retrieval process,
+we can describe our approaches based on them.
+
+\begin{itemize}
+    \item Parser: the legacy implementation was simply streaming the content of each documents into the analyzer, which was then firstly tokenizing the content and starting with all the logic. Researchers in IR usually keep this step as simply as possible, to be more general and avoid overfitting problems; by the way we decided to put in here some actions to clean from the documents body any kind of scripting code: it was simpler, in fact, to remove all this dirtyness before passing data to the analyzer, which actually analyzes tokens one by one.
+    \item Analyzer: the analyzer from the Hello Tipster system was meant to be used with english tokens; by the way we faced to manage both english and french collecions of documents. Thus, we ended up to set in it different configurations, to be switched based on the collection used. Since many parameters can be configured inside in the analyzer, our workflow was to see which filters were available in Lucene and there it was basically a trial and error procedure to see which configurations were performing the best. More details will be available in the next sections.
+    \item Searcher: even in the searching section is necessary, even if smaller, a parsing section as to gather the content of the topics. The parser used in the legacy code was parsing a slight different format rather than the one provided, so the very first step was to implement a simply parsing section. After that, two major were setted: query expansion, generated for each of the provided topics: results were combined by weighting more the original queries with respect to their expansions. After that, the second improvement was carried by results re-ranking, throug a model working with sentence embeddings.
+\end{itemize}
+
+\pagebreak

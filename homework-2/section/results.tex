@@ -36,7 +36,6 @@ We tried to use the \textit{SBERT} model~\cite{reimers-2019-sentence-bert}, whic
 We tried to use different distance metrics such as \textit{CosineSimilarity} and \textit{ManhattanDistance} for calculating the similarity, but at the end of the day, \textit{CosineSimilarity} is much better than others.
 Finally, we sort the documents based on merging the BM25 score and similarity score into one score by multiplying them together.
 
-\newline
 Lastly, some minor adding were set on the \textit{Analyzer} (see Section \ref{analyzer_subsec}) by implementing the Lucene \textit{ElisionFilter} (for French) \cite{luceneelisionfilter}, which aims to remove apostrophes articles and prepositions from tokens (for example, \textit{m'appelle} and \textit{t'appelle} become the same token).
 
 

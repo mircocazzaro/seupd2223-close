@@ -1,6 +1,6 @@
-\Title{SEUPD@CLEF: Team CLOSE}
-\Author{Gianluca Antolini\sep Nicola Boscolo\sep Mirco Cazzaro\sep Marco Martinelli\sep Seyedreza Safavi\sep Farzad Shami}
-\Keywords{Information Retrieval \sep Search Engines \sep Longitudinal Evaluation \sep Model Performance}
+\Title{Notebook for the LongEval Lab on Information Retrieval at CLEF 2023}
+\Author{Gianluca Antolini\sep Nicola Boscolo\sep Mirco Cazzaro\sep Marco Martinelli\sep Seyedreza Safavi\sep Farzad Shami\sep Nicola Ferro}
+\Keywords{Information Retrieval \sep Search Engines \sep Longitudinal Evaluation \sep Temporal persistence \sep Model Performance}
 \Subject{CEUR Workshop Proceedings (CEUR-WS.org)}
 \Copyright{\copyright\ 2023\ Copyright for this paper by its authors.\\ Use permitted under Creative Commons License Attribution 4.0 International (CC BY 4.0).}
 \CopyrightURL{https://creativecommons.org/licenses/by/4.0}
