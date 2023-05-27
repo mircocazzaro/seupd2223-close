@@ -19,7 +19,7 @@ The workflow of our system, starting from the train collection provided by \text
 
     \item \textbf{Query Formulation}: Topics are then parsed using the same analyzer used for documents, and used to formulate queries. For each topic, together with the already provided query, around 15 others query variants are generated (through GPT model) by us and used altogether for searching relevant documents.
 
-    \item \textbf{Re-ranking}: The retrieved documents are re-ranked combining the scores obtained with two different approaches which compute the similarity of the document to the query given in the topic.
+    \item \textbf{Re-ranking}: Utilizing the sentence transformers model to determine the similarity between the document and the query. This similarity score is then multiplied by the BM25 score, resulting in new ranking scores for the documents. Then the retrieved documents are re-ranked based on these new ranking scores.
 
 \end{enumerate}
 
