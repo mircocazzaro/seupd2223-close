@@ -18,6 +18,7 @@ The analyses and discussions provided in the next subsections aim to give a bett
 
 
 \newpage
+\subsection{Analysis of Results on the French Collection}
 \enlargethispage{3\baselineskip}
 \subsubsection{Overall \textit{nDCG} Comparison}  \label{sec:ndcg_comparison_french}
 
@@ -84,6 +85,19 @@ This plot enables us to examine the effects of both the choice of run and the lo
 \label{fig:lt_anova_french}
 \end{figure}
 
+%\begin{figure}[!htb]
+%    \begin{minipage}{0.48\textwidth}
+%        \centering
+%        \includegraphics[width=\linewidth]{figure/StatisticalAnalysis/ANOVA 2/ndcg-lt-fr.jpeg}
+%        \caption{Interpolation for Data 1}\label{Fig:Data1}
+%    \end{minipage}\hfill
+%    \begin{minipage}{0.48\textwidth}
+%        \centering
+%        \includegraphics[width=\linewidth]{figure/StatisticalAnalysis/ANOVA 2/ap-lt-fr.jpeg}
+%        \caption{Interpolation for Data 2}\label{Fig:Data2}
+%    \end{minipage}
+%\end{figure}
+
 Analyzing the two-way \ac{ANOVA} plot above, at first view we can notice, as expected, that there is no interaction among the three runs.  
 
 Then, we observe that Run 5 consistently achieves the highest mean \ac{nDCG} score across different evaluation points. 
@@ -124,7 +138,7 @@ Similarly, the results of the two-way \ac{ANOVA} performed on the Short Term Fre
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.8\textwidth]{figure/StatisticalAnalysis/ANOVA 2/ap-st-fr.jpeg}
+\includegraphics[width=0.8\textwidth]{figure/StatisticalAnalysis/ANOVA 2/ndcg-st-fr.jpeg}
 \caption{Two-way \ac{ANOVA} for Runs 2, 3, and 5 on the Short Term French Collection}
 \label{fig:st_anova_french}
 \end{figure}
