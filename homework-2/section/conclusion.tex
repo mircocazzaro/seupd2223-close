@@ -10,3 +10,5 @@ Another area for future work is to find better prompts \cite{wang2023chatgpt} to
 We also want to explore ways to increase the similarity in \textit{SBERT}~\cite{reimers-2019-sentence-bert}, to increase the number of relevant documents found in the re-ranking phase. One possible approach is to fine-tune the \textit{SBERT}~\cite{reimers-2019-sentence-bert} model on our specific task. \\
 Another direction for future work is to index documents as vectors and use them directly, instead of calculating them in re-ranking. This trade-off would result in the loss of one of the scores, but it would increase the re-ranking speed. \\
 Finally, we plan to use links inside documents to extract details that may improve the searching results. We may try to find keywords in the URL path and use them to find their domain authority and take this aspect into account in the score computation.
+
+\newpage

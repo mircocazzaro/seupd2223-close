@@ -1,0 +1,38 @@
+\section{Related Work}
+\label{sec:related}
+
+In the development of our \ac{IR} system, we drew inspiration from various works and approaches. 
+
+This section provides an overview of the related works and methodologies that influenced our system's design and implementation.
+
+\subsection{\textit{HelloTipster} Experiment}
+
+We initially looked to the \textit{HelloTipster} \cite{hello-tipster} experiment, provided by Professor Nicola Ferro in his repository, as a starting point for implementing our \ac{IR} system. 
+
+This experiment offered a basic \textit{Lucene} \cite{lucene} implementation that encompassed the main characteristics and functionalities of an \ac{IR} system. By examining and understanding the \textit{HelloTipster} experiment, we gained insights into the fundamental steps involved in an \ac{IR} process.
+
+\subsection{Parser}
+
+A crucial step in the \ac{IR} process is parsing the documents to extract relevant information. 
+
+In the legacy implementation, the content of each document was streamed into the analyzer, which tokenized the content and initiated the subsequent logical operations. While conventional \ac{IR} practice often keeps this step simple to ensure generality and avoid overfitting, we incorporated additional actions to clean the document body of any scripting code. By removing such extraneous elements before passing the data to the analyzer, we ensured a cleaner input for token analysis. 
+
+Furthermore, since the documents were also available in \textit{JSON} format, we modified the parsing phase to accommodate this format.
+
+\subsection{Analyzer}
+
+The analyzer component in the \textit{HelloTipster} system was designed for English tokens.
+
+However, we encountered the need to handle both English and French document collections. As a result, we introduced different configurations to the analyzer, allowing us to switch between them based on the specific collection being used. 
+
+With numerous configurable parameters within the analyzer, our workflow involved exploring the available filters in \textit{Lucene} and conducting a trial-and-error process to identify the optimal configurations. Further details regarding the analyzer configurations will be discussed in the subsequent sections.
+
+\subsection{Searcher}
+
+The searcher component of our system required a parsing phase to extract the content of the topics. While the legacy code's parser worked with a slightly different format, we implemented a separate parsing section to align with the provided format. Building upon this, we incorporated two major improvements in the searcher component. 
+
+Firstly, we employed query expansion techniques to generate expanded queries for each topic, combining the original queries with their expansions by assigning greater weights to the original queries. 
+
+Secondly, we enhanced the search results by implementing a model that utilized sentence embeddings for results re-ranking.
+
+By incorporating ideas and methodologies from these related works, we aimed to build a comprehensive and effective \ac{IR} system that leveraged the strengths of existing approaches while addressing the specific requirements of our French and English collections.

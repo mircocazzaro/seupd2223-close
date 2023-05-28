@@ -17,7 +17,7 @@ The workflow of our system, starting from the train collection provided by \text
 
     \item \textbf{Indexing}: Each parsed document is then analyzed and indexed keeping only the necessary information. Indexed documents are composed of two fields: an \textit{id} field, containing the identifier of the document in the collection, and a \textit{content} field, containing the entire body of the document cleaned by the parsing and indexing phases.
 
-    \item \textbf{Query Formulation}: Topics are then parsed using the same analyzer used for documents, and used to formulate queries. For each topic, together with the already provided query, around 15 others query variants are generated (through GPT model) by us and used altogether for searching relevant documents.
+    \item \textbf{Query Formulation}: Topics are then parsed using the same analyzer used for documents, and used to formulate queries. For each topic, together with the already provided query, around 15 other query variants are generated (through the GPT model) by us and used altogether for searching relevant documents.
 
     \item \textbf{Re-ranking}: Utilizing the sentence transformers model to determine the similarity between the document and the query. This similarity score is then multiplied by the BM25 score, resulting in new ranking scores for the documents. Then the retrieved documents are re-ranked based on these new ranking scores.
 
@@ -41,11 +41,11 @@ The workflow of our system, starting from the train collection provided by \text
     \label{fig:Classes_diagram_white}
 \end{figure}
 \clearpage
-The class diagram of the system [\ref{fig:Classes_diagram_white}] retraces the Y model [\ref{fig:lucene_yModel}] of an IR system: in fact, it is possible to see as an indexer class and a searcher class that are, in this order,
-called by the main class \textit{CloseSearchEngine} of our system. The \textit{Analyzer} class is instantiated before all, as it is used both from the two main branches stated before. Here many other Lucene (and Solr for NLP filters trials) tool are istantiated, as long as this component
-is responsible of analyzing tokens, and here most of our processing phase goes on: in particular, the tokenizer and the stemmer (and some NLP filters used in a trial).\\
+The class diagram of the system [\ref{fig:Classes_diagram_white}] retraces the Y model [\ref{fig:lucene_yModel}] of an IR system: in fact, it is possible to see it as an indexer class and a searcher class that is, in this order,
+called by the main class \textit{CloseSearchEngine} of our system. The \textit{Analyzer} class is instantiated before all, as it is used both from the two main branches stated before. Here many other Lucene (and Solr for NLP filters trials) tools are instantiated, as long as this component
+is responsible for analyzing tokens, and here most of our processing phase goes on: in particular, the tokenizer and the stemmer (and some NLP filters used in a trial).\\
 The other connected component of the diagram is related to the parsing section: here, while walking on the file tree, the \textit{Indexer} uses this component to generate, from a JSON document, an actual Java object (\textit{ParsedTextDocument}) representing it with its fields.\\
-The \textit{Searcher} class firstly parses the queries from the trec format in a Lucene \textit{QualityQuery} object, through our \textit{ClefQueryParser} class. It also istantiate the \textit{ReRanker}, responsible of the second ranking phase.\\
+The \textit{Searcher} class firstly parses the queries from the \ac{TREC} format in a Lucene \textit{QualityQuery} object, through our \textit{ClefQueryParser} class. It also instantiates the \textit{ReRanker}, responsible for the second-ranking phase.\\
 Other utility classes are included but no longer used in our project.
 
 \subsection{Parser} \label{parser_subsec}
@@ -55,7 +55,7 @@ In this phase, the documents are cleaned from all the residuals of codes not use
 We first created an abstract class \textit{DocumentParser} and then extended it by implementing a custom \textit{ClefParser} class, which contains many functions for removing sundry types of noises that can be present in documents. 
 This was the result of the trial and error approach we adopted for implementing this class:
 \begin{itemize}
-\item We started by our own read of a large statistical sample size of the documents in the collection to decide which types of noises needed to be removed.
+\item We started with our own read of a large statistical sample size of the documents in the collection to decide which types of noises needed to be removed.
 \item Then we implemented the parser and ran it.
 \item The results of the parsing were stored, and a sample of the parsed documents was analyzed to start this procedure again.
 \end{itemize}
@@ -67,6 +67,7 @@ This was the result of the trial and error approach we adopted for implementing 
     \label{fig:Parser_implementation_workflow}
 \end{figure}
 
+\newpage
 The types of noises we tried to remove are the following:
 \begin{itemize}
 \item \textit{JavaScript} scripts,
@@ -81,7 +82,7 @@ The types of noises we tried to remove are the following:
 \item Hashtags and mentions.
 \end{itemize}
 The final decision about the type of noises to effectively remove for our runs was the most crucial part of this process. \\
-For establishing this we used a trial \& error approach, and at the end we decided to remove only the \textit{JavaScript} scripts and the \textit{HTTP} and \textit{HTTPS} URIs. Regarding \textit{URI}s, although these are usually important because they can contain valuable keywords, we noticed an improvement in \ac{MAP} of almost 0.5 points by just removing them. \\
+For establishing this we used a trial \& error approach, and in the end, we decided to remove only the \textit{JavaScript} scripts and the \textit{HTTP} and \textit{HTTPS} URIs. Regarding \textit{URI}s, although these are usually important because they can contain valuable keywords, we noticed an improvement in \ac{MAP} of almost 0.5 points by just removing them. \\
 We also identified some patterns of words and symbols to remove:
 \begin{itemize}
 \item Two words separated by an underscore, like \textit{word1\_word2}
@@ -154,7 +155,7 @@ final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Sta
 We have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist.
 This stoplist has been built upon a popular French stoplist together with the most frequent stopwords in the collection.  
 We didn't use any of the other parameters.
-We utilized the Gson library to efficiently parse a JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects, enabling effortless manipulation and integration of the query expansions into our application.
+We utilized the Gson library to efficiently parse JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects, enabling effortless manipulation and integration of the query expansions into our application.
 
 
 \subsection{Searcher} \label{searcher_subsec}
@@ -171,13 +172,13 @@ Our implementation does so by accepting the following parameters:
   If the parameter is set to null, no model is used and the documents are scored normally.
 \end{itemize}
 
-
+\newpage
 \subsubsection{Query Expansion}
 When running the search function, one of the first actions performed is to generate new queries from the original ones by query expansion \cite{wang2023}. \\
 % For this task we have taken inspiration from the work of Shuai Wang \cite{wang2023}. 
 We created a Python script that, given the \textit{*.trec} topic file, generates all the expanded terms for each query and stores everything in a \textit{.json} file called \textit{result}, containing all the expansions.
 \newline
-We use \textit{OpenAI's} \textit{Text completion} \cite{openaicompletionapi} endpoints to generate the expansions, we can use our need as prompt and the model will generate the result. 
+We use \textit{OpenAI's} \textit{Text completion} \cite{openaicompletionapi} endpoints to generate the expansions, we can use our need as a prompt and the model will generate the result. 
 We used the \textit{davinci} model, which is the most powerful one, and we set the \textit{temperature} parameter to 0.6, which is the value that gives the best results.
 \newline
 The sample result for prompt 
@@ -189,7 +190,7 @@ is:
     \begin{tabular}{|l|l|l|}
         \hline
         Query                 & text-davinci-002                                                                                                                                                                  & text-davinci-003                                                                                                                                                                    \\ \hline
-        antivirus comparaison & \begin{tabular}[c]{@{}l@{}}1. Antivirus software\\ 2. Antivirus protection\\ 3. Best antivirus\\ 4. Free antivirus\\ 5. Antivirus for Windows\\ 6. Antivirus for Mac\end{tabular} & \begin{tabular}[c]{@{}l@{}}1. Antivirus Reviews \\ 2. Antivirus Software \\ 3. Antivirus Protection \\ 4. Malware Protection \\ 5. Virus Scanner \\ 6. Online Security\end{tabular} \\ \hline
+        antivirus comparison & \begin{tabular}[c]{@{}l@{}}1. Antivirus software\\ 2. Antivirus protection\\ 3. Best antivirus\\ 4. Free antivirus\\ 5. Antivirus for Windows\\ 6. Antivirus for Mac\end{tabular} & \begin{tabular}[c]{@{}l@{}}1. Antivirus Reviews \\ 2. Antivirus Software \\ 3. Antivirus Protection \\ 4. Malware Protection \\ 5. Virus Scanner \\ 6. Online Security\end{tabular} \\ \hline
     \end{tabular}
     \label{tab:query_expansion}
 \end{table}
@@ -201,8 +202,11 @@ The main difference between \textit{davinci-text-002} and \textit{davinci-text-0
 Query boosting is a technique used to assign greater relevance to certain query terms or queries.\newline
 We tried the following approach that seemed to improve the overall results: when building the queries in the search function of the \textit{Searcher} (\ref{searcher_subsec}), for each query, a \textit{BooleanQuery} \cite{lucenebooleanquery} is built in the following way: 
 after getting the query expansions, each of them is added to the \textit{BooleanQuery} with the clause \textit{SHOULD} (meaning that at least one of them must be satisfied) and a main query is added with the clause \textit{MUST}, indicating that it must be satisfied. \\
-This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions. We got this value by a trial \& error approach we used to fine tune this parameter.
+This main query is boosted using Lucene's \textit{BoostQuery} \cite{luceneboostquery}, with a boost value tuned at 14.68 multiplied by the number of expansions. We got this value by a trial \& error approach we used to fine-tune this parameter.
 
+
+\newpage
+\enlargethispage{6\baselineskip}
 \subsubsection{Document Re-Ranking}
 Re-Ranking is the process of ranking documents retrieved by the search function of the \textit{Searcher} (\ref{searcher_subsec}). 
 To accomplish this task, we utilized sentence transformers~\cite{sentence-transformers}, a Python framework known for its state-of-the-art sentence, text, and image embeddings. 
@@ -210,7 +214,7 @@ Various models were experimented with, and the one yielding the best results was
 This particular model aims to train sentence embedding models using a self-supervised contrastive learning objective on vast sentence-level datasets, ultimately mapping sentences and paragraphs to a dense vector space of 384 dimensions.
 
 To generate embeddings for both the documents and query retrieved by the search function, we loaded the \textit{all-MiniLM-L6-v2} model and instantiated a \textit{SentenceTransformer} object. 
-For the purpose of calculating similarity, we employed the widely used \textit{cosine similarity} formula, which computes the similarity between two vectors. The formula is defined as follows:
+To calculate similarity, we employed the widely used \textit{cosine similarity} formula, which computes the similarity between two vectors. The formula is defined as follows:
 
 \begin{equation}
 \text{similarity} = \frac{t \cdot d_i}{|t| |d_i|}\label{eq:similarity_equation}
