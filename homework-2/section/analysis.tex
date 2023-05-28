@@ -5,7 +5,7 @@ In this section, we delve into a comprehensive analysis of the retrieval effecti
 The analysis aims to evaluate the performance of different runs and provides insights into the effectiveness of the system in retrieving and ranking relevant documents.
 
 We begin by analyzing the results obtained from the French collection. 
-The overall \ac{nDCG} comparison allows us to gain an initial understanding of the performance differences between runs 2, 3, and 5, considering short-term, heldout, and long-term evaluations. 
+The overall \ac{nDCG} and \ac{MAP} comparison allows us to gain an initial understanding of the performance differences between runs 2, 3, and 5, considering short-term, heldout, and long-term evaluations. 
 By examining the \ac{nDCG} scores and \ac{RnD} values, we can identify the run that demonstrates the highest effectiveness in retrieving relevant documents.
 
 Furthermore, we employ two-way \ac{ANOVA} tests to investigate the significance of the observed differences in the long-term and short-term evaluations. 
@@ -62,11 +62,11 @@ The horizontal line within each box corresponds to the median value, while the w
     \label{fig:map_french}
 \end{figure}
 
-Analyzing the overall \ac{nDCG} comparison, we observe that Runs 3 and 5 consistently outperform Run 2 across both short and long term evaluations, similarly to what we have seen in Section \ref{sec:ndcg_comparison_french}.
+Analyzing the overall \ac{nDCG} comparison, we observe that Runs 3 and 5 consistently outperform Run 2 across both short and long-term evaluations, similarly to what we have seen in Section \ref{sec:ndcg_comparison_french}.
 These runs achieve higher \ac{nDCG} scores, indicating their superior effectiveness in capturing relevant documents.  
 
 However, we can see that Run 5 demonstrates a noticeable drop in \ac{nDCG} of the long-term compared to the heldout run. 
-This indicates a potential decrease in retrieval performance when transitioning from the heldout period to the long-term. 
+This indicates a potential decrease in retrieval performance when transitioning from the heldout period to the long term. 
 On the other hand, Run 3 displays a relatively smaller drop in \ac{nDCG} compared to the heldout run, suggesting greater stability and consistency in capturing relevant documents over time.
 
 In contrast, Run 2 exhibits relatively lower \ac{nDCG} scores, particularly in the long-term evaluation. This can be attributed to its more greedy approach, which might compromise its ability to retrieve relevant documents as the collection evolves over time.
@@ -77,7 +77,7 @@ Overall, these results confirm what we found in Section \ref{sec:ndcg_comparison
 \subsubsection{Two-way \textit{ANOVA} on the Long Term French Collection} \label{sec:anova_fr_lt}
 
 The results of the two-way \ac{ANOVA} conducted on the Long Term French Collection are depicted in Figure \ref{fig:lt_anova_french}, which showcases the mean \ac{nDCG} and \ac{AP} scores for Run 2 in red, Run 3 in grey, and Run 5 in blue. 
-This plot enables us to examine the effects of both the choice of run and the long-term evaluation on the performances.
+This plot enables us to examine the effects of both the run choice and the long-term evaluation on the performances.
 
 \begin{figure}[!h]
     \centering
@@ -100,13 +100,13 @@ This plot enables us to examine the effects of both the choice of run and the lo
 
 Analyzing the two-way \ac{ANOVA} plot above, at first view we can notice, as expected, that there is no interaction among the three runs.  
 
-Then, we observe that Run 5 consistently achieves the highest mean \ac{nDCG} score across different evaluation points. 
+Then, we observe that Run 5 consistently achieves the highest mean \ac{nDCG}  and \ac{AP} scores across different evaluation points. 
 Run 2 exhibits lower performance compared to the other runs, while Run 3 shows a relatively stable performance, albeit slightly lower than Run 5, confirming what we found in Section \ref{sec:ndcg_comparison_french}.
 In addition, the overlap we find among the columns of Run 3 and Run 5 suggests that the small changes done from Run 3 to Run 5 (see Table \ref{tab:run_parameters}) led to some noticeable albeit small improvements. 
-These findings suggest that both the choice of run and the long-term evaluation have a significant impact on the overall \ac{nDCG} scores obtained.
+These findings suggest that both the choice of run and the long-term evaluation have a significant impact on the overall \ac{nDCG} and \ac{AP} scores obtained.
 
-To complement the two-way \ac{ANOVA} plot, we refer to Table \ref{table:lt_anova_french} that presents additional statistical information.
-providing multiple comparisons between the mean \ac{nDCG} scores, variance, and p-values associated with runs 2, 3, and 5. 
+To complement the two-way \ac{ANOVA} plot, we refer to Tables \ref{table:lt_anova_french} and \ref{table:lt_anova_french_ap}, that present additional statistical information.
+providing multiple comparisons between the mean \ac{nDCG} and \ac{AP}, scores, variance, and p-values associated with runs 2, 3, and 5. 
 The p-values indicate the level of significance and suggest whether there is a significant difference in performance between runs. 
 
 \begin{table}[!h]
@@ -135,16 +135,18 @@ The p-values indicate the level of significance and suggest whether there is a s
     \end{tabular}
 \end{table}
 
-The table presents the results of the pairwise comparisons between different runs. 
+The tables present the results of the pairwise comparisons between different runs. 
 The "Group A" and "Group B" columns indicate the runs being compared. 
 The "Lower Limit" and "Upper Limit" columns represent the lower and upper bounds of the confidence interval, while the "A-B" column indicates the mean difference between the runs. 
 The "P-value" column displays the statistical significance of the comparison.
 
-The comparison between Run 5 and Run 3 yields a p-value of 0.1661, indicating that the mean difference in \ac{nDCG} scores between these runs is not statistically significant. 
+Looking at Table \ref{table:lt_anova_french}, the comparison between Run 5 and Run 3 yields a p-value of 0.1661, indicating that the mean difference in \ac{nDCG} scores between these runs is not statistically significant. 
 Similarly, the comparison between Run 5 and Run 2 results in an extremely low p-value of 1.16E-21, suggesting a highly significant difference in \ac{nDCG} scores. 
 Finally, the comparison between Run 3 and Run 2 also demonstrates a remarkably low p-value of 3.84E-14, indicating a significant discrepancy in their \ac{nDCG} scores.
 
-These statistical results from the multiple comparisons provide further evidence of the differences in the retrieval performance among the runs on the Long Term French Collection. The significance of the mean differences confirms that the choice of run significantly affects the \ac{nDCG} scores. Additionally, the p-values obtained from the comparisons reinforce the observations made from the two-way \ac{ANOVA} plot, highlighting the superior performance of Run 5 and the relatively stable performance of Run 3 compared to the other runs.
+These statistical results from the multiple comparisons provide further evidence of the differences in the retrieval performance among the runs on the Long Term French Collection. 
+The significance of the mean differences confirms that the choice of run significantly affects the \ac{nDCG} scores. 
+Additionally, the p-values obtained from the comparisons reinforce the observations made from the two-way \ac{ANOVA} plot, highlighting the superior performance of Run 5 and the relatively stable performance of Run 3 compared to the other runs.
 
 \newpage
 \subsubsection{Two-way ANOVA on the Short Term French Collection}
@@ -172,7 +174,7 @@ Similarly, the results of the two-way \ac{ANOVA} for mean \ac{nDCG} and \ac{AP} 
 
 The considerations made in Section \ref{sec:anova_fr_lt} hold in almost the same way for the results the system got on short-term Collection.  
 
-To further investigate the statistical differences among the runs, we refer to the multiple comparisons table shown below, which uses the same notation as Table \ref{table:lt_anova_french}:
+To further investigate the statistical differences among the runs, we refer to the multiple comparisons Tables \ref{table:st_anova_french} and \ref{table:st_anova_french_ap} shown below, which uses the same notation as Table \ref{table:lt_anova_french}:
 
 \begin{table}[!h]
     \centering
@@ -200,7 +202,7 @@ To further investigate the statistical differences among the runs, we refer to t
     \end{tabular}
 \end{table}
  
-The comparison between Run 5 and Run 3 yields a p-value of 0.355, indicating that the mean difference in \ac{nDCG} scores between these runs is not statistically significant. 
+Looking at Table \ref{table:st_anova_french}, the comparison between Run 5 and Run 3 yields a p-value of 0.355, indicating that the mean difference in \ac{nDCG} scores between these runs is not statistically significant. 
 Similarly, the comparison between Run 5 and Run 2 results in a remarkably low p-value of 3.86E-12, suggesting a highly significant difference in \ac{nDCG} scores. 
 Finally, the comparison between Run 3 and Run 2 also demonstrates a low p-value of 3.33E-08, indicating a significant discrepancy in their \ac{nDCG} scores.
 
@@ -292,7 +294,7 @@ At first, we can see that, as expected, there is no interaction between these tw
 Continuing into analyzing the two-way \ac{ANOVA} plot, we find that Run 4 achieves higher mean \ac{nDCG} scores compared to Run 1 across different evaluation points. 
 This suggests the superiority of Run 4 in retrieving relevant documents in the long term on the English collection, keep confirming what we found in Section \ref{sec:ndcg_comparison_eng}. 
 
-To provide additional statistical information, we refer to Table \ref{table:lt_anova_eng}, which presents the results of multiple comparisons between Run 1 and Run 4 for the Long Term English Collection. 
+To provide additional statistical information, we refer to Tables \ref{table:lt_anova_eng} and \ref{table:lt_anova_eng_ap}, which present the results of multiple comparisons between Run 1 and Run 4 for the Long Term English Collection. 
 The table shows the lower limit, A-B difference, upper limit, and p-value for the comparison. 
 In this case, there is a single row in the table since there is only one comparison between the two runs.
 
@@ -353,7 +355,7 @@ Similarly, the results of the two-way \ac{ANOVA} for mean \ac{nDCG} and \ac{AP} 
  
 These results confirm everything we have found until now, indicating the superiority of run 4 on both Short Term and Long Term Collection.
 
-To provide additional statistical information, Table \ref{table:st_anova_eng} presents the results of the multiple comparisons between Run 1 and Run 4.
+To provide additional statistical information, Tables \ref{table:st_anova_eng} and \ref{table:st_anova_eng_ap} present the results of the multiple comparisons between Run 1 and Run 4.
 
 \begin{table}[!h]
     \centering
@@ -381,7 +383,7 @@ To provide additional statistical information, Table \ref{table:st_anova_eng} pr
     \end{tabular}
 \end{table}
 
-The table shows that there is a significant difference in the mean \ac{nDCG} scores between Run 1 and Run 4 on the Short Term English Collection. 
+Table \ref{table:st_anova_eng} shows that there is a significant difference in the mean \ac{nDCG} scores between Run 1 and Run 4 on the Short Term English Collection. 
 The A-B difference, which represents the difference in \ac{nDCG} scores between the two runs, is 0.0564, indicating that Run 4 performs substantially better than Run 1. 
 The p-value, which is practically zero, further supports the significance of this difference.
 
