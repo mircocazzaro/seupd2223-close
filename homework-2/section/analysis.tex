@@ -170,13 +170,22 @@ The overall \ac{nDCG} comparison for Runs 1 and 4 on the English collection is d
 \label{fig:overall_ndcg_eng}
 \end{figure}
  
-Upon analyzing the overall \ac{nDCG} comparison, we first notice that the results are significantly worse than the ones seen in Section \ref{sec:ndcg_comparison_french}. 
-This is not particularly surprising, since we focused most of our work on improving the results on the French Collection.  
-About the comparison we get from Figure \ref{fig:overall_ndcg_eng}, we can observe that Run 4 consistently outperforms Run 1 across both Short and Long Term evaluations on the English Collection. 
-It achieves higher \ac{nDCG} scores, indicating its superior effectiveness in retrieving relevant documents. 
-Also, looking at the \ac{RnD} deltas, we can see a good stability among the Short and Long Term for Run 4, while in Run 1 it increases by more than twice from Short to Long Term.
+Upon analyzing the overall \ac{nDCG} comparison, we first notice that the results on the English Collection are notably worse compared to those observed in Section \ref{sec:ndcg_comparison_french}. 
+This discrepancy is not unexpected since the focus of our work was primarily on improving the retrieval performance on the French Collection.
 
-\subsubsection{Overall \textit{MAP} Comparison}
+Examining the boxplot in Figure \ref{fig:overall_ndcg_eng}, we can observe that Run 4 consistently outperforms Run 1 across both the Short and Long Term evaluations on the English Collection. 
+Run 4 achieves higher \ac{nDCG} scores, indicating its superior effectiveness in retrieving relevant documents. 
+The clear separation between the two runs in the boxplot suggests significant differences in their retrieval performance.
+
+Furthermore, by considering the \ac{RnD} deltas represented by the values inside the boxes, we can observe that Run 4 exhibits a good level of stability between the Short and Long Term evaluations, with minimal changes in its \ac{nDCG} scores. 
+On the other hand, Run 1 shows a notable increase in \ac{RnD} from the Short to the Long Term, more than doubling the delta value. 
+This indicates that Run 1's performance significantly deteriorates when transitioning from the Short to the Long Term evaluation on the English Collection.
+
+In summary, the overall \ac{nDCG} comparison confirms that Run 4 performs better than Run 1 in all evaluation settings on the English Collection. 
+Run 4 demonstrates higher \ac{nDCG} scores and exhibits greater stability between the Short and Long Term evaluations, while Run 1 experiences a noticeable decline in performance when moving from the Short to the Long Term. 
+These findings highlight the importance of the improvements achieved in Run 4 and emphasize its superior retrieval effectiveness compared to Run 1.
+
+\subsubsection{Overall \textit{MAP} Comparison} \label{sec:map_comparison_eng}
 
 We now turn our attention to the overall \ac{MAP} comparison of Runs 1 and 4 on the English collection, as illustrated in Figure \ref{fig:map_english}. 
 The boxplot showcases the distribution of \ac{MAP} scores, using the same notation as Figure \ref{fig:map_french}.
@@ -188,11 +197,14 @@ The boxplot showcases the distribution of \ac{MAP} scores, using the same notati
 \label{fig:map_english}
 \end{figure}
 
-We can see that Run 4 displays a higher median \ac{MAP} score compared to Run 1 in terms of both the Short Term and Long Term Collections, indicating its superior performance in retrieving relevant documents over short and long windows of time. 
-However, the distribution of \ac{MAP} scores for Run 1 appears to be more concentrated, suggesting more consistent performance compared to Run 4.
+Analyzing the boxplot in Figure \ref{fig:map_english}, we observe that Run 4 consistently outperforms Run 1 on all three collections: Short Term, Heldout, and Long Term. 
+Run 4 exhibits higher median \ac{MAP} scores in both the Short Term and Long Term evaluations, indicating its superior retrieval performance in terms of average precision across different evaluation points.
 
-Regarding the heldout collection, both Runs 1 and 4 demonstrate comparable median \ac{MAP} scores, suggesting similar retrieval performance within this collection. 
-These results confirms the superiority of Run 4 compared to Run 1, as found in Section \ref{sec:ndcg_comparison_eng}.
+Although the distribution of \ac{MAP} scores for Run 1 appears to be more concentrated, suggesting more consistent performance, Run 4 clearly demonstrates better overall effectiveness in retrieving relevant documents on the English Collection.
+
+However, in terms of the Heldout Collection, both Runs 1 and 4 display comparable median \ac{MAP} scores, indicating similar retrieval performance within this collection. 
+
+These findings reinforce the conclusions drawn in Section \ref{sec:ndcg_comparison_eng} regarding the superior performance of Run 4 compared to Run 1 on the English Collection. 
 
 \subsubsection{Two-way \textit{ANOVA} on the Long Term English Collection}
 
@@ -208,28 +220,27 @@ The results of the two-way \ac{ANOVA} performed on the Long Term English Collect
 Analyzing the two-way \ac{ANOVA} plot, we find that Run 4 achieves higher mean \ac{nDCG} scores compared to Run 1 across different evaluation points. 
 This suggests the superiority of Run 4 in retrieving relevant documents in the long term on the English collection, keep confirming what we found in Section \ref{sec:ndcg_comparison_eng}. 
 
-To provide additional statistical information, we refer to Table \ref{table:lt_anova_eng} that presents the results of the one-way \ac{ANOVA} conducted on Runs 1 and 4 submitted on the Long Term English Collection.
+To provide additional statistical information, we refer to Table \ref{table:lt_anova_eng}, which presents the results of multiple comparisons between Run 1 and Run 4 for the Long Term English Collection. 
+The table shows the lower limit, A-B difference, upper limit, and p-value for the comparison. 
+In this case, there is a single row in the table since there is only one comparison between the two runs.
 
 \begin{table}[!h]
-\centering
-\caption{One-way \ac{ANOVA} Results for Runs 2 and 4 on the Long Term English Collection}
-\label{table:lt_anova_eng}
-\begin{tabular}{cccc}
-\toprule
-\textbf{Run} & \textbf{Mean nDCG} & \textbf{Variance} & \textbf{p-value} \\
-\midrule
-Run 2 & $0.78$ & $0.005$ & $<0.001$ \\
-Run 4 & $0.85$ & $0.004$ & $<0.001$ \\
-\bottomrule
-\end{tabular}
+    \centering
+    \caption{Multiple comparisons for the Long Term English Collection}
+    \label{table:lt_anova_eng}
+    \begin{tabular}{cccccc}
+    \hline
+    Group A & Group B & Lower Limit & A-B Difference & Upper Limit & P-value \\
+    \hline
+    1 & 4 & 0.0415 & 0.0515 & 0.0615 & $6.77 \times 10^{-25}$ \\
+    \hline
+    \end{tabular}
 \end{table}
+    
+Table \ref{table:lt_anova_eng} suggests a significant difference between Run 1 and Run 4 in terms of \ac{nDCG} scores for the Long Term English Collection. 
+The positive A-B difference and the large p-value indicate that Run 4 consistently achieves higher \ac{nDCG} scores than Run 1 across different evaluation points.
 
-\begin{center}
-    \textbf{TODO: insert real data}
-\end{center}
-
-Table \ref{table:lt_anova_eng} provides the mean \ac{nDCG} scores, variance, and p-values associated with runs 2 and 4. 
-The low p-value (less than $0.001$) indicates a significant difference in performance between runs in the long term evaluation on the English collection.
+These findings further support the conclusion that Run 4 performs better than Run 1 in terms of retrieving relevant documents over the long term on the English collection, as discussed in Sections \ref{sec:ndcg_comparison_eng} and \ref{sec:map_comparison_eng}.
 
 \subsubsection{Two-way \textit{ANOVA} on the Short Term English Collection}
 
@@ -244,30 +255,52 @@ Similarly, the results of the two-way \ac{ANOVA} performed on the Short Term Eng
 
 These results confirm everything we have found until now, indicating the superiority of run 4 on both Short Term and Long Term Collection.
 
-To provide further statistical insights, Table \ref{table:st_anova_eng} presents the results of the one-way \ac{ANOVA} test conducted on runs 2 and 4 submitted on the Short Term English Collection.
+To provide additional statistical information, Table \ref{table:st_anova_eng} presents the results of the multiple comparisons between Run 1 and Run 4.
 
-\begin{table}[htbp]
+\begin{table}[!h]
 \centering
-\caption{One-way \ac{ANOVA} Results for Runs 2 and 4 on the Short Term English Collection}
+\caption{Multiple comparisons for the Short Term English Collection}
 \label{table:st_anova_eng}
-\begin{tabular}{cccc}
-\toprule
-\textbf{Run} & \textbf{Mean nDCG} & \textbf{Variance} & \textbf{p-value} \\
-\midrule
-Run 2 & $0.71$ & $0.007$ & $<0.001$ \\
-Run 4 & $0.75$ & $0.006$ & $<0.001$ \\
-\bottomrule
+\begin{tabular}{cccccc}
+\hline
+Group A & Group B & Lower Limit & A-B Difference & Upper Limit & P-value \\
+\hline
+1 & 4 & 0.0457 & 0.0564 & 0.0671 & $0.00 \times 10^{0}$ \\
+\hline
 \end{tabular}
 \end{table}
 
-\begin{center}
-    \textbf{TODO: insert real data}
-\end{center}
+The table shows that there is a significant difference in the mean \ac{nDCG} scores between Run 1 and Run 4 on the Short Term English Collection. 
+The A-B difference, which represents the difference in \ac{nDCG} scores between the two runs, is 0.0564, indicating that Run 4 performs substantially better than Run 1. 
+The p-value, which is practically zero, further supports the significance of this difference.
 
-In summary, the analysis of the results obtained on the English collection reveals that run 4 consistently outperforms run 1 in terms of \ac{nDCG} scores across both short and long term evaluations. 
-The two-way \ac{ANOVA} plots and accompanying tables provide statistical evidence of the observed differences, supporting the conclusions drawn from the analysis.
+These findings consistently demonstrate the superiority of Run 4 over Run 1 in terms of \ac{nDCG} scores in both short and long term evaluations on the English collection.
 
 \subsection{Final Conclusions on Statistical Analysis}
+
+In this section, we conducted a comprehensive statistical analysis of the retrieval performance of our system on both the French and English collections. 
+We focused on evaluating the overall \ac{nDCG} and \ac{MAP} scores, as well as conducting two-way \ac{ANOVA} tests to examine the effects of different factors on the performance.
+
+For the French collection, we compared the performances of Runs 2, 3, and 5. 
+The analysis revealed that Run 5 consistently exhibited slightly better or comparable performance compared to Run 3 across all evaluation points. 
+This suggests that the modifications made in Run 5 resulted in an improved retrieval effectiveness, making it a promising option. 
+On the other hand, Run 2 displayed significantly worse performance compared to the other runs, indicating the need for further improvements.
+
+Turning to the English collection, we focused on comparing Runs 1 and 4. 
+The results consistently demonstrated that Run 4 outperformed Run 1 in every aspect of the analysis. 
+It achieved higher \ac{nDCG} scores, indicating its superior effectiveness in retrieving relevant documents. 
+Additionally, Run 4 displayed a higher median \ac{MAP} score, indicating its superior overall performance in both short and long windows of time. 
+These findings establish Run 4 as the more successful option for retrieval on the English collection.
+
+The two-way \ac{ANOVA} tests further supported our conclusions. 
+In the French collection, the two-way \ac{ANOVA} analysis confirmed the superiority of Run 5 over Run 3 in terms of \ac{nDCG} scores. 
+This finding aligns with the overall comparison results. 
+
+In the English collection, the two-way \ac{ANOVA} did not provide any new unexpected result, as the performance differences between Run 1 and Run 4 were consistently evident in all previous aspects of the analysis.
+
+In summary, our statistical analysis highlights the varying performances of different runs in the French and English collections. 
+For the French collection, Run 5 exhibited slightly better or comparable performance compared to Run 3, while Run 2 displayed significantly worse performance. 
+In contrast, for the English collection, Run 4 consistently outperformed Run 1 in every aspect of the analysis.
 
 
 
