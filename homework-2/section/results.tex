@@ -2,8 +2,8 @@
 \section{Results and Discussion}
 
 \label{sec:results}
+\input{section/tableResults}
 
-\input{section/tableResults.tex}
 In this section we provide some of the most relevant results we got during the development phase.
 We are considering five principal milestones that, within many different trials, led us to improve significantly our \ac{MAP} score and the overall number of relevant documents actually retrieved.
 
@@ -19,14 +19,8 @@ Another approach we tried and that carried an improvement was to use \textit{Que
 %of expansion used, and without boosting the expansion: this carried to us an extra MAP point.
 of expansion used. This made us gain an extra \ac{MAP} point.
 
-\begin{figure}[h!]
-    \includegraphics[width=\textwidth]{figure/PRgraph.png}
-    \caption{Recall and precision graph}
-    \label{fig:recallPrecision}
-\end{figure}
-
-We try to generate the embeddings for each document based on word2vector, we use pre-trained word2vec model \textit{frWac\_no\_postag\_no\_phrase\_500\_cbow\_cut100}~\cite{fauconnier_2015} for French. Then we calculate the embedding for each document and index them as KnnFloatVectorField in lucene and use KnnFloatVectorQuery for searching the query to find the k nearest documents to the target vector according to the vectors in the given field, but the results (overall map ~0.08) were not satisfying, being  goes worser than the case of indexing and searching without embeddings.
-\newline
+%We try to generate the embeddings for each document based on word2vector, we use pre-trained word2vec model \textit{frWac\_no\_postag\_no\_phrase\_500\_cbow\_cut100}~\cite{fauconnier_2015} for French. Then we calculate the embedding for each document and index them as KnnFloatVectorField in lucene and use KnnFloatVectorQuery for searching the query to find the k nearest documents to the target vector according to the vectors in the given field, but the results (overall map ~0.08) were not satisfying, being  goes worser than the case of indexing and searching without embeddings.
+%\newline
 We tried to combine different similarities rather than using the classic \textit{BM25Similarity}: we tried to use the Lucene \textit{MultiSimilarity} \cite{lucenemultisimilarity}, that allows to combine the score of two or more similarity scores, but it does not allow to
 tune the weights. Then, we tried to reimplement the \textit{MultiSimilarity} class with tuning options, but results were always lower than the standard \textit{BM25Similarity}. Some minor improvements came up by fine tuning the document-length
 normalization \textit{b} parameter and the term frequency component \textit{k1} parameter of the \textit{BM25Similarity}.
@@ -37,7 +31,14 @@ We tried to use different distance metrics such as \textit{CosineSimilarity} and
 Finally, we sort the documents based on merging the BM25 score and similarity score into one score by multiplying them together.
 
 Lastly, some minor adding were set on the \textit{Analyzer} (see Section \ref{analyzer_subsec}) by implementing the Lucene \textit{ElisionFilter} (for French) \cite{luceneelisionfilter}, which aims to remove apostrophes articles and prepositions from tokens (for example, \textit{m'appelle} and \textit{t'appelle} become the same token).
+\begin{figure}[h!]
+    \includegraphics[width=\textwidth]{figure/PRgraph.png}
+    \caption{Recall and Precision graph on the Train collection and the train query set of LongEval.}
+    \label{fig:recallPrecision}
+\end{figure}
 
+\subsection{Test set results}
+\label{subsec:results_submission}
+\input{section/results_submission}
 
-
-
+\pagebreak
