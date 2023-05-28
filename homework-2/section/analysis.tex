@@ -109,6 +109,12 @@ To complement the two-way \ac{ANOVA} plot, we refer to Tables \ref{table:lt_anov
 providing multiple comparisons between the mean \ac{nDCG} and \ac{AP}, scores, variance, and p-values associated with runs 2, 3, and 5. 
 The p-values indicate the level of significance and suggest whether there is a significant difference in performance between runs. 
 
+The tables present the results of the pairwise comparisons between different runs. 
+The "Group A" and "Group B" columns indicate the runs being compared. 
+The "Lower Limit" and "Upper Limit" columns represent the lower and upper bounds of the confidence interval, while the "A-B" column indicates the mean difference between the runs. 
+The "P-value" column displays the statistical significance of the comparison.
+
+\newpage
 \begin{table}[!h]
     \centering
     \caption{\ac{nDCG} Multiple Comparisons for Runs 2, 3, and 5 on the Long Term French Collection}
@@ -134,11 +140,6 @@ The p-values indicate the level of significance and suggest whether there is a s
     3 & 2 & 0.0216 & 0.0322 & 0.0427 & 0 \\ \hline
     \end{tabular}
 \end{table}
-
-The tables present the results of the pairwise comparisons between different runs. 
-The "Group A" and "Group B" columns indicate the runs being compared. 
-The "Lower Limit" and "Upper Limit" columns represent the lower and upper bounds of the confidence interval, while the "A-B" column indicates the mean difference between the runs. 
-The "P-value" column displays the statistical significance of the comparison.
 
 Looking at Table \ref{table:lt_anova_french}, the comparison between Run 5 and Run 3 yields a p-value of 0.1661, indicating that the mean difference in \ac{nDCG} scores between these runs is not statistically significant. 
 Similarly, the comparison between Run 5 and Run 2 results in an extremely low p-value of 1.16E-21, suggesting a highly significant difference in \ac{nDCG} scores. 
