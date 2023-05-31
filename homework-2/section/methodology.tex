@@ -96,63 +96,48 @@ The structure of the parsed document is defined in the \textit{ParsedTextDocumen
 \item \textit{id}: the identifier of the document,
 \item \textit{body}: the (parsed) content of the document.
 \end{enumerate}
-The constructor of \textit{ParsedTextDocument} is the following:
-\begin{lstlisting}[language=Java]
-    /**
-     * Creates a new parsed document.
-     *
-     * @param id  the document identifier.
-     * @param body the document body.
-     */
-    public ParsedTextDocument(final String id, final String body) 
-\end{lstlisting}
-Inside it, multiple controls about the validity and integrity of the parameters are performed, then an object of the class is instantiated. 
+Inside it, multiple controls about the validity and integrity of the parameters are performed, then an object of the class is instantiated.
 
 
 \subsection{Analyzer} \label{analyzer_subsec}
-The Analyzer is responsible for analyzing the extracted documents and preparing them for the Indexing and Searching phases. 
+The Analyzer is responsible for analyzing the extracted documents and preparing them for the Indexing and Searching phases.
 It does so by combining a series of techniques of text processing such as tokenization, stemming, stopword removal, and many more.\\
-We extended Apache Lucene's Analyzer abstract class \cite{luceneanalyzer} by creating a custom class \textit{CloseAnalyzer}, which is fully customizable by its parameters that can be chosen when creating an instance of the class. 
+We extended Apache Lucene's Analyzer abstract class \cite{luceneanalyzer} by creating a custom class \textit{CloseAnalyzer}, which is fully customizable by its parameters that can be chosen when creating an instance of the class.
 This has been done because we tried different settings and approaches to maximize the results and kept all the possible variations as optional settings.
 This \textit{CloseAnalyzer} is passed as a parameter and then used by the \textit{DirectoryIndexer} and by the \textit{Searcher}. \\
 The constructor of \textit{CloseAnalyzer} accepts the following parameters:
 \begin{itemize}
   \item \textbf{tokenizerType}: used to choose between three standard \textit{Lucene} tokenizers: \textit{WhitespaceTokenizer} \cite{lucenetokenizer}, \textit{LetterTokenizer} \cite{lucenelettertokenizer}, and \textit{StandardTokenizer} \cite{lucenestandardtokenizer}.
-  
-  \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard \textit{Apache Solr} \cite{solr} filters: \textit{EnglishMinimalStemFilter} \cite{solrminimalstemfilter}, \textit{KStemFilter} \cite{solrkstemfilter}, \textit{PorterStemFilter} \cite{solrporterstemfilter}, and \textit{FrenchLightStemFilter} \cite{solrfrenchlightstemfilter}. 
+
+  \item \textbf{stemFilterType}: the possible choices for the stemming types are four standard \textit{Apache Solr} \cite{solr} filters: \textit{EnglishMinimalStemFilter} \cite{solrminimalstemfilter}, \textit{KStemFilter} \cite{solrkstemfilter}, \textit{PorterStemFilter} \cite{solrporterstemfilter}, and \textit{FrenchLightStemFilter} \cite{solrfrenchlightstemfilter}.
   We also tried using \textit{FrenchMinimalStemFilter} \cite{solrfrenchminimalstemfilter} and a custom filter called \textit{LovinsStemmerFilter} based on a LovinsStemmer \cite{lucenelovinsstemmer} implementation but decided to keep them commented as they didn't improve the results.
-  
+
   \item \textbf{minLength} and \textbf{maxLength}: these are integers that simply specify the minimum and maximum length of a token, applying Lucene's \textit{LengthFilter} \cite{lucenelengthfilter}.
-  
-  \item \textbf{isEnglishPossessiveFilter}: specifies whether to use Lucene's \textit{EnglishPossessiveFilter} \cite{luceneenglishpossessivefilter} or not. 
+
+  \item \textbf{isEnglishPossessiveFilter}: specifies whether to use Lucene's \textit{EnglishPossessiveFilter} \cite{luceneenglishpossessivefilter} or not.
   Of course, this can be useful when operating with the English dataset.
-  
-  \item \textbf{stopFilterListName}: with this parameter, it's possible to insert the path of an eventual word stoplist \textit{.txt} file located in the \textit{resources} folder. 
-  To do this we use Lucene's \textit{StopFilter} \cite{lucenestopfilter} and a custom class called \textit{AnalyzerUtil} that uses a \textit{loadStopList} method to read and load all the stoplist words from the specified file. 
-  The stoplists we created are based on the standard ones but modified after inspecting the index with the \textit{Luke} \cite{luke} tool. 
+
+  \item \textbf{stopFilterListName}: with this parameter, it's possible to insert the path of an eventual word stoplist \textit{.txt} file located in the \textit{resources} folder.
+  To do this we use Lucene's \textit{StopFilter} \cite{lucenestopfilter} and a custom class called \textit{AnalyzerUtil} that uses a \textit{loadStopList} method to read and load all the stoplist words from the specified file.
+  The stoplists we created are based on the standard ones but modified after inspecting the index with the \textit{Luke} \cite{luke} tool.
   We have lists of different lengths and different ones for French and English.
-  
+
   \item \textbf{Character nGramFilterSize}: if specified, this parameter is used to define the size of the n-grams to be applied by Lucene's \textit{NGramTokenFilter} \cite{lucenengramtokenfilter}.
-  
+
   \item \textbf{Word nGramFilterSize}: similar to the previous one, if used, this integer number indicates the shingle size to be applied by Lucene's \textit{ShingleFilter} \cite{luceneshinglefilter} that allows the creation of a combination of words.
-  
-  \item \textbf{useNLPFilter}: this boolean allows the use of Solr's \cite{solr} \textit{OpenNLPPPOSFilter} \cite{solropennlpposfilter} for Part-Of-Speech Tagging and of a custom class called \textit{OpenNLPNERFilter} for Named Entity Recognition. 
+
+  \item \textbf{useNLPFilter}: this boolean allows the use of Solr's \cite{solr} \textit{OpenNLPPPOSFilter} \cite{solropennlpposfilter} for Part-Of-Speech Tagging and of a custom class called \textit{OpenNLPNERFilter} for Named Entity Recognition.
   To load the \textit{.bin} models, which are located in the \textit{resources} folder, we use two methods from \textit{AnalyzerUtil}: \textit{loadPosTaggerModel} and \textit{loadNerTaggerModel}.
-  
+
   \item \textbf{lemmatization}: specifies whether to use Solr's \textit{OpenNLPLemmatizerFilter} \cite{solropennlplemmafilter} by loading a \textit{.bin} model file in the \textit{resources} folder using AnalyzerUtil's \textit{loadLemmatizerModel} function.
-  
+
   \item \textbf{frenchElisionFilter}: we applied this only when using the French dataset by adding Lucene's \textit{ElisionFilter} \cite{luceneelisionfilter} with an array of the following characters: 'l', 'd', 's', 't', 'n', 'm'.
 \end{itemize}
 On top of this, a \textit{LowerCaseFilter} \cite{lucenelowercasefilter} is always applied. \\
-We also tried Lucene's \textit{ASCIIFoldingFilter} \cite{luceneasciifoldingfilter} and \textit{SynonymGraphFilter} \cite{lucenesynonymgraphfilter}. 
+We also tried Lucene's \textit{ASCIIFoldingFilter} \cite{luceneasciifoldingfilter} and \textit{SynonymGraphFilter} \cite{lucenesynonymgraphfilter}.
 For the second one, only for the French Dataset, we used a \textit{SynonymMap} \cite{lucenesynonymmap} based on a \textit{.txt} file containing French synonyms.
 \newline
-After different trials with different variations of the parameter, the following is the instance of the \textit{CloseAnalyzer} we used:
-
-\begin{lstlisting}
-final Analyzer closeAnalyzer = new CloseAnalyzer(CloseAnalyzer.TokenizerType.Standard, 2, 15, false, "new-long-stoplist-fr.txt", CloseAnalyzer.StemFilterType.French, null, null, false, false, true);
-\end{lstlisting}
-We have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist.
+After different trials with different variations of the parameters, the following are options used with our \textit{CloseAnalyzer} implementation: we have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist.
 This stoplist has been built upon a popular French stoplist together with the most frequent stopwords in the collection.  
 We didn't use any of the other parameters.
 We utilized the Gson library to efficiently parse JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects, enabling effortless manipulation and integration of the query expansions into our application.

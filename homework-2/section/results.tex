@@ -6,7 +6,7 @@
 \input{section/tableResults.tex}
 In this Section, we provide some of the most relevant results we got during the development phase.
 We are considering five principal milestones that, within many different trials, led us to improve significantly our \ac{MAP} score and the overall number of relevant documents actually retrieved.
-
+\subsection{Results on Training Data}
 First of all, given that we were provided with two different versions of the same document's \textit{corpora}, our first idea was to try the English version.\\
 We noticed that the best combination of basic \ac{IR} tools was to use the \textit{Porter} Stemmer \cite{solrporterstemfilter}, a length filter from 1 to 10, and a list of stop-word composed by some standard terms and more from the top 600 extracted from the index.
 The very first big milestone, that helped us to increment the \ac{MAP} of around 3 points, from 10.1\% to 13.1\%, was the \textit{JavaScript} code cleaner since we noticed by inspection that many documents were having these types of scripts inside.\\
@@ -22,7 +22,7 @@ of expansion used. This made us gain an extra \ac{MAP} point.
 \enlargethispage{4\baselineskip}
 \begin{figure}[h!]
     \includegraphics[width=\textwidth]{figure/PRgraph.png}
-    \caption{Recall and precision graph}
+    \caption{Standard Recall Levels vs Interpolated Precision}
     \label{fig:recallPrecision}
 \end{figure}
 
@@ -40,7 +40,7 @@ Finally, we sort the documents based on merging the BM25 score and similarity sc
 Lastly, some minor adding were set on the \textit{Analyzer} (see Section \ref{analyzer_subsec}) by implementing the Lucene \textit{ElisionFilter} (for French) \cite{luceneelisionfilter}, which aims to remove apostrophes articles and prepositions from tokens (for example, \textit{m'appelle} and \textit{t'appelle} become the same token \textit{appelle}).
 
 
-\subsection{Test set results}
+\subsection{Results on Test Data}
 \label{subsec:results_submission}
 \input{section/results_submission}
 
