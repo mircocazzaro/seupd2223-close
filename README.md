@@ -28,7 +28,7 @@ CLOSE (Clef LOngeval Search Engine) Group
 ## Project Description
 Our approach involves using the training data provided by Qwant search engine, which includes user searches and web documents in both French and English. We believe that this data will enable our system to better adapt to changes in user search behavior and the content of web documents.
 
-### Organisation of the Repository
+### Organization of the Repository
 The project is developed mainly in Java, with the addition of some Python scripts for performing the expansion of the queries and for the re-ranking of the retrieved documents for each topic. The overall structure is as follows:
 
 * `code`: This folder contains the source code of the developed system.
@@ -39,6 +39,22 @@ The project is developed mainly in Java, with the addition of some Python script
 * `slides`: This folder contains the slides used for presenting the conducted project.
 
 ---
+
+### Class Diagram
+
+![Class Diagram](https://bitbucket.org/upd-dei-stud-prj/seupd2223-close/src/clef/homework-1/figure/Classes_diagram_white.pdf)
+
+The class diagram of the system retraces the Y model of an information retrieval (IR) system. The main components of the diagram include an indexer class, a searcher class, and a main class called "CloseSearchEngine."
+
+The "Analyzer" class is instantiated at the beginning and is used by both the indexer and the searcher. It plays a crucial role in token analysis, including tasks such as tokenization, stemming, and NLP filters.
+
+The parsing section of the system is represented by the "Indexer" component. As it walks through the file tree, the Indexer uses this component to generate Java objects (ParsedTextDocument) from JSON documents, representing them with their fields.
+
+The "Searcher" class handles query parsing from the TREC format using the "ClefQueryParser" class, creating Lucene QualityQuery objects. Additionally, the Searcher instantiates the "ReRanker" responsible for the second-ranking phase.
+
+The class diagram also includes other utility classes that were part of the project but are no longer used.
+
+Note: The image provided above displays the class diagram for reference.
 
 ## System Hardware
 
