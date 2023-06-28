@@ -42,7 +42,7 @@ The project is developed mainly in Java, with the addition of some Python script
 
 ### Class Diagram
 
-![Class Diagram](https://bitbucket.org/upd-dei-stud-prj/seupd2223-close/src/clef/homework-1/figure/Classes_diagram_white.pdf)
+![Class Diagram](https://bitbucket.org/upd-dei-stud-prj/seupd2223-close/src/clef/homework-2/figure/Classes_diagram_white.jpg)
 
 The class diagram of the system retraces the Y model of an information retrieval (IR) system. The main components of the diagram include an indexer class, a searcher class, and a main class called "CloseSearchEngine."
 
