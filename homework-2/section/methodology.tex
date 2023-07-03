@@ -13,7 +13,7 @@ In the development of our \ac{IR} system, we followed the traditional \textit{Y 
 
 The workflow of our system, starting from the train collection provided by \textit{LongEval} \cite{cleflongeval}, is as follows:
 \begin{enumerate}
-    \item \textbf{Parsing}: The first phase consists of parsing the documents in the collection, which is a pre-processing operation performed to clean them from unnecessary noises. Since the collection is composed of web pages, the documents contain many leftovers like JavaScript scripts, HTML and CSS codes, HTTP and HTTPS URIs, and so on. The purpose of this phase is to ease the processing performed in the following phases.
+    \item \textbf{Parsing}: The first phase consists of parsing the documents in the collection, which is a pre-processing operation performed to clean them from unnecessary noises. Since the collection is composed of web pages, the documents contain many leftovers like JavaScript scripts, HTML and CSS codes, HTTP and HTTPS URIs, and so on.
 
     \item \textbf{Indexing}: Each parsed document is then analyzed and indexed keeping only the necessary information. Indexed documents are composed of two fields: an \textit{id} field, containing the identifier of the document in the collection, and a \textit{content} field, containing the entire body of the document cleaned by the parsing and indexing phases.
 
@@ -46,7 +46,6 @@ called by the main class \textit{CloseSearchEngine} of our system. The \textit{A
 is responsible for analyzing tokens, and here most of our processing phase goes on: in particular, the tokenizer and the stemmer (and some NLP filters used in a trial).\\
 The other connected component of the diagram is related to the parsing section: here, while walking on the file tree, the \textit{Indexer} uses this component to generate, from a JSON document, an actual Java object (\textit{ParsedTextDocument}) representing it with its fields.\\
 The \textit{Searcher} class firstly parses the queries from the \ac{TREC} format in a Lucene \textit{QualityQuery} object, through our \textit{ClefQueryParser} class. It also instantiates the \textit{ReRanker}, responsible for the second-ranking phase.\\
-Other utility classes are included but no longer used in our project.
 
 \subsection{Parser} \label{parser_subsec}
 As stated before, the documents in the collection provided by the \ac{CLEF} \textit{LongEval LAB 2023} \cite{cleflongeval} are essentially the corpus of web pages, to better represent the nature of a web test collection.
@@ -91,7 +90,7 @@ We also identified some patterns of words and symbols to remove:
 \end{itemize}
 We used \textit{Regular Expressions} \cite{regexdefinition} to identify and remove these patterns.  
 
-The structure of the parsed document is defined in the \textit{ParsedTextDocument} class, and it is composed of just two fields, as provided by \ac{CLEF}:
+The structure of the parsed document is defined in the \textit{ParsedTextDocument} class, and it is composed of just two fields:
 \begin{enumerate}
 \item \textit{id}: the identifier of the document,
 \item \textit{body}: the (parsed) content of the document.
@@ -140,7 +139,7 @@ For the second one, only for the French Dataset, we used a \textit{SynonymMap} \
 After different trials with different variations of the parameters, the following are options used with our \textit{CloseAnalyzer} implementation: we have opted for the French dataset and by doing so we have the \textit{StandardTokenizer}, 2 and 15 as minimum and maximum token length, we use \textit{frenchElisionFilter}, \textit{FrenchLightStemFilter}, and a list of 662 French words as a stoplist.
 This stoplist has been built upon a popular French stoplist together with the most frequent stopwords in the collection.  
 We didn't use any of the other parameters.
-We utilized the Gson library to efficiently parse JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects, enabling effortless manipulation and integration of the query expansions into our application.
+We utilized the Gson library to efficiently parse JSON files that contained query expansions. By leveraging Gson's capabilities, we were able to seamlessly convert the JSON data into Java objects.
 
 
 \subsection{Searcher} \label{searcher_subsec}
@@ -153,8 +152,7 @@ Our implementation does so by accepting the following parameters:
   \item \textbf{similarity}: we decided to opt for the \textit{BM25Similarity} \cite{lucenebm25similarity} function with the parameters \textit{k1} and \textit{b} tuned at 1.2 and 0.90.
   \item \textbf{Run options}: there are parameters for the index path, the topics path, the run path and the run name, the number of the expected topic (in our case 50), and the maximum number of documents retrieved (in our case 1000).
   \item \textbf{reRankModel}: this is the type of model used to do a Re-Ranking on the retrieved documents. 
-  In our case, we use a model called \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2}, explained in the following subsection. 
-  If the parameter is set to null, no model is used and the documents are scored normally.
+  In our case, we use a model called \textit{all-MiniLM-L6-v2} \cite{huggingfaceallminilml6v2}, explained in the following subsection.
 \end{itemize}
 
 \newpage
